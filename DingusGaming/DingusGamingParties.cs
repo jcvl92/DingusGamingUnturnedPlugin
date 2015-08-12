@@ -71,6 +71,7 @@ namespace Parties
             else
             {
                 DGPlugin.messagePlayer(invite.requester, caller.CharacterName + " declined your invite.");
+                DGPlugin.messagePlayer(caller, "You have declined "+invite.requester.CharacterName+"'s party invite.");
                 invites.Remove(invite);
             }
         }
