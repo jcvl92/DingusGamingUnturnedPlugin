@@ -16,11 +16,20 @@ namespace DingusGaming
 		{
 			//is run after start by Rocket but still at initial load of the plugin
 			Logger.LogWarning("\tPlugin loaded successfully!");
+
+			//read all of the credit balances from file
+			foreach(var thing in file)
+				Currency.balances.Add(thing.playerID, thing.balance);
+
+			//read the stores data from file
+			foreach(var thing in file)
+				Stores.stores.Add(new Store(thing));
 		}
 
 		protected override void Unload()
 		{
-			
+			//Write all of the credit balances to file.
+
 		}
 
 		public void FixedUpdate()

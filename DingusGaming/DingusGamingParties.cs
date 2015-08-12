@@ -3,9 +3,8 @@ using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
-using DingusGaming;
 
-namespace Parties
+namespace DingusGaming
 {
 	public class Parties
 	{
