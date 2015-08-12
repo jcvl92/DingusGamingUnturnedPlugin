@@ -1,0 +1,10 @@
+*.suo
+*.sln
+*.csproj
+*.dll
+*.pdb
+*.xml
+*.cache
+*.txt
+DingusGaming/obj/
+DingusGaming/Properties/AssemblyInfo.cs
