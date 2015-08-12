@@ -315,17 +315,19 @@ namespace Parties
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             //check for parameter vaidity
-            if (command.Length != 1)
+            if (command.Length == 0)
             {
                 DGPlugin.messagePlayer(caller, "Invalid amount of players. Format is \"/invite PlayerName\".");
                 return;
             }
 
+            string playerName = Join(" ", command);
+
             //check for player existence
-            UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
+            UnturnedPlayer player = DGPlugin.getPlayer(playerName);
             if (player == null)
             {
-                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + command[0] + "\"");
+                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                 return;
             }
 
@@ -391,17 +393,19 @@ namespace Parties
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             //check for parameter vaidity
-            if (command.Length != 1)
+            if (command.Length == 0)
             {
                 DGPlugin.messagePlayer(caller, "Invalid amount of players. Format is \"/kick PlayerName\".");
                 return;
             }
 
+            string playerName = Join(" ", command);
+
             //check for player existence
-            UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
+            UnturnedPlayer player = DGPlugin.getPlayer(playerName);
             if (player == null)
             {
-                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + command[0] + "\"");
+                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                 return;
             }
 
@@ -458,13 +462,13 @@ namespace Parties
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             //check for parameter vaidity
-            if (command.Length != 1)
+            if (command.Length == 0)
             {
                 DGPlugin.messagePlayer(caller, "No message entered. Format is \"/p message\".");
                 return;
             }
 
-            string message = command[0];
+            string message = Join(" ", command);
 
             Party party = Parties.getParty(caller);
             if (party != null)
@@ -672,17 +676,19 @@ namespace Parties
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             //check for parameter vaidity
-            if (command.Length != 1)
+            if (command.Length == 0)
             {
                 DGPlugin.messagePlayer(caller, "Invalid amount of players. Format is \"/leader PlayerName\".");
                 return;
             }
 
+            string playerName = Join(" ", command);
+
             //check for player existence
-            UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
+            UnturnedPlayer player = DGPlugin.getPlayer(playerName);
             if (player == null)
             {
-                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + command[0] + "\"");
+                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                 return;
             }
 
@@ -801,17 +807,19 @@ namespace Parties
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             //check for parameter vaidity
-            if (command.Length != 1)
+            if (command.Length == 0)
             {
                 DGPlugin.messagePlayer(caller, "Invalid amount of players. Format is \"/tp PlayerName\".");
                 return;
             }
 
+            string playerName = Join(" ", command);
+
             //check for player existence
-            UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
+            UnturnedPlayer player = DGPlugin.getPlayer(playerName);
             if (player == null)
             {
-                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + command[0] + "\"");
+                DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                 return;
             }
 
@@ -874,12 +882,7 @@ namespace Parties
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            //check for parameter vaidity
-            if (command.Length > 1)
-            {
-                DGPlugin.messagePlayer(caller, "Invalid amount of players. Format is \"/info\" or \"/info PlayerName\".");
-                return;
-            }
+            string playerName = Join(" ", command);
 
             Party party = Parties.getParty(caller);
             if (party != null)
@@ -895,10 +898,10 @@ namespace Parties
                 else
                 {
                     //check for player existence
-                    UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
+                    UnturnedPlayer player = DGPlugin.getPlayer(playerName);
                     if (player == null)
                     {
-                        DGPlugin.messagePlayer(caller, "Failed to find player named \"" + command[0] + "\"");
+                        DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                         return;
                     }
 
