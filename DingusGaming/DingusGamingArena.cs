@@ -9,10 +9,52 @@ namespace Arena
 {
 	public class ArenaEvent
 	{
-		//arena event will be a timed event that consists of multiple sub-events
+		public Timer timer;
+		public ArenaEvent(ushort eventLength)
+		{
+			//ingest the location, time to start, event length, item to give everyone, and item to scatter on the floor
 
-		//the winner gets to choose a prize(out of 5 prizes)
-		//once the currency system is up, everyone will be getting coins for their arena kills, too
+			//create the timer to stop the event if the max time has been reached
+			timer = new Timer((double)eventLength*1000);
+			timer.AutoReset = false;
+			timer.Elapsed += new ElapsedEventHandler(
+				delegate(object source, ElapsedEventArgs e) 
+				{
+					stopArena();
+				});
+
+			//create the onDeath event to isolate dead people so they can watch and be out of the way
+
+			//create the onDeath event to see if 1 or 0 people are left alive(to end the event)
+		}
+
+		public ~ArenaEvent()
+		{
+			timer.Close();
+		}
+
+		public void beginArena()
+		{
+			//store player states(inventory, location, experience, and skill trees) - remember to exclude admins
+			//compile player death list(unique ID, removed from list on death)
+			//create player score list(unique ID, score(0))
+
+			//register onDeath event handler
+
+			//start event timer
+			timer.Start();
+		}
+
+		private void stopArena()
+		{
+			//stop event timer if still going
+			timer.Stop();
+
+			//
+
+			//at the end of the arena, the top 3 people are allowed to choose a prize, scores are published to chat
+			//this way, you don't have to kill everyone and if someone just hides or leaves, they will only impact themselves
+		}
 
 		//admins are not included in the event(after beta-testing)
 
