@@ -14,11 +14,19 @@ namespace DingusGaming
 		public static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
 		static Dictionary<string, int> balances = new Dictionary<string, int>();
 
-	    static Currency()
-	    {
-	        //TODO: read in balances
-            //TODO: set up writing out balances
-	    }
+		static Currency()
+		{
+			//add the on-death crediting
+			UnturnedPlayerEvents.OnPlayerDeath +=
+				delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+				{
+					//grant the killing user 5 credits + 10% of their victim's credits
+					changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player)/10);
+				};
+
+			//TODO: read in balances
+			//TODO: set up writing out balances
+		}
 
 		public static void addPlayer(UnturnedPlayer player)
 		{
@@ -38,14 +46,14 @@ namespace DingusGaming
 
 		public static bool transferCredits(UnturnedPlayer from, UnturnedPlayer to, int amount)
 		{
-		    string src = DGPlugin.getConstantID(from), dest = DGPlugin.getConstantID(to);
+			string src = DGPlugin.getConstantID(from), dest = DGPlugin.getConstantID(to);
 			if(amount > 0 && balances[src] >= amount)
 			{
 				balances[src] -= amount;
 				balances[dest] += amount;
 				return true;
 			}
-		    return false;
+			return false;
 		}
 	}
 
@@ -53,20 +61,12 @@ namespace DingusGaming
 	{
 		public static readonly List<Store> stores = new List<Store>();
 
-	    static Stores()
-	    {
-            //add the on-death crediting
-	        UnturnedPlayerEvents.OnPlayerDeath +=
-	            delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
-	            {
-	                //grant the killing user 5 credits + 10% of their victim's credits
-	                Currency.changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player)/10);
-	            };
+		static Stores()
+		{
+			//TODO: read in the stores data here
+		}
 
-            //TODO: read in the stores data here
-	    }
-
-        public static string listSubstores()
+		public static string listSubstores()
 		{
 			string str = "";
 			for(int i=0; i<stores.Count; ++i)
@@ -143,9 +143,9 @@ namespace DingusGaming
 		}
 	}
 
-    /********** COMMANDS **********/
+	/********** COMMANDS **********/
 
-    public class CommandStore : IRocketCommand
+	public class CommandStore : IRocketCommand
 	{
 		public bool RunFromConsole
 		{
