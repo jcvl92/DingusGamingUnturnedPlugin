@@ -10,9 +10,12 @@ namespace Arena
 	public class ArenaEvent
 	{
 		public Timer timer;
-		public ArenaEvent(ushort eventLength)
+		public bool adminsIncluded;
+		public ArenaEvent(ushort eventLength, bool adminsIncluded=false)
 		{
-			//ingest the location, time to start, event length, item to give everyone, and item to scatter on the floor
+			//ingest the location, time to start, event length, item to give everyone, admins included, and item to scatter on the floor
+
+			this.adminsIncluded = adminsIncluded;
 
 			//create the timer to stop the event if the max time has been reached
 			timer = new Timer((double)eventLength*1000);
@@ -23,9 +26,8 @@ namespace Arena
 					stopArena();
 				});
 
-			//create the onDeath event to isolate dead people so they can watch and be out of the way
-
-			//create the onDeath event to see if 1 or 0 people are left alive(to end the event)
+			//hook in player death event
+			UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
 		}
 
 		public ~ArenaEvent()
@@ -33,13 +35,40 @@ namespace Arena
 			timer.Close();
 		}
 
+		private void onPlayerDeath()
+		{
+			//isolate player so they can watch and be out of the way
+			//move them to a holding location(spawn location but in the sky a little bit - enough to not get in the way)
+			//prevent them from moving(can still rotate)
+			//give them god-mode and vanish-mode
+
+			//remove from alive list
+			//broadcast players left("X has died. Y players left!")
+
+			//update score of killing player
+			//notify killing player of kill and how many credits were earned
+
+
+			//see if 1 or 0 people are left alive(to end the event)
+		}
+
 		public void beginArena()
 		{
-			//store player states(inventory, location, experience, and skill trees) - remember to exclude admins
-			//compile player death list(unique ID, removed from list on death)
+			//remember to check the adminsIncluded flag
+			//store player states(inventory, location, experience, and skill trees)
+			//compile player alive list(unique ID, removed from list on death)
 			//create player score list(unique ID, score(0))
 
 			//register onDeath event handler
+
+			//drop starting items on location
+
+			//clear player inventories
+			//give players god-mode and vanish-mode
+			//give players starting item if present
+			//teleport players to location
+
+			//start 10 second timer that will remove god-mod and vanish-mode
 
 			//start event timer
 			timer.Start();
@@ -50,36 +79,17 @@ namespace Arena
 			//stop event timer if still going
 			timer.Stop();
 
-			//
+			//unhook player death event
+			UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
 
-			//at the end of the arena, the top 3 people are allowed to choose a prize, scores are published to chat
+			//at the end of the arena, the top 3 people are allowed to choose a prize, scores are published to chat(and credits earned)
 			//this way, you don't have to kill everyone and if someone just hides or leaves, they will only impact themselves
+
+			//prizes chosen are announced
+			// /prize will be used to claim a prize
 		}
 
-		//admins are not included in the event(after beta-testing)
-
-		//a list is generated when the event started, it contains everyone on the server(minus admins).
-		//on death, players are removed from the list, given god-mode and vanish-mode, teleported to a holding cell in the sky where they can watch,
-		//and the list is checked for size 1 to determine if someone won
-
-		/*
-		event flow is as follows:
-		0. Admin creates event by running command /arena <location>
-		1. Server broadcasts the impending arena 1 minute before it happens(mentions it at 1 minute, 30 secondss, and then a countdown from 10 seconds)
-		2. At the end of the countdown, the inventory, location, experience, and skill tress of everyone is saved in memory(maybe dump this to file for safety, too).
-		3. Everyone's inventory is cleared out.
-		4. Everyone is given god-mode and vanish-mode.
-		5. Everyone is teleported to the arena location.
-		6. Guns are spawned in front of the players.
-		7. After 10 seconds, players will have god-mode and vanish-mode disabled.
-		8. After 2 minutes, if there is no winner, the event will run again(just skipping to step 4)
-
-		9. When a winner is determined(last man standing), everyone is teleported to their previous locations, given their gear, skills, and experience back.
-		10. The winner is broadcast to all players on the server
-		11. The winner is presented with 5 options to pick for a prize.(the options will be a random subset of a large pool of options)
-		12. The winner will use command /prize <number> to pick a prize.(prizes will include lump sum currency, weapons, and weapon attachments)
-		13. The prize the winner picked will be broadcast to all players on the server(e.g. "Congrats to X for winning Y!")
-		*/
+		//TODO: implement a prize system feature for arbitrary rewarding from admins, this feature, and other possible features
 
 		/*
 		controls during the event are as follows:
