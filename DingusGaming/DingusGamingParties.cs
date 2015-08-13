@@ -3,6 +3,9 @@ using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
+using Rocket.Unturned.Events;
+using SDG.Unturned;
+using Steamworks;
 
 namespace DingusGaming
 {
@@ -11,7 +14,33 @@ namespace DingusGaming
 		static List<Party> parties = new List<Party>();
 		static List<Invite> invites = new List<Invite>();
 
-		public class Invite
+	    static Parties()
+	    {
+            //notify party of death
+            UnturnedPlayerEvents.OnPlayerDeath +=
+                delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+                {
+                    Party party = Parties.getParty(player);
+                    if (party != null)
+                        party.tellParty(player.CharacterName + " has died!");
+                };
+
+            //TODO: implement this!
+            /*
+            //remove them from their party
+			Party party = Parties.getParty(this.Player);
+			if (party != null)
+			{
+				party.removeMember(this.Player);
+				party.tellParty(this.Player.CharacterName + " has disconnected!");
+			}
+
+			//clear pending invites
+			Parties.removeInvite(this.Player);
+            */
+        }
+
+        public class Invite
 		{
 			public Party party;
 			public UnturnedPlayer requester, playerRequested;
@@ -242,37 +271,6 @@ namespace DingusGaming
 		}
 	}
 
-	public class PartyPlayerComponent : UnturnedPlayerComponent
-	{
-		private void Stop()
-		{
-			//remove them from their party
-			Parties.Party party = Parties.Parties.getParty(this.Player);
-			if (party != null)
-			{
-				party.removeMember(this.Player);
-				party.tellParty(this.Player.CharacterName + " has disconnected!");
-			}
-
-			//clear pending invites
-			Parties.Parties.removeInvite(this.Player);
-		}
-
-		private void FixedUpdate()
-		{
-			//death updates for the party
-			if (this.Player.Dead && !dead)
-			{
-				dead = true;
-				Parties.Party party = Parties.Parties.getParty(this.Player);
-				if (party != null)
-					party.tellParty(this.Player.CharacterName + " has died!");
-			}
-			if (!this.Player.Dead && dead)
-				dead = false;
-		}
-	}
-
 	/********** COMMANDS **********/
 
 	public class CommandInvite : IRocketCommand
@@ -321,7 +319,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = Join(" ", command);
+			string playerName = String.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -399,7 +397,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = Join(" ", command);
+			string playerName = String.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -468,7 +466,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string message = Join(" ", command);
+			string message = String.Join(" ", command);
 
 			Party party = Parties.getParty(caller);
 			if (party != null)
@@ -682,7 +680,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = Join(" ", command);
+			string playerName = String.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -813,7 +811,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = Join(" ", command);
+			string playerName = String.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -882,7 +880,7 @@ namespace DingusGaming
 
 		public void Execute(UnturnedPlayer caller, string[] command)
 		{
-			string playerName = Join(" ", command);
+			string playerName = String.Join(" ", command);
 
 			Party party = Parties.getParty(caller);
 			if (party != null)

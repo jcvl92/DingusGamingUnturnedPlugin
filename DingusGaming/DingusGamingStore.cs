@@ -3,6 +3,9 @@ using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
+using Rocket.Unturned.Events;
+using SDG.Unturned;
+using Steamworks;
 
 namespace DingusGaming
 {
@@ -11,10 +14,16 @@ namespace DingusGaming
 		public static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
 		static Dictionary<string, int> balances = new Dictionary<string, int>();
 
+	    static Currency()
+	    {
+	        //TODO: read in balances
+            //TODO: set up writing out balances
+	    }
+
 		public static void addPlayer(UnturnedPlayer player)
 		{
 			if(!balances.ContainsKey(DGPlugin.getConstantID(player)))
-				balances.Add(player.STEAMID, startingAmount);
+				balances.Add(DGPlugin.getConstantID(player), startingAmount);
 		}
 
 		public static void changeBalance(UnturnedPlayer player, int amount)
@@ -27,15 +36,16 @@ namespace DingusGaming
 			return balances[DGPlugin.getConstantID(player)];
 		}
 
-		public static boolean transferCredits(UnturnedPlayer src, UnturnedPlayer dest, int amount)
+		public static bool transferCredits(UnturnedPlayer from, UnturnedPlayer to, int amount)
 		{
+		    string src = DGPlugin.getConstantID(from), dest = DGPlugin.getConstantID(to);
 			if(amount > 0 && balances[src] >= amount)
 			{
 				balances[src] -= amount;
 				balances[dest] += amount;
 				return true;
 			}
-			return false
+		    return false;
 		}
 	}
 
@@ -43,10 +53,23 @@ namespace DingusGaming
 	{
 		public static readonly List<Store> stores = new List<Store>();
 
-		public static string listSubstores()
+	    static Stores()
+	    {
+            //add the on-death crediting
+	        UnturnedPlayerEvents.OnPlayerDeath +=
+	            delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+	            {
+	                //grant the killing user 5 credits + 10% of their victim's credits
+	                Currency.changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player)/10);
+	            };
+
+            //TODO: read in the stores data here
+	    }
+
+        public static string listSubstores()
 		{
 			string str = "";
-			for(int i=0; i<stores.Length; ++i)
+			for(int i=0; i<stores.Count; ++i)
 				str += "("+(i+1)+")"+ stores[i] + ", ";
 			return str.Substring(0, str.Length - 2);
 		}
@@ -54,11 +77,11 @@ namespace DingusGaming
 		public static string viewSubstore(int storeNumber)
 		{
 			//check the bounds
-			if(storeNumber < 1 || storeNumber > stores.Length)
+			if(storeNumber < 1 || storeNumber > stores.Count)
 				return "Store number does not exist!";
 
 			string str = "";
-			foreach(Item item in stores[storeNumber-1].items)
+			foreach(Store.Item item in stores[storeNumber-1].items)
 				str += "$"+item.cost+"-"+item.name + "("+item.itemID+"), ";
 			return str.Substring(0, str.Length - 2);
 		}
@@ -72,9 +95,9 @@ namespace DingusGaming
 			}
 
 			//search for the item in one of the stores
-			Item item = null;
+			Store.Item item = null;
 			foreach(Store store in stores)
-				if(item = getItem(itemID) != null)
+				if((item = store.getItem(itemID)) != null)
 					break;
 
 			if(item == null)
@@ -95,7 +118,7 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "Insufficient funds to purchase "+quantity+" "+item.name+"($"+Currency.getBalance(caller)+"/$"+item.cost*quantity+").");
 		}
 
-		class Store
+		public class Store
 		{
 			public readonly List<Item> items = new List<Item>();
 
@@ -104,13 +127,13 @@ namespace DingusGaming
 				return items.Find(x => x.itemID == itemID);
 			}
 
-			class Item
+			public class Item
 			{
 				public readonly string name;
 				public readonly ushort itemID;
 				public readonly int cost;
 
-				public Item(name, itemID, cost)
+				public Item(string name, ushort itemID, int cost)
 				{
 					this.name = name;
 					this.itemID = itemID;
@@ -120,29 +143,9 @@ namespace DingusGaming
 		}
 	}
 
-	public class StorePlayerComponent : UnturnedPlayerComponent
-	{
-		private void FixedUpdate()
-		{
-			//death rewards for killing players
-			if (this.Player.Dead && !dead)
-			{
-				dead = true;
-				
-				//get the killing player
-				killer = this.Player.Death.getCause().player;
+    /********** COMMANDS **********/
 
-				//grant the killing user 5 credits + 10% of their victim's credits
-				Store.addCredits(killer, 5 + Store.getCredits(this.Player)/10);
-			}
-			if (!this.Player.Dead && dead)
-				dead = false;
-		}
-	}
-
-	/********** COMMANDS **********/
-
-	public class CommandStore : IRocketCommand
+    public class CommandStore : IRocketCommand
 	{
 		public bool RunFromConsole
 		{
@@ -186,7 +189,7 @@ namespace DingusGaming
 			else if(command.Length == 1)
 			{
 				int num;
-				if(Int32.TryParse(command[0], out num));
+				if(int.TryParse(command[0], out num))
 					DGPlugin.messagePlayer(caller, Stores.viewSubstore(num));
 				else
 					DGPlugin.messagePlayer(caller, "Invalid storeNumber.");
@@ -246,12 +249,12 @@ namespace DingusGaming
 			{
 				int itemID, quantity=1;
 
-				if(!Int32.TryParse(command[0], out itemID));
+				if(!int.TryParse(command[0], out itemID))
 					DGPlugin.messagePlayer(caller, "Invalid itemID.");
-				else if(command.Length == 2 && !Int32.TryParse(command[1], out quantity)
+				else if(command.Length == 2 && !int.TryParse(command[1], out quantity))
 					DGPlugin.messagePlayer(caller, "Invalid quantity.");
 				else
-					DGPlugin.messagePlayer(caller, Stores.purchase(caller, itemID, quantity));
+					Stores.purchase(caller, (ushort)itemID, quantity);
 			}
 		}
 
@@ -356,13 +359,13 @@ namespace DingusGaming
 			else
 			{
 				int amount;
-				if(!Int32.TryParse(command[0], out amount))
+				if(!int.TryParse(command[0], out amount))
 					DGPlugin.messagePlayer(caller, "Invalid amount.");
 				else
 				{
-					string playerName = Join(" ", Skip(command, 1));//TODO: might need.ToArray() at the end of it
+					string playerName = String.Join(" ", Enumerable.Skip(command, 1));//TODO: might need.ToArray() at the end of it
 					UnturnedPlayer player;
-					if(player = DGPlugin.getPlayer(playerName) == null)
+					if((player = DGPlugin.getPlayer(playerName)) == null)
 						DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
 					else
 					{

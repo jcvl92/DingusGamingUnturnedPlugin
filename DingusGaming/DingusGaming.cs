@@ -1,35 +1,24 @@
-﻿using System;
-using Rocket.Core.Logging;
+﻿using Rocket.Core.Logging;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.API;
+using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
+using Steamworks;
 
 namespace DingusGaming
 {
-	public class DGPlugin : Rocket.Core.Plugins.RocketPlugin
+	public class DGPlugin : RocketPlugin
 	{
 		//contains helper functions for persisting data and centralizing system functions
-
-		protected override void Load()
+		protected override void Load() 
 		{
-			//is run after start by Rocket but still at initial load of the plugin
-			Logger.LogWarning("\tPlugin loaded successfully!");
-
-			//read all of the credit balances from file
-			foreach(var thing in file)
-				Currency.balances.Add(thing.playerID, thing.balance);
-
-			//read the stores data from file
-			foreach(var thing in file)
-				Stores.stores.Add(new Store(thing));
+			//is called after start by Rocket but still at initial load of the plugin
+		    Logger.LogWarning("\tPlugin loaded successfully!");
 		}
 
 		protected override void Unload()
 		{
-			//Write all of the credit balances to file.
-
+			//is called by Rocket before shutting down
 		}
 
 		public void FixedUpdate()
@@ -53,31 +42,17 @@ namespace DingusGaming
 
 		public static void givePlayerItem(UnturnedPlayer player, ushort itemID, int quantity)
 		{
-			player.GiveItem(itemID, quantity);
+			player.GiveItem(itemID, (byte)quantity);
 		}
 
 		public static string getConstantID(UnturnedPlayer player)
 		{
-			throw new UnimplementedException();
+		    return player.CSteamID.ToString();
 		}
-	}
 
-	public class GlobalPlayerComponent : UnturnedPlayerComponent
-	{
-		private void FixedUpdate()
-		{
-			//death messages
-			if (this.Player.Dead && !dead)
-			{
-				dead = true;
-				
-				//get the killing player
-				killer = this.Player.Death.getCause().player;
-
-				DGPlugin.messagePlayer(this.Player, "You have been killed by "+killer+"!");
-			}
-			if (!this.Player.Dead && dead)
-				dead = false;
-		}
-	}
+        internal static UnturnedPlayer getPlayer(CSteamID murderer)
+        {
+            return UnturnedPlayer.FromCSteamID(murderer);
+        }
+    }
 }
