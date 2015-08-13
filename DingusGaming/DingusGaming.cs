@@ -21,10 +21,12 @@ namespace DingusGaming
 			//is called by Rocket before shutting down
 		}
 
-		public void FixedUpdate()
+		public override void FixedUpdate()
 		{
 			//is called every game update
 		}
+
+		/********** HELPER FUNCTIONS **********/
 
 		public static void messagePlayer(UnturnedPlayer player, string text)
 		{
