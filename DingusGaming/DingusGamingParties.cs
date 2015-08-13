@@ -14,20 +14,20 @@ namespace DingusGaming
 		static List<Party> parties = new List<Party>();
 		static List<Invite> invites = new List<Invite>();
 
-	    static Parties()
-	    {
-            //notify party of death
-            UnturnedPlayerEvents.OnPlayerDeath +=
-                delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
-                {
-                    Party party = Parties.getParty(player);
-                    if (party != null)
-                        party.tellParty(player.CharacterName + " has died!");
-                };
+		static Parties()
+		{
+			//notify party of death
+			UnturnedPlayerEvents.OnPlayerDeath +=
+				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+				{
+					Party party = Parties.getParty(player);
+					if (party != null)
+						party.tellParty(player.CharacterName + " has died!");
+				};
 
-            //TODO: implement this!
-            /*
-            //remove them from their party
+			//TODO: implement this!
+			/*
+			//remove them from their party
 			Party party = Parties.getParty(this.Player);
 			if (party != null)
 			{
@@ -37,10 +37,10 @@ namespace DingusGaming
 
 			//clear pending invites
 			Parties.removeInvite(this.Player);
-            */
-        }
+			*/
+		}
 
-        public class Invite
+		public class Invite
 		{
 			public Party party;
 			public UnturnedPlayer requester, playerRequested;

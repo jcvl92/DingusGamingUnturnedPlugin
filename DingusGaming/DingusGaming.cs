@@ -9,11 +9,12 @@ namespace DingusGaming
 {
 	public class DGPlugin : RocketPlugin
 	{
-		//contains helper functions for persisting data and centralizing system functions
+		//contains helper functions for persisting data, global event handling, and centralizing system functions
+
 		protected override void Load() 
 		{
 			//is called after start by Rocket but still at initial load of the plugin
-		    Logger.LogWarning("\tPlugin loaded successfully!");
+			Logger.LogWarning("\tPlugin loaded successfully!");
 		}
 
 		protected override void Unload()
@@ -49,12 +50,12 @@ namespace DingusGaming
 
 		public static string getConstantID(UnturnedPlayer player)
 		{
-		    return player.CSteamID.ToString();
+			return player.CSteamID.ToString();
 		}
 
-        internal static UnturnedPlayer getPlayer(CSteamID murderer)
-        {
-            return UnturnedPlayer.FromCSteamID(murderer);
-        }
-    }
+		internal static UnturnedPlayer getPlayer(CSteamID murderer)
+		{
+			return UnturnedPlayer.FromCSteamID(murderer);
+		}
+	}
 }
