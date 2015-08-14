@@ -22,7 +22,7 @@ namespace DingusGaming
 			//is called by Rocket before shutting down
 		}
 
-		public override void FixedUpdate()
+		public void FixedUpdate()
 		{
 			//is called every game update
 		}
@@ -53,9 +53,9 @@ namespace DingusGaming
 			return player.CSteamID.ToString();
 		}
 
-		internal static UnturnedPlayer getPlayer(CSteamID murderer)
+		internal static UnturnedPlayer getPlayer(CSteamID playerID)
 		{
-			return UnturnedPlayer.FromCSteamID(murderer);
+			return UnturnedPlayer.FromCSteamID(playerID);
 		}
 	}
 }

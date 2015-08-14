@@ -11,8 +11,8 @@ namespace DingusGaming
 {
 	public class Parties
 	{
-		static List<Party> parties = new List<Party>();
-		static List<Invite> invites = new List<Invite>();
+		static readonly List<Party> parties = new List<Party>();
+		static readonly List<Invite> invites = new List<Invite>();
 
 		static Parties()
 		{
@@ -20,25 +20,28 @@ namespace DingusGaming
 			UnturnedPlayerEvents.OnPlayerDeath +=
 				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 				{
-					Party party = Parties.getParty(player);
+					Party party = getParty(player);
 					if (party != null)
 						party.tellParty(player.CharacterName + " has died!");
 				};
 
-			//TODO: implement this!
-			/*
-			//remove them from their party
-			Party party = Parties.getParty(this.Player);
-			if (party != null)
-			{
-				party.removeMember(this.Player);
-				party.tellParty(this.Player.CharacterName + " has disconnected!");
-			}
+            //TODO: should this be "Steam.OnClientDisconnected"?
+            Steam.OnServerDisconnected += delegate(CSteamID id)
+            {
+                UnturnedPlayer player = DGPlugin.getPlayer(id);
 
-			//clear pending invites
-			Parties.removeInvite(this.Player);
-			*/
-		}
+                //remove them from their party
+                Party party = getParty(player);
+                if (party != null)
+                {
+                    party.removeMember(player);
+                    party.tellParty(player.CharacterName + " has disconnected!");
+                }
+
+                //clear pending invites
+                removeInvite(player);
+            };
+        }
 
 		public class Invite
 		{
