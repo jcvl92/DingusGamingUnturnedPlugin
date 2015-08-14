@@ -53,9 +53,11 @@ namespace DingusGaming
 			return player.CSteamID.ToString();
 		}
 
-		internal static UnturnedPlayer getPlayer(CSteamID playerID)
+		public static UnturnedPlayer getPlayer(CSteamID playerID)
 		{
 			return UnturnedPlayer.FromCSteamID(playerID);
 		}
+
+
 	}
 }

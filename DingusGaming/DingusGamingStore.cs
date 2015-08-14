@@ -11,8 +11,8 @@ namespace DingusGaming
 {
 	public class Currency
 	{
-		public static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
-		static Dictionary<string, int> balances = new Dictionary<string, int>();
+		static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
+		static readonly Dictionary<string, int> balances;
 
 		static Currency()
 		{
@@ -24,8 +24,14 @@ namespace DingusGaming
 					changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player)/10);
 				};
 
-			//TODO: read in balances
-			//TODO: set up writing out balances
+			//read in balances
+		    balances = DGPlugin.readFromFile<Dictionary<string, int>>("balances.xml");
+
+		    //set balances to write to file on server shutdown
+		    Steam.OnServerShutdown += delegate()
+		    {
+		        DGPlugin.writeToFile(balances, "balances.xml");
+		    };
 		}
 
 		public static void addPlayer(UnturnedPlayer player)
@@ -59,11 +65,12 @@ namespace DingusGaming
 
 	public class Stores
 	{
-		public static readonly List<Store> stores = new List<Store>();
+	    static readonly List<Store> stores;
 
 		static Stores()
 		{
-			//TODO: read in the stores data here
+			//read in the stores data
+		    stores = DGPlugin.readFromFile<List<Store>>("stores.xml");
 		}
 
 		public static string listSubstores()
