@@ -57,6 +57,13 @@ namespace DingusGaming
             }
 		}
 
+		public static void broadcastMessage(string text)
+		{
+			List<string> strs = UnturnedChat.wrapMessage(text);
+			foreach (string str in strs)
+				UnturnedChat.Say(str);
+		}
+
         public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)
         {
             List<DictionaryEntry> entries = new List<DictionaryEntry>(dictionary.Count);

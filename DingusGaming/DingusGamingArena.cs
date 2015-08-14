@@ -9,14 +9,22 @@ namespace Arena
 {
 	public class ArenaEvent
 	{
-        /*
 		public Timer timer;
 		public bool adminsIncluded;
-		public ArenaEvent(ushort eventLength, bool adminsIncluded=false)
-		{
-			//ingest the location, time to start, event length, item to give everyone, admins included, and item to scatter on the floor
+		private List<TeleportInfo> teleports = new List<TeleportInfo>();
 
+		public ArenaEvent(UnturnedLocation locaiton="castle", ushort eventLength=120, UnturnedItem startItem=null, UnturnedItem dropItem=null, bool adminsIncluded=false)
+		{
 			this.adminsIncluded = adminsIncluded;
+
+			//newly connecting players are put in the holding area
+			U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+		    {
+		    	addToTeleports(player);
+		    	moveToHoldingArea(player);
+		    }
+
+		    //TODO: disable all user commands during event
 
 			//create the timer to stop the event if the max time has been reached
 			timer = new Timer((double)eventLength*1000);
@@ -36,21 +44,45 @@ namespace Arena
 			timer.Close();
 		}
 
-		private void onPlayerDeath()
+		private void addToTeleports(UnturnedPlayer player)
+		{
+
+		}
+
+		private void moveToHoldingArea(UnturnedPlayer player)
 		{
 			//isolate player so they can watch and be out of the way
 			//move them to a holding location(spawn location but in the sky a little bit - enough to not get in the way)
 			//prevent them from moving(can still rotate)
 			//give them god-mode and vanish-mode
+		}
+
+		private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+		{
+			//TODO: is this stuff thread safe?
+			moveToHoldingArea(player);
 
 			//remove from alive list
-			//broadcast players left("X has died. Y players left!")
+			alive.Remove(player.CSteamID);
 
 			//update score of killing player
-			//notify killing player of kill and how many credits were earned
+			++score[murderer];
 
+			DGPlugin.broadcastMessage(player.CharacterName+" has been killed by "+DGPlugin.getPlayer(murderer).CharacterName+".");
 
 			//see if 1 or 0 people are left alive(to end the event)
+			if(alive.Count == 0)
+			{
+				DGPlugin.broadcastMessage("Everyone has died!");
+				stopArena();
+			}
+			else if(alive.Count == 1)
+			{
+				DGPlugin.broadcastMessage(DGPlugin.getPlayer(murderer).CharacterName+" is the last man standing!");
+				stopArena();
+			}
+			else
+				DGPlugin.broadcastMessage(alive.Count+" players left!");
 		}
 
 		public void beginArena()
@@ -65,9 +97,10 @@ namespace Arena
 			//drop starting items on location
 
 			//clear player inventories
+			//heal up all survival stats on players
 			//give players god-mode and vanish-mode
 			//give players starting item if present
-			//teleport players to location
+			//teleport players to location(remember to add them to the teleports list before TPing them)
 
 			//start 10 second timer that will remove god-mod and vanish-mode
 
@@ -83,21 +116,13 @@ namespace Arena
 			//unhook player death event
 			UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
 
+			//notify everyone of how many people they killed/credits they earned/what place they earned out of everyone(e.g. 4/10, 4th highest score)
+
 			//at the end of the arena, the top 3 people are allowed to choose a prize, scores are published to chat(and credits earned)
 			//this way, you don't have to kill everyone and if someone just hides or leaves, they will only impact themselves
 
 			//prizes chosen are announced
 			// /prize will be used to claim a prize
 		}
-
-		//TODO: implement a prize system feature for arbitrary rewarding from admins, this feature, and other possible features
-
-		/*
-		controls during the event are as follows:
-		1. People joining the server are placed in the holding cage.
-		2. People who die are placed in the holding cage.
-		3. People who go significantly far enough away from the event are placed in the holding cage.
-		4. When people die, a winner-check function is run.
-		*/
 	}
 }
