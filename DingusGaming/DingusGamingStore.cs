@@ -1,8 +1,9 @@
-using System;
+using System.Collections;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
+using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using SDG.Unturned;
 using Steamworks;
@@ -12,29 +13,39 @@ namespace DingusGaming
 	public class Currency
 	{
 		static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
-		static readonly Dictionary<string, int> balances;
+		static Dictionary<string, int> balances;
 
-		static Currency()
+		public static void init()
 		{
-			//add the on-death crediting
-			UnturnedPlayerEvents.OnPlayerDeath +=
-				delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
-				{
-					//grant the killing user 5 credits + 10% of their victim's credits
-					changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player)/10);
-				};
+			//read in balances, you have to convert dictionaries in order to deserialize then
+		    List<DictionaryEntry> temp = DGPlugin.readFromFile<List<DictionaryEntry>>("balances.xml");
+		    if (temp != null)
+                balances = DGPlugin.convertToDictionary<string, int>(temp);
+            else
+		        balances = new Dictionary<string, int>();
 
-			//read in balances
-		    balances = DGPlugin.readFromFile<Dictionary<string, int>>("balances.xml");
-
-		    //set balances to write to file on server shutdown
-		    Steam.OnServerShutdown += delegate()
+            //set balances to write to file on server shutdown
+            Steam.OnServerShutdown += delegate()
 		    {
-		        DGPlugin.writeToFile(balances, "balances.xml");
+                //you have to convert dictionaries in order to serialize them
+		        DGPlugin.writeToFile(DGPlugin.convertFromDictionary(balances), "balances.xml");
 		    };
-		}
 
-		public static void addPlayer(UnturnedPlayer player)
+            //give the player a balance if they don't already have one
+            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+		    {
+                addPlayer(player);
+		    };
+
+            //add the on-death crediting
+            UnturnedPlayerEvents.OnPlayerDeath += delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+            {
+                //grant the killing user 5 credits + 10% of their victim's credits
+                changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player) / 10);
+            };
+        }
+
+        public static void addPlayer(UnturnedPlayer player)
 		{
 			if(!balances.ContainsKey(DGPlugin.getConstantID(player)))
 				balances.Add(DGPlugin.getConstantID(player), startingAmount);
@@ -65,19 +76,19 @@ namespace DingusGaming
 
 	public class Stores
 	{
-	    static readonly List<Store> stores;
+	    static List<Store> stores;
 
-		static Stores()
+		public static void init()
 		{
-			//read in the stores data
-		    stores = DGPlugin.readFromFile<List<Store>>("stores.xml");
+            //read in the stores data
+            stores = DGPlugin.readFromFile<List<Store>>("stores.xml");
 		}
 
 		public static string listSubstores()
 		{
 			string str = "";
 			for(int i=0; i<stores.Count; ++i)
-				str += "("+(i+1)+")"+ stores[i] + ", ";
+				str += "("+(i+1)+")"+ stores[i].name + ", ";
 			return str.Substring(0, str.Length - 2);
 		}
 
@@ -128,6 +139,7 @@ namespace DingusGaming
 		public class Store
 		{
 			public readonly List<Item> items = new List<Item>();
+		    public readonly string name;
 
 			public Item getItem(ushort itemID)
 			{
@@ -140,7 +152,9 @@ namespace DingusGaming
 				public readonly ushort itemID;
 				public readonly int cost;
 
-				public Item(string name, ushort itemID, int cost)
+			    public Item(){}
+
+			    public Item(string name, ushort itemID, int cost)
 				{
 					this.name = name;
 					this.itemID = itemID;
@@ -361,7 +375,7 @@ namespace DingusGaming
 
 		public void Execute(UnturnedPlayer caller, string[] command)
 		{
-			if(command.Length != 2)
+			if(command.Length < 2)
 				DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/transfer amount playerName\".");
 			else
 			{
@@ -370,7 +384,7 @@ namespace DingusGaming
 					DGPlugin.messagePlayer(caller, "Invalid amount.");
 				else
 				{
-					string playerName = String.Join(" ", Enumerable.Skip(command, 1));//TODO: might need.ToArray() at the end of it
+					string playerName = string.Join(" ", command.Skip(1).ToArray());
 					UnturnedPlayer player;
 					if((player = DGPlugin.getPlayer(playerName)) == null)
 						DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");

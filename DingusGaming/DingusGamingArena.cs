@@ -9,6 +9,7 @@ namespace Arena
 {
 	public class ArenaEvent
 	{
+        /*
 		public Timer timer;
 		public bool adminsIncluded;
 		public ArenaEvent(ushort eventLength, bool adminsIncluded=false)

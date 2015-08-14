@@ -9,3 +9,4 @@
 *.DS_Store
 DingusGaming/obj/
 DingusGaming/Properties/AssemblyInfo.cs
+*.user

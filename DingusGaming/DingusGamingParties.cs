@@ -1,8 +1,8 @@
-using System;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
+using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using SDG.Unturned;
 using Steamworks;
@@ -14,7 +14,7 @@ namespace DingusGaming
 		static readonly List<Party> parties = new List<Party>();
 		static readonly List<Invite> invites = new List<Invite>();
 
-		static Parties()
+		public static void init()
 		{
 			//notify party of death
 			UnturnedPlayerEvents.OnPlayerDeath +=
@@ -24,12 +24,9 @@ namespace DingusGaming
 					if (party != null)
 						party.tellParty(player.CharacterName + " has died!");
 				};
-
-            //TODO: should this be "Steam.OnClientDisconnected"?
-            Steam.OnServerDisconnected += delegate(CSteamID id)
+            
+            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
             {
-                UnturnedPlayer player = DGPlugin.getPlayer(id);
-
                 //remove them from their party
                 Party party = getParty(player);
                 if (party != null)
@@ -165,7 +162,6 @@ namespace DingusGaming
 
 		public bool isMember(UnturnedPlayer player)
 		{
-			//return members.Contains(player);
 			foreach (UnturnedPlayer member in members)
 				if (member.Equals(player))
 					return true;
@@ -322,7 +318,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = String.Join(" ", command);
+			string playerName = string.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -400,7 +396,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = String.Join(" ", command);
+			string playerName = string.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -469,7 +465,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string message = String.Join(" ", command);
+			string message = string.Join(" ", command);
 
 			Party party = Parties.getParty(caller);
 			if (party != null)
@@ -683,7 +679,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = String.Join(" ", command);
+			string playerName = string.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -814,7 +810,7 @@ namespace DingusGaming
 				return;
 			}
 
-			string playerName = String.Join(" ", command);
+			string playerName = string.Join(" ", command);
 
 			//check for player existence
 			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
@@ -883,7 +879,7 @@ namespace DingusGaming
 
 		public void Execute(UnturnedPlayer caller, string[] command)
 		{
-			string playerName = String.Join(" ", command);
+			string playerName = string.Join(" ", command);
 
 			Party party = Parties.getParty(caller);
 			if (party != null)
