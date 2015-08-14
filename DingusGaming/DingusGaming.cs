@@ -96,26 +96,40 @@ namespace DingusGaming
 	    public static void writeToFile(object obj, string fileName)
 	    {
             XmlSerializer serializer = new XmlSerializer(obj.GetType(), "");
-	        XmlTextWriter xmlTextWriter = new XmlTextWriter("DGPLugin_" + fileName, Encoding.UTF8);
-	        xmlTextWriter.Formatting = Formatting.Indented;
-            serializer.Serialize(xmlTextWriter, obj);
+	        XmlTextWriter xmlTextWriter = null;
+
+	        try
+	        {
+	            xmlTextWriter = new XmlTextWriter("DGPLugin_" + fileName, Encoding.UTF8);
+	            xmlTextWriter.Formatting = Formatting.Indented;
+	            serializer.Serialize(xmlTextWriter, obj);
+	        }
+	        finally
+	        {
+                xmlTextWriter?.Close();
+            }
 	    }
 
 	    public static T readFromFile<T>(string fileName)
 	    {
             XmlSerializer serializer = new XmlSerializer(typeof(T));
+	        XmlTextReader xmlTextReader = null;
 
 	        try
 	        {
-                XmlTextReader xmlTextReader = new XmlTextReader("DGPLugin_" + fileName);
+	            xmlTextReader = new XmlTextReader("DGPLugin_" + fileName);
 
-                if (serializer.CanDeserialize(xmlTextReader))
-                    return (T)serializer.Deserialize(xmlTextReader);
-                return default(T);
-            }
+	            if (serializer.CanDeserialize(xmlTextReader))
+	                return (T) serializer.Deserialize(xmlTextReader);
+	            return default(T);
+	        }
 	        catch (FileNotFoundException)
 	        {
 	            return default(T);
+	        }
+	        finally
+	        {
+                xmlTextReader?.Close();
 	        }
         }
 	}
