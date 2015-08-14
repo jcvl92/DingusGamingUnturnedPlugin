@@ -2,6 +2,9 @@
 using Rocket.Core.Logging;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
 using Steamworks;
@@ -61,12 +64,14 @@ namespace DingusGaming
 
 	    public static void writeToFile(Object obj, string fileName)
 	    {
-	        
+	        XmlSerializer serializer = new XmlSerializer(obj.GetType());
+	        serializer.Serialize(new XmlTextWriter(fileName, Encoding.UTF8), obj);
 	    }
 
 	    public static T readFromFile<T>(string fileName)
 	    {
-	        return default(T);
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+	        return (T)serializer.Deserialize(new XmlTextReader(fileName));
 	    }
 	}
 }
