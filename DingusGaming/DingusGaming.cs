@@ -1,4 +1,5 @@
-﻿using Rocket.Core.Logging;
+﻿using System;
+using Rocket.Core.Logging;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using Rocket.Core.Plugins;
@@ -58,6 +59,14 @@ namespace DingusGaming
 			return UnturnedPlayer.FromCSteamID(playerID);
 		}
 
+	    public static void writeToFile(Object obj, string fileName)
+	    {
+	        
+	    }
 
+	    public static T readFromFile<T>(string fileName)
+	    {
+	        return default(T);
+	    }
 	}
 }
