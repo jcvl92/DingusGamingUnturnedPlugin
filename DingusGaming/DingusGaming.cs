@@ -45,6 +45,16 @@ namespace DingusGaming
 
 		/********** HELPER FUNCTIONS **********/
 
+		public static void disableCommands()
+		{
+
+		}
+
+		public static void enableCommands()
+		{
+
+		}
+
 		public static void messagePlayer(UnturnedPlayer player, string text)
 		{
 			List<string> strs = UnturnedChat.wrapMessage(text);

@@ -20,20 +20,18 @@ namespace DingusGaming
 			UnturnedPlayerEvents.OnPlayerDeath +=
 				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 				{
-					Party party = getParty(player);
-					if (party != null)
-						party.tellParty(player.CharacterName + " has died!");
+					//TODO: remove this if it works
+					//Party party = getParty(player);
+					//party.tellParty(player.CharacterName + " has died!");
+					getParty(player)?.tellParty(player.CharacterName + " has died!");
 				};
             
             U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
             {
                 //remove them from their party
                 Party party = getParty(player);
-                if (party != null)
-                {
-                    party.removeMember(player);
-                    party.tellParty(player.CharacterName + " has disconnected!");
-                }
+                party?.removeMember(player);
+                party?.tellParty(player.CharacterName + " has disconnected!");
 
                 //clear pending invites
                 removeInvite(player);
@@ -106,9 +104,11 @@ namespace DingusGaming
 
 		public static void removeInvite(UnturnedPlayer player)
 		{
-			Invite invite = getInvite(player);
-			if (invite != null)
-				invites.Remove(invite);
+			//TODO: remove this if it works
+			//Invite invite = getInvite(player);
+			//if (invite != null)
+			//	invites.Remove(invite);
+			invites.Remove(getInvite(player)?);
 		}
 
 		public static void createParty(UnturnedPlayer leader)
@@ -120,10 +120,8 @@ namespace DingusGaming
 		public static Party getParty(UnturnedPlayer player)
 		{
 			foreach (Party party in parties)
-			{
 				if (party.isMember(player))
 					return party;
-			}
 			return null;
 		}
 

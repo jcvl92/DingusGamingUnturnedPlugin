@@ -24,7 +24,8 @@ namespace Arena
 		    	moveToHoldingArea(player);
 		    }
 
-		    //TODO: disable all user commands during event
+		    //disable all user commands during event
+		    DGPlugin.disableCommands();
 
 			//create the timer to stop the event if the max time has been reached
 			timer = new Timer((double)eventLength*1000);
@@ -123,6 +124,9 @@ namespace Arena
 
 			//prizes chosen are announced
 			// /prize will be used to claim a prize
+
+			//re-enable commands
+			DGPlugin.enableCommands();
 		}
 	}
 }
