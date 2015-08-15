@@ -788,7 +788,7 @@ namespace DingusGaming
 
 		public List<string> Aliases
 		{
-			get { return new List<string> { "tp", "pteleport", "ptp" }; }
+			get { return new List<string> { "tp", "pteleport", "ptp", "tpa" }; }
 		}
 
 		public bool AllowFromConsole
