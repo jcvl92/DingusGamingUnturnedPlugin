@@ -20,9 +20,6 @@ namespace DingusGaming
 			UnturnedPlayerEvents.OnPlayerDeath +=
 				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 				{
-					//TODO: remove this if it works
-					//Party party = getParty(player);
-					//party.tellParty(player.CharacterName + " has died!");
 					getParty(player)?.tellParty(player.CharacterName + " has died!");
 				};
             
@@ -104,11 +101,9 @@ namespace DingusGaming
 
 		public static void removeInvite(UnturnedPlayer player)
 		{
-			//TODO: remove this if it works
-			//Invite invite = getInvite(player);
-			//if (invite != null)
-			//	invites.Remove(invite);
-			invites.Remove(getInvite(player)?);
+			Invite invite = getInvite(player);
+			if (invite != null)
+				invites.Remove(invite);
 		}
 
 		public static void createParty(UnturnedPlayer leader)

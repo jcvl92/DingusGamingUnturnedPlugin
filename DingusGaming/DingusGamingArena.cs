@@ -1,8 +1,5 @@
-using System;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.API;
 using DingusGaming;
 
 namespace Arena
@@ -18,11 +15,11 @@ namespace Arena
 			this.adminsIncluded = adminsIncluded;
 
 			//newly connecting players are put in the holding area
-			U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+		    U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
 		    {
-		    	addToTeleports(player);
-		    	moveToHoldingArea(player);
-		    }
+		        addToTeleports(player);
+		        moveToHoldingArea(player);
+		    };
 
 		    //disable all user commands during event
 		    DGPlugin.disableCommands();
