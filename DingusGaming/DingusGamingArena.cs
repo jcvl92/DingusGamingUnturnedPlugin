@@ -61,6 +61,7 @@ namespace Arena
 		private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 		{
 			//TODO: is this stuff thread safe?
+			//TODO: have suiciding cause a decrement in score rather than increment(pending method evaluation in Currency)
 			moveToHoldingArea(player);
 
 			//remove from alive list

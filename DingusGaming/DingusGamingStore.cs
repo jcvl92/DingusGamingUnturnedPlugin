@@ -40,8 +40,9 @@ namespace DingusGaming
             //add the on-death crediting
             UnturnedPlayerEvents.OnPlayerDeath += delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
             {
-                //grant the killing user 5 credits + 10% of their victim's credits
-                changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player) / 10);
+            	//grant the killing user 5 credits + 10% of their victim's credits
+            	if(!player.CSteamID.Equals(murderer))//TODO: check that this works for suicide. maybe dump the variables to console log?
+                	changeBalance(DGPlugin.getPlayer(murderer), 5 + Currency.getBalance(player) / 10);
             };
         }
 
