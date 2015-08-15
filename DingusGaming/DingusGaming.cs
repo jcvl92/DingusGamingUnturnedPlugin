@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
+using SDG.Unturned;
 using Steamworks;
 
 namespace DingusGaming
@@ -44,6 +45,16 @@ namespace DingusGaming
 
 		/********** HELPER FUNCTIONS **********/
 
+	    public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
+	    {
+	        if (cause == EDeathCause.KILL)
+	            //return !murderer.m_SteamID.Equals(90071992547409920) && !player.CSteamID.Equals(murderer);
+                //get the last player that damaged them before they die(timeout is 30 seconds)
+	            return getPlayer(murderer);
+	        else
+	            return null;
+	    }
+        
 		public static void disableCommands()
 		{
 
