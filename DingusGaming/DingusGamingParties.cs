@@ -23,7 +23,7 @@ namespace DingusGaming
 					getParty(player)?.tellParty(player.CharacterName + " has died!");
 				};
             
-            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+            U.Events.OnPlayerDisconnected += delegate(UnturnedPlayer player)
             {
                 //remove them from their party
                 Party party = getParty(player);
