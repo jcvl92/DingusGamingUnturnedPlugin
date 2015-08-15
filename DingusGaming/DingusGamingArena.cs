@@ -6,6 +6,7 @@ namespace Arena
 {
 	public class ArenaEvent
 	{
+        /*
 		public Timer timer;
 		public bool adminsIncluded;
 		private List<TeleportInfo> teleports = new List<TeleportInfo>();
@@ -126,5 +127,6 @@ namespace Arena
 			//re-enable commands
 			DGPlugin.enableCommands();
 		}
+        */
 	}
 }
