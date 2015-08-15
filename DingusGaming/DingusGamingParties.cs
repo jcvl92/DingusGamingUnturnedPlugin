@@ -326,6 +326,13 @@ namespace DingusGaming
 				return;
 			}
 
+			//disable the ability of a user to invite themself to a party
+			if(player.Equals(caller))
+			{
+				DGPlugin.messagePlayer(caller, "You cannot invite yourself to a party!");
+				return;
+			}
+
 			//if caller is in a party, invite. otherwise create first
 			Party party = Parties.getParty(caller);
 			if (party != null)
