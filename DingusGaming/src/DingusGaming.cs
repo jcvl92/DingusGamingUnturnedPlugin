@@ -24,26 +24,9 @@ namespace DingusGaming
 
 		protected override void Load()
 		{
-		    /*AudioClip ac = new WWW("file:///G:/Unturned%20server/Servers/Dingus%20Gaming%20Open%20Beta/Rocket/rawdog.wav").GetAudioClip(false);
-            //AudioSource src = GetComponent<AudioSource>();
-            //src.PlayOneShot(ac, 1);
-            //src.Play();
-
-            UnturnedPlayerEvents.OnPlayerInventoryRemoved += delegate (UnturnedPlayer player, InventoryGroup inventoryGroup, byte inventoryIndex, ItemJar P)
-            {
-                messagePlayer(player, "Playing sound...");
-                player.Player.playSound(ac);
-                messagePlayer(player, "Done playing sound.");
-            };*/
-
             //Initialize components
-            //Currency
 		    Currency.init();
-
-		    //Store
             Stores.init();
-
-		    //Party
             Parties.init();
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
