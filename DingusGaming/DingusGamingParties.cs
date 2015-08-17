@@ -38,13 +38,13 @@ namespace DingusGaming
 		public class Invite
 		{
 			public Party party;
-			public UnturnedPlayer requester, playerRequested;
+			public CSteamID requester, playerRequested;
 
 			public Invite(UnturnedPlayer requester, Party party, UnturnedPlayer playerRequested)
 			{
-				this.requester = requester;
+				this.requester = requester.CSteamID;
 				this.party = party;
-				this.playerRequested = playerRequested;
+				this.playerRequested = playerRequested.CSteamID;
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "You have no pending invites!");
 			else
 			{
-				invite.party.addMember(invite.playerRequested);
+				invite.party.addMember(DGPlugin.getPlayer(invite.playerRequested));
 				invites.Remove(invite);
 			}
 		}
@@ -93,8 +93,8 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "You have no pending invites!");
 			else
 			{
-				DGPlugin.messagePlayer(invite.requester, caller.CharacterName + " declined your invite.");
-				DGPlugin.messagePlayer(caller, "You have declined "+invite.requester.CharacterName+"'s party invite.");
+				DGPlugin.messagePlayer(DGPlugin.getPlayer(invite.requester), caller.CharacterName + " declined your invite.");
+				DGPlugin.messagePlayer(caller, "You have declined "+DGPlugin.getPlayer(invite.requester).CharacterName+"'s party invite.");
 				invites.Remove(invite);
 			}
 		}
@@ -138,13 +138,13 @@ namespace DingusGaming
 
 	public class Party
 	{
-		private UnturnedPlayer leader;
-		private List<UnturnedPlayer> members;
+		private CSteamID leader;
+		private List<CSteamID> members;
 
 		public Party(UnturnedPlayer leader)
 		{
-			this.leader = leader;
-			members = new List<UnturnedPlayer>();
+			this.leader = leader.CSteamID;
+			members = new List<CSteamID>();
 			addMember(leader);
 		}
 
@@ -155,36 +155,40 @@ namespace DingusGaming
 
 		public bool isMember(UnturnedPlayer player)
 		{
-			foreach (UnturnedPlayer member in members)
-				if (member.Equals(player))
+			foreach (CSteamID member in members)
+				if (member.Equals(player.CSteamID))
 					return true;
 			return false;
 		}
 
 		public bool isLeader(UnturnedPlayer player)
 		{
-			return leader.Equals(player);
+			return leader.Equals(player.CSteamID);
 		}
 
 		public string getInfo()
 		{
 			string info = "";
 
-			foreach (UnturnedPlayer member in members)
-				info += member.CharacterName + (isLeader(member) ? "[L](" : "(") + (member.Dead ? "dead" : member.Health + "/100") + "), ";
+		    foreach (CSteamID member in members)
+		    {
+		        UnturnedPlayer player = DGPlugin.getPlayer(member);
+		        info += player.CharacterName + (isLeader(player) ? "[L](" : "(") +
+		                (player.Dead ? "dead" : player.Health + "/100") + "), ";
+		    }
 
-			return info.Substring(0, info.Length - 2);
+		    return info.Substring(0, info.Length - 2);
 		}
 
 		public UnturnedPlayer getLeader()
 		{
-			return leader;
+			return DGPlugin.getPlayer(leader);
 		}
 
 		public void tellParty(string text)
 		{
-			foreach (UnturnedPlayer member in members)
-				DGPlugin.messagePlayer(member, text);
+			foreach (CSteamID member in members)
+				DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
 		}
 
 		public void chat(UnturnedPlayer caller, string text)
@@ -198,7 +202,7 @@ namespace DingusGaming
 		//done through invites
 		public void addMember(UnturnedPlayer player)
 		{
-			members.Add(player);
+			members.Add(player.CSteamID);
 			tellParty(player.CharacterName + " has joined the party!");
 		}
 
@@ -217,7 +221,7 @@ namespace DingusGaming
 			}
 			else
 				DGPlugin.messagePlayer(caller,
-					"Only the party leader(" + leader.CharacterName + ") can kick party members.");
+					"Only the party leader(" + DGPlugin.getPlayer(leader).CharacterName + ") can kick party members.");
 		}
 
 		public void removeMember(UnturnedPlayer player)
@@ -231,7 +235,7 @@ namespace DingusGaming
 		        if (leader.Equals(player))
 		        {
 		            leader = members.First();
-		            tellParty(leader.CharacterName + " has been made party leader!");
+		            tellParty(DGPlugin.getPlayer(leader).CharacterName + " has been made party leader!");
 		        }
 		    }
 		    else
@@ -251,12 +255,12 @@ namespace DingusGaming
 			{
 				if (isLeader(caller))
 				{
-					leader = player;
+					leader = player.CSteamID;
 					tellParty(player.CharacterName + " has been made party leader!");
 				}
 				else
 				{
-					DGPlugin.messagePlayer(caller, "Only the party leader("+leader.CharacterName+") switch leaders.");
+					DGPlugin.messagePlayer(caller, "Only the party leader("+DGPlugin.getPlayer(leader).CharacterName+") switch leaders.");
 				}
 			}
 			else
