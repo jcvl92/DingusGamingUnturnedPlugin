@@ -393,7 +393,7 @@ namespace DingusGaming
 				    else
 				    {
 				        if (Currency.transferCredits(caller, player, amount))
-				            DGPlugin.messagePlayer(caller, "You have sent " + amount + " credits to " + playerName + ".");
+				            DGPlugin.messagePlayer(caller, "You have sent " + amount + " credits to " + player.CharacterName + ".");
 				        else
 				            DGPlugin.messagePlayer(caller, "You cannot send negative credits!");
 				    }
