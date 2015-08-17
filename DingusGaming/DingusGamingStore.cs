@@ -12,7 +12,7 @@ namespace DingusGaming
 {
 	public class Currency
 	{
-		static readonly int startingAmount = 200;//TODO: change this back to 5, 200 is just for testing purposes
+		static readonly int startingAmount = 5;
 		static Dictionary<string, int> balances;
 
 		public static void init()

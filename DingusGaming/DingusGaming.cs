@@ -19,8 +19,7 @@ namespace DingusGaming
 
 		protected override void Load() 
 		{
-            //Initialize plugin components
-
+            //Initialize components
             //Currency
 		    Currency.init();
 
@@ -71,7 +70,7 @@ namespace DingusGaming
 			foreach (string str in strs)
 			{
 				UnturnedChat.Say(player, str);
-                //TODO: debug code here V
+                
                 //SDG.Unturned.ChatManager.say(player.CSteamID, str, Color.white);
                 //SDG.Unturned.ChatManager.Instance.tellChat(player.CSteamID, player.CSteamID, 0, Color.black, str);
             }
