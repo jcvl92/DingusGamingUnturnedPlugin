@@ -106,7 +106,7 @@ namespace DingusGaming
 			return str.Substring(0, str.Length - 2);
 		}
 
-		public static void purchase(UnturnedPlayer caller, ushort itemID, int quantity)
+		public static void purchase(UnturnedPlayer caller, ushort itemID, byte quantity)
 		{
 			if(quantity <= 0)
 			{
@@ -270,11 +270,12 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buy itemID\" or \"/buy itemID quantity\".");
 			else
 			{
-				int itemID, quantity=1;
+			    int itemID;
+                byte quantity =1;
 
 				if(!int.TryParse(command[0], out itemID))
 					DGPlugin.messagePlayer(caller, "Invalid itemID.");
-				else if(command.Length == 2 && !int.TryParse(command[1], out quantity))
+				else if(command.Length == 2 && !byte.TryParse(command[1], out quantity))
 					DGPlugin.messagePlayer(caller, "Invalid quantity.");
 				else
 					Stores.purchase(caller, (ushort)itemID, quantity);

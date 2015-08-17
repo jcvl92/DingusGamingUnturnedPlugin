@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.IO;
@@ -10,11 +11,12 @@ using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
 using SDG.Unturned;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming
 {
 	public class DGPlugin : RocketPlugin
-	{
+    {
 		//contains helper functions for persisting data and centralizing common functions
 
 		protected override void Load() 
@@ -65,16 +67,11 @@ namespace DingusGaming
 
 		}
 
-		public static void messagePlayer(UnturnedPlayer player, string text)
+		public static void messagePlayer(UnturnedPlayer player, string message)
 		{
-			List<string> strs = UnturnedChat.wrapMessage(text);
+			List<string> strs = UnturnedChat.wrapMessage(message);
 			foreach (string str in strs)
-			{
-				UnturnedChat.Say(player, str);
-                
-                //SDG.Unturned.ChatManager.say(player.CSteamID, str, Color.white);
-                //SDG.Unturned.ChatManager.Instance.tellChat(player.CSteamID, player.CSteamID, 0, Color.black, str);
-            }
+				UnturnedChat.Say(player, "0"+str);
 		}
 
 		public static void broadcastMessage(string text)
@@ -105,9 +102,9 @@ namespace DingusGaming
 			return UnturnedPlayer.FromName(name);
 		}
 
-		public static void givePlayerItem(UnturnedPlayer player, ushort itemID, int quantity)
+		public static void givePlayerItem(UnturnedPlayer player, ushort itemID, byte quantity)
 		{
-			player.GiveItem(itemID, (byte)quantity);
+			player.GiveItem(itemID, quantity);
 		}
 
 		public static string getConstantID(UnturnedPlayer player)
