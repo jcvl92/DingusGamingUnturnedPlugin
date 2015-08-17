@@ -2,39 +2,47 @@ namespace DingusGaming
 {
 	public class CommandInfo : IRocketCommand
 	{
+		private const string NAME = "info"; 
+		private const string HELP = "Get info on your party or a party member.";
+		private const string SYNTAX = "(<player>)";
+		private const List<string> ALIASES = new List<string> { "pinfo", "partyinfo", "inf", "pinf" };
+		private const bool ALLOW_FROM_CONSOLE = false;
+		private const bool RUN_FROM_CONSOLE = false;
+		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		
 		public bool RunFromConsole
 		{
-			get { return false; }
+			get { return RUN_FROM_CONSOLE; }
 		}
 
 		public string Name
 		{
-			get { return "info"; }
+			get { return NAME; }
 		}
 
 		public string Help
 		{
-			get { return "Get info on your party or a party member."; }
+			get { return HELP; }
 		}
 
 		public string Syntax
 		{
-			get { return "(<player>)"; }
+			get { return SYNTAX; }
 		}
 
 		public List<string> Aliases
 		{
-			get { return new List<string> { "pinfo", "partyinfo", "inf", "pinf" }; }
+			get { return ALIASES; }
 		}
 
 		public bool AllowFromConsole
 		{
-			get { return false; }
+			get { return ALLOW_FROM_CONSOLE; }
 		}
 
 		public List<string> Permissions
 		{
-			get { return new List<string>(); }
+			get { return REQUIRED_PERMISSIONS; }
 		}
 
 		public void Execute(UnturnedPlayer caller, string[] command)

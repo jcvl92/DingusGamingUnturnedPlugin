@@ -2,39 +2,47 @@ namespace DingusGaming
 {
 	public class CommandDisband : IRocketCommand
 	{
+		private const string NAME = "disband"; 
+		private const string HELP = "Disband your party.";
+		private const string SYNTAX = "";
+		private const List<string> ALIASES = new List<string> { "disbandparty" };
+		private const bool ALLOW_FROM_CONSOLE = false;
+		private const bool RUN_FROM_CONSOLE = false;
+		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		
 		public bool RunFromConsole
 		{
-			get { return false; }
+			get { return RUN_FROM_CONSOLE; }
 		}
 
 		public string Name
 		{
-			get { return "disband"; }
+			get { return NAME; }
 		}
 
 		public string Help
 		{
-			get { return "Disband your party."; }
+			get { return HELP; }
 		}
 
 		public string Syntax
 		{
-			get { return ""; }
+			get { return SYNTAX; }
 		}
 
 		public List<string> Aliases
 		{
-			get { return new List<string> { "disbandparty" }; }
+			get { return ALIASES; }
 		}
 
 		public bool AllowFromConsole
 		{
-			get { return false; }
+			get { return ALLOW_FROM_CONSOLE; }
 		}
 
 		public List<string> Permissions
 		{
-			get { return new List<string>(); }
+			get { return REQUIRED_PERMISSIONS; }
 		}
 
 		public void Execute(UnturnedPlayer caller, string[] command)

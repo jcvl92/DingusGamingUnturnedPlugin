@@ -2,39 +2,47 @@ namespace DingusGaming
 {
 	public class CommandTeleport : IRocketCommand
 	{
+		private const string NAME = "teleport"; 
+		private const string HELP = "Teleport to a party member.";
+		private const string SYNTAX = "<player>";
+		private const List<string> ALIASES = new List<string> { "tp", "pteleport", "ptp", "tpa" };
+		private const bool ALLOW_FROM_CONSOLE = false;
+		private const bool RUN_FROM_CONSOLE = false;
+		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		
 		public bool RunFromConsole
 		{
-			get { return false; }
+			get { return RUN_FROM_CONSOLE; }
 		}
 
 		public string Name
 		{
-			get { return "teleport"; }
+			get { return NAME; }
 		}
 
 		public string Help
 		{
-			get { return "Teleport to a party member."; }
+			get { return HELP; }
 		}
 
 		public string Syntax
 		{
-			get { return "<player>"; }
+			get { return SYNTAX; }
 		}
 
 		public List<string> Aliases
 		{
-			get { return new List<string> { "tp", "pteleport", "ptp", "tpa" }; }
+			get { return ALIASES; }
 		}
 
 		public bool AllowFromConsole
 		{
-			get { return false; }
+			get { return ALLOW_FROM_CONSOLE; }
 		}
 
 		public List<string> Permissions
 		{
-			get { return new List<string>(); }
+			get { return REQUIRED_PERMISSIONS; }
 		}
 
 		public void Execute(UnturnedPlayer caller, string[] command)
@@ -72,7 +80,7 @@ namespace DingusGaming
 
 		public void Execute(IRocketPlayer caller, string[] command)
 		{
-			Execute((UnturnedPlayer)caller, command);
+			Execute((UnturnedPlayer) caller, command);
 		}
 	}
 }

@@ -16,14 +16,23 @@ namespace DingusGaming
 
 		public static void init()
 		{
+			registerOnPlayerDeath();
+            registerOnPlayerDisconnected();
+        }
+		
+		private static void registerOnPlayerDeath() 
+		{
 			//notify party of death
 			UnturnedPlayerEvents.OnPlayerDeath +=
 				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 				{
 					getParty(player)?.tellParty(player.CharacterName + " has died!");
 				};
-            
-            U.Events.OnPlayerDisconnected += delegate(UnturnedPlayer player)
+		}
+		
+		private static void registerOnPlayerDisconnected() 
+		{
+			U.Events.OnPlayerDisconnected += delegate(UnturnedPlayer player)
             {
                 //remove them from their party
                 Party party = getParty(player);
@@ -33,32 +42,17 @@ namespace DingusGaming
                 //clear pending invites
                 removeInvite(player);
             };
-        }
-
-		public class Invite
-		{
-			public Party party;
-			public CSteamID requester, playerRequested;
-
-			public Invite(UnturnedPlayer requester, Party party, UnturnedPlayer playerRequested)
-			{
-				this.requester = requester.CSteamID;
-				this.party = party;
-				this.playerRequested = playerRequested.CSteamID;
-			}
 		}
 
 		public static void invitePlayer(UnturnedPlayer caller, UnturnedPlayer player)
 		{
 			if (getParty(player) != null)
 			{
-				DGPlugin.messagePlayer(caller, player.CharacterName + " is already in a party. They must /leave it before you can invite them.");
-				return;
+				return DGPlugin.messagePlayer(caller, player.CharacterName + " is already in a party. They must /leave it before you can invite them.");
 			}
 			if (getInvite(player) != null)
 			{
-				DGPlugin.messagePlayer(caller, player.CharacterName + " already has an invite pending. They must /decline it before you can invite them.");
-				return;
+				return DGPlugin.messagePlayer(caller, player.CharacterName + " already has an invite pending. They must /decline it before you can invite them.");
 			}
 
 			invites.Add(new Invite(caller, getParty(caller), player));

@@ -93,7 +93,6 @@ namespace DingusGaming
 			members.RemoveAt(members.FindIndex(0, x => x.Equals(player)));
 
             //promote a new leader if the leader was removed
-
 		    if (members.Count > 1)
 		    {
 		        if (leader.Equals(player))
@@ -112,8 +111,7 @@ namespace DingusGaming
 		{
 			if (caller.Equals(player))
 			{
-				DGPlugin.messagePlayer(caller, "You are already the party leader.");
-				return;
+				return DGPlugin.messagePlayer(caller, "You are already the party leader.");
 			}
 			if (isMember(player))
 			{
