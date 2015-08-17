@@ -43,7 +43,7 @@ namespace DingusGaming
                 //grant the killing user 5 credits + 10% of their victim's credits
                 UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
                 if(killer != null)
-                    changeBalance(killer, 5 + Currency.getBalance(player) / 10);
+                    changeBalance(killer, 5 + getBalance(player) / 10);
             };
         }
 

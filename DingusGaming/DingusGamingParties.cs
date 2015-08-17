@@ -224,20 +224,21 @@ namespace DingusGaming
 		{
 			members.RemoveAt(members.FindIndex(0, x => x.Equals(player)));
 
-			//promote a new leader if the leader was removed
-			if (leader.Equals(player))
-			{
-				if (members.Count > 1)
-				{
-					leader = members.First();
-					tellParty(leader.CharacterName + " has been made party leader!");
-				}
-				else
-				{
-					Parties.disbandParty(this);
-				}
-			}
-		}
+            //promote a new leader if the leader was removed
+
+		    if (members.Count > 1)
+		    {
+		        if (leader.Equals(player))
+		        {
+		            leader = members.First();
+		            tellParty(leader.CharacterName + " has been made party leader!");
+		        }
+		    }
+		    else
+		    {
+		        Parties.disbandParty(this);
+		    }
+        }
 
 		public void makeLeader(UnturnedPlayer caller, UnturnedPlayer player)
 		{
@@ -407,10 +408,13 @@ namespace DingusGaming
 			}
 
 			Party party = Parties.getParty(caller);
-			if (party != null)
-				party.kickMember(caller, player);
-			else
-				DGPlugin.messagePlayer(caller, "You are not in a party.");
+		    if (party != null)
+		    {
+		        party.kickMember(caller, player);
+                DGPlugin.messagePlayer(player, "You have been removed from the party.");
+		    }
+		    else
+		        DGPlugin.messagePlayer(caller, "You are not in a party.");
 		}
 
 		public void Execute(IRocketPlayer caller, string[] command)
