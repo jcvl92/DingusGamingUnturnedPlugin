@@ -1,4 +1,4 @@
-﻿namespace DingusGaming
+﻿namespace DingusGaming.Store
 {
     public class Item
     {

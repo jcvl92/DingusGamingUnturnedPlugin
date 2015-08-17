@@ -1,14 +1,17 @@
-namespace DingusGaming
+using Rocket.RocketAPI;
+using System.Collections.Generic;
+
+namespace DingusGaming.Party
 {
 	public class CommandInvite : IRocketCommand
 	{
 		private const string NAME = "invite"; 
 		private const string HELP = "Invite a player to your party.";
 		private const string SYNTAX = "<player>";
-		private const List<string> ALIASES = new List<string> { "inv", "pinv", "pinvite" };
+		private readonly List<string> ALIASES = new List<string> { "inv", "pinv", "pinvite" };
 		private const bool ALLOW_FROM_CONSOLE = false;
 		private const bool RUN_FROM_CONSOLE = false;
-		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 		
 		public bool RunFromConsole
 		{
@@ -42,10 +45,10 @@ namespace DingusGaming
 
 		public List<string> Permissions
 		{
-			get { return REQUIRED_PERMISSIONS }
+			get { return REQUIRED_PERMISSIONS; }
 		}
 
-		public void Execute(UnturnedPlayer caller, string[] command)
+		public void Execute(RocketPlayer caller, string[] command)
 		{
 			//check for parameter vaidity
 			if (command.Length == 0)
@@ -56,8 +59,8 @@ namespace DingusGaming
 
 			string playerName = string.Join(" ", command);
 
-			//check for player existence
-			UnturnedPlayer player = DGPlugin.getPlayer(playerName);
+            //check for player existence
+            RocketPlayer player = DGPlugin.getPlayer(playerName);
 			if (player == null)
 			{
 				DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
@@ -87,9 +90,9 @@ namespace DingusGaming
 			}
 		}
 
-		public void Execute(IRocketPlayer caller, string[] command)
-		{
-			Execute((UnturnedPlayer)caller, command);
-		}
+//		public void Execute(IRocketPlayer caller, string[] command)
+//		{
+//			Execute((UnturnedPlayer)caller, command);
+//		}
 	}
 }

@@ -1,15 +1,12 @@
-using Rocket.Unturned.Player;
 using System.Collections.Generic;
-using System.Linq;
-using Rocket.API;
-using Rocket.Unturned;
-using Rocket.Unturned.Events;
-using SDG.Unturned;
 using Steamworks;
+using SDG;
+using Rocket.RocketAPI.Events;
+using Rocket.RocketAPI;
 
-namespace DingusGaming
+namespace DingusGaming.Party
 {
-	public class Parties
+    public class Parties
 	{
 		static readonly List<Party> parties = new List<Party>();
 		static readonly List<Invite> invites = new List<Invite>();
@@ -23,8 +20,8 @@ namespace DingusGaming
 		private static void registerOnPlayerDeath() 
 		{
 			//notify party of death
-			UnturnedPlayerEvents.OnPlayerDeath +=
-				delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+			RocketPlayerEvents.OnPlayerDeath +=
+				delegate (RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
 				{
 					getParty(player)?.tellParty(player.CharacterName + " has died!");
 				};
@@ -32,7 +29,7 @@ namespace DingusGaming
 		
 		private static void registerOnPlayerDisconnected() 
 		{
-			U.Events.OnPlayerDisconnected += delegate(UnturnedPlayer player)
+			RocketServerEvents.OnPlayerDisconnected += delegate(RocketPlayer player)
             {
                 //remove them from their party
                 Party party = getParty(player);
@@ -44,23 +41,25 @@ namespace DingusGaming
             };
 		}
 
-		public static void invitePlayer(UnturnedPlayer caller, UnturnedPlayer player)
+		public static void invitePlayer(RocketPlayer caller, RocketPlayer player)
 		{
 			if (getParty(player) != null)
 			{
-				return DGPlugin.messagePlayer(caller, player.CharacterName + " is already in a party. They must /leave it before you can invite them.");
-			}
+				DGPlugin.messagePlayer(caller, player.CharacterName + " is already in a party. They must /leave it before you can invite them.");
+                return;
+            }
 			if (getInvite(player) != null)
 			{
-				return DGPlugin.messagePlayer(caller, player.CharacterName + " already has an invite pending. They must /decline it before you can invite them.");
-			}
+				DGPlugin.messagePlayer(caller, player.CharacterName + " already has an invite pending. They must /decline it before you can invite them.");
+                return;
+            }
 
 			invites.Add(new Invite(caller, getParty(caller), player));
 			DGPlugin.messagePlayer(player, caller.CharacterName + " is inviting you to join a party. Enter /accept or /decline to respond.");
 			DGPlugin.messagePlayer(caller, "Invite sent to " + player.CharacterName + ".");
 		}
 
-		private static Invite getInvite(UnturnedPlayer player)
+		private static Invite getInvite(RocketPlayer player)
 		{
 			foreach (Invite invite in invites)
 				if (invite.playerRequested.Equals(player))
@@ -68,7 +67,7 @@ namespace DingusGaming
 			return null;
 		}
 
-		public static void acceptInvite(UnturnedPlayer caller)
+		public static void acceptInvite(RocketPlayer caller)
 		{
 			Invite invite = getInvite(caller);
 			if (invite == null)
@@ -80,7 +79,7 @@ namespace DingusGaming
 			}
 		}
 
-		public static void declineInvite(UnturnedPlayer caller)
+		public static void declineInvite(RocketPlayer caller)
 		{
 			Invite invite = getInvite(caller);
 			if (invite == null)
@@ -93,20 +92,20 @@ namespace DingusGaming
 			}
 		}
 
-		public static void removeInvite(UnturnedPlayer player)
+		public static void removeInvite(RocketPlayer player)
 		{
 			Invite invite = getInvite(player);
 			if (invite != null)
 				invites.Remove(invite);
 		}
 
-		public static void createParty(UnturnedPlayer leader)
+		public static void createParty(RocketPlayer leader)
 		{
 			Party newParty = new Party(leader);
 			parties.Add(newParty);
 		}
 
-		public static Party getParty(UnturnedPlayer player)
+		public static Party getParty(RocketPlayer player)
 		{
 			foreach (Party party in parties)
 				if (party.isMember(player))

@@ -1,11 +1,10 @@
-using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.Timers;
 using DingusGaming;
-using Rocket.Unturned;
-using Rocket.Unturned.Events;
-using SDG.Unturned;
 using Steamworks;
+using Rocket.RocketAPI;
+using SDG;
+using Rocket.RocketAPI.Events;
 
 namespace Arena
 {
@@ -24,9 +23,9 @@ namespace Arena
             this.adminsIncluded = adminsIncluded;
 
             //newly connecting players are put in the holding area
-            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+            RocketServerEvents.OnPlayerConnected += delegate(RocketPlayer player)
             {
-                addToTeleports(player);
+                // addToTeleports(player); // TODO
                 moveToHoldingArea(player);
             };
 
@@ -42,7 +41,7 @@ namespace Arena
             };
 
             //hook in player death event
-            UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
+            // RocketPlayerEvents.OnPlayerDeath += onPlayerDeath; //TODO
         }
 
         ~ArenaEvent()
@@ -50,12 +49,13 @@ namespace Arena
             timer.Close();
         }
 
-        private void addToTeleports(UnturnedPlayer player)
+        /* Disabled because RocketPlayer constructor
+        private void addToTeleports(RocketPlayer player)
         {
-            new UnturnedPlayer().Inventory.Items
-        }
+            new RocketPlayer().Inventory.Items
+        } */
 
-        private void moveToHoldingArea(UnturnedPlayer player)
+        private void moveToHoldingArea(RocketPlayer player)
         {
             //isolate player so they can watch and be out of the way
             //move them to a holding location(spawn location but in the sky a little bit - enough to not get in the way)
@@ -63,7 +63,8 @@ namespace Arena
             //give them god-mode and vanish-mode
         }
 
-        private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+        /* TODO: Disabled because what is alive?
+        private void onPlayerDeath(RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             //TODO: is this stuff thread safe?
             //TODO: have suiciding cause a decrement in score rather than increment(pending method evaluation in Currency)
@@ -91,7 +92,7 @@ namespace Arena
             }
             else
                 DGPlugin.broadcastMessage(alive.Count + " players left!");
-        }
+        }*/
 
         public void beginArena()
         {
@@ -122,7 +123,7 @@ namespace Arena
             timer.Stop();
 
             //unhook player death event
-            UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
+            // RocketPlayerEvents.OnPlayerDeath -= onPlayerDeath; // TODO
 
             //notify everyone of how many people they killed/credits they earned/what place they earned out of everyone(e.g. 4/10, 4th highest score)
 

@@ -1,14 +1,17 @@
-namespace DingusGaming 
+using Rocket.RocketAPI;
+using System.Collections.Generic;
+
+namespace DingusGaming.Party
 {
 	public class CommandAccept : IRocketCommand
 	{
 		private const string NAME = "accept"; 
 		private const string HELP = "Accept a party invitation.";
 		private const string SYNTAX = "";
-		private const List<string> ALIASES = new List<string> { "paccept", "invaccept" };
+		private readonly List<string> ALIASES = new List<string> { "paccept", "invaccept" };
 		private const bool ALLOW_FROM_CONSOLE = false;
 		private const bool RUN_FROM_CONSOLE = false;
-		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 		
 		public bool RunFromConsole
 		{
@@ -45,14 +48,14 @@ namespace DingusGaming
 			get { return REQUIRED_PERMISSIONS; }
 		}
 
-		public void Execute(UnturnedPlayer caller, string[] command)
+		public void Execute(RocketPlayer caller, string[] command)
 		{
 			Parties.acceptInvite(caller);
 		}
 
-		public void Execute(IRocketPlayer caller, string[] command)
-		{
-			Execute((UnturnedPlayer)caller, command);
-		}
+//		public void Execute(IRocketPlayer caller, string[] command)
+//		{
+//			Execute((UnturnedPlayer)caller, command);
+//		}
 	}
 }

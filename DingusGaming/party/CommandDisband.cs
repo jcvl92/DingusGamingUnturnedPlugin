@@ -1,14 +1,17 @@
-namespace DingusGaming
+using Rocket.RocketAPI;
+using System.Collections.Generic;
+
+namespace DingusGaming.Party
 {
 	public class CommandDisband : IRocketCommand
 	{
 		private const string NAME = "disband"; 
 		private const string HELP = "Disband your party.";
 		private const string SYNTAX = "";
-		private const List<string> ALIASES = new List<string> { "disbandparty" };
+		private readonly List<string> ALIASES = new List<string> { "disbandparty" };
 		private const bool ALLOW_FROM_CONSOLE = false;
 		private const bool RUN_FROM_CONSOLE = false;
-		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 		
 		public bool RunFromConsole
 		{
@@ -45,7 +48,7 @@ namespace DingusGaming
 			get { return REQUIRED_PERMISSIONS; }
 		}
 
-		public void Execute(UnturnedPlayer caller, string[] command)
+		public void Execute(RocketPlayer caller, string[] command)
 		{
 			Party party = Parties.getParty(caller);
 			if (party != null)
@@ -64,9 +67,9 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "You are not in a party.");
 		}
 
-		public void Execute(IRocketPlayer caller, string[] command)
-		{
-			Execute((UnturnedPlayer)caller, command);
-		}
+//		public void Execute(IRocketPlayer caller, string[] command)
+//		{
+//			Execute((UnturnedPlayer)caller, command);
+//		}
 	}
 }

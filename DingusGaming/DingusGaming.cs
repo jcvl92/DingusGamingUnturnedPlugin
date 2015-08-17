@@ -1,33 +1,26 @@
-﻿using System;
+﻿using Rocket.Logging;
+using Rocket.RocketAPI;
+using SDG;
+using Steamworks;
 using System.Collections;
-using Rocket.Unturned.Player;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Rocket.Core.Logging;
-using Rocket.Core.Plugins;
-using Rocket.Unturned;
-using Rocket.Unturned.Chat;
-using Rocket.Unturned.Enumerations;
-using Rocket.Unturned.Events;
-using SDG.Unturned;
-using Steamworks;
-using UnityEngine;
 
 namespace DingusGaming
 {
-	public class DGPlugin : RocketPlugin
+    public class DGPlugin : RocketPlugin
     {
 		//contains helper functions for persisting data and centralizing common functions
 
 		protected override void Load()
 		{
             //Initialize components
-		    Currency.init();
-            Stores.init();
-            Parties.init();
+		    Store.Currency.init();
+            Store.Stores.init();
+            Party.Parties.init();
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
         }
@@ -45,7 +38,7 @@ namespace DingusGaming
 
 		/********** HELPER FUNCTIONS **********/
 
-	    public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
+	    public static RocketPlayer getKiller(RocketPlayer player, EDeathCause cause, CSteamID murderer)
 	    {
 	        if (cause == EDeathCause.KILL)
 	            //return !murderer.m_SteamID.Equals(90071992547409920) && !player.CSteamID.Equals(murderer);
@@ -65,18 +58,18 @@ namespace DingusGaming
 
 		}
 
-		public static void messagePlayer(UnturnedPlayer player, string message)
+		public static void messagePlayer(RocketPlayer player, string message)
 		{
-			List<string> strs = UnturnedChat.wrapMessage(message);
+			List<string> strs = RocketChatManager.wrapMessage(message);
 			foreach (string str in strs)
-				UnturnedChat.Say(player, "0"+str);
+                RocketChatManager.Say(player, "0"+str);
 		}
 
 		public static void broadcastMessage(string text)
 		{
-			List<string> strs = UnturnedChat.wrapMessage(text);
+			List<string> strs = RocketChatManager.wrapMessage(text);
 			foreach (string str in strs)
-				UnturnedChat.Say(str);
+                RocketChatManager.Say(str);
 		}
 
         public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)
@@ -95,24 +88,24 @@ namespace DingusGaming
 	        return dictionary;
 	    }
 
-        public static UnturnedPlayer getPlayer(string name)
+        public static RocketPlayer getPlayer(string name)
 		{
-			return UnturnedPlayer.FromName(name);
+			return RocketPlayer.FromName(name);
 		}
 
-		public static void givePlayerItem(UnturnedPlayer player, ushort itemID, byte quantity)
+		public static void givePlayerItem(RocketPlayer player, ushort itemID, byte quantity)
 		{
 			player.GiveItem(itemID, quantity);
 		}
 
-		public static string getConstantID(UnturnedPlayer player)
+		public static string getConstantID(RocketPlayer player)
 		{
 			return player.CSteamID.ToString();
 		}
 
-		public static UnturnedPlayer getPlayer(CSteamID playerID)
+		public static RocketPlayer getPlayer(CSteamID playerID)
 		{
-			return UnturnedPlayer.FromCSteamID(playerID);
+			return RocketPlayer.FromCSteamID(playerID);
 		}
 
 	    public static void writeToFile(object obj, string fileName)

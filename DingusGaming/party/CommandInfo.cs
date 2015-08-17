@@ -1,14 +1,17 @@
-namespace DingusGaming
+using Rocket.RocketAPI;
+using System.Collections.Generic;
+
+namespace DingusGaming.Party
 {
 	public class CommandInfo : IRocketCommand
 	{
 		private const string NAME = "info"; 
 		private const string HELP = "Get info on your party or a party member.";
 		private const string SYNTAX = "(<player>)";
-		private const List<string> ALIASES = new List<string> { "pinfo", "partyinfo", "inf", "pinf" };
+		private readonly List<string> ALIASES = new List<string> { "pinfo", "partyinfo", "inf", "pinf" };
 		private const bool ALLOW_FROM_CONSOLE = false;
 		private const bool RUN_FROM_CONSOLE = false;
-		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 		
 		public bool RunFromConsole
 		{
@@ -45,7 +48,7 @@ namespace DingusGaming
 			get { return REQUIRED_PERMISSIONS; }
 		}
 
-		public void Execute(UnturnedPlayer caller, string[] command)
+		public void Execute(RocketPlayer caller, string[] command)
 		{
 			string playerName = string.Join(" ", command);
 
@@ -62,8 +65,8 @@ namespace DingusGaming
 				//get info on a member
 				else
 				{
-					//check for player existence
-					UnturnedPlayer player = DGPlugin.getPlayer(playerName);
+                    //check for player existence
+                    RocketPlayer player = DGPlugin.getPlayer(playerName);
 					if (player == null)
 					{
 						DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
@@ -89,9 +92,9 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "You are not in a party. You can only get info on party members.");
 		}
 
-		public void Execute(IRocketPlayer caller, string[] command)
-		{
-			Execute((UnturnedPlayer)caller, command);
-		}
+//		public void Execute(IRocketPlayer caller, string[] command)
+//		{
+//			Execute((UnturnedPlayer)caller, command);
+//		}
 	}
 }

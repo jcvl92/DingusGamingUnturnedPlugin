@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
     public class Store
 	{

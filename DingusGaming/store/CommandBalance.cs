@@ -1,19 +1,17 @@
-using Rocket.Unturned.Commands;
+using Rocket.RocketAPI;
 using System.Collections.Generic;
-using Rocket.Unturned.Player;
-using System;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
     public class CommandBalance : IRocketCommand
     {
         private const string NAME = "balance";
         private const string HELP = "View your credit balance.";
         private const string SYNTAX = "";
-        private const List<string> ALIASES = new List<string> { "bank", "wallet", "viewwallet", "viewbalance", "viewbank" };
+        private readonly List<string> ALIASES = new List<string> { "bank", "wallet", "viewwallet", "viewbalance", "viewbank" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -50,7 +48,7 @@ namespace DingusGaming
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(UnturnedPlayer caller, string[] command)
+        public void Execute(RocketPlayer caller, string[] command)
         {
             if (command.Length > 0)
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/balance\".");
@@ -58,9 +56,9 @@ namespace DingusGaming
                 DGPlugin.messagePlayer(caller, "You currently have " + Currency.getBalance(caller) + " credits.");
         }
 
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
-        }
+//        public void Execute(RocketPlayer caller, string[] command)
+//        {
+//            Execute((UnturnedPlayer)caller, command);
+//        }
     }
 }

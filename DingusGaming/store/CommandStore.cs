@@ -1,16 +1,17 @@
+using Rocket.RocketAPI;
 using System.Collections.Generic;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
     public class CommandStore : IRocketCommand
     {
         private const string NAME = "store";
         private const string HELP = "Access the store.";
         private const string SYNTAX = "(<storeNumber>)";
-        private const List<string> ALIASES = new List<string> { "viewstore", "s" };
+        private readonly List<string> ALIASES = new List<string> { "viewstore", "s" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -47,7 +48,7 @@ namespace DingusGaming
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(UnturnedPlayer caller, string[] command)
+        public void Execute(RocketPlayer caller, string[] command)
         {
             if (command.Length == 0)
                 DGPlugin.messagePlayer(caller, Stores.listSubstores());
@@ -63,9 +64,9 @@ namespace DingusGaming
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/store\" or \"/store storeNumber\".");
         }
 
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
-        }
+//        public void Execute(RocketPlayer caller, string[] command)
+//        {
+//            Execute((UnturnedPlayer)caller, command);
+//        }
     }
 }

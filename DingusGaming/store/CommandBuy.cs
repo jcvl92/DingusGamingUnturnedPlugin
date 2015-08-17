@@ -1,17 +1,17 @@
-
+using Rocket.RocketAPI;
 using System.Collections.Generic;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
     public class CommandBuy : IRocketCommand
     {
         private const string NAME = "buy";
         private const string HELP = "Purchase an item from the store.";
         private const string SYNTAX = "<itemID> (<quantity>)";
-        private const List<string> ALIASES = new List<string> { "purchase", "b", "buyitem", "purchaseitem" };
+        private readonly List<string> ALIASES = new List<string> { "purchase", "b", "buyitem", "purchaseitem" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -48,7 +48,7 @@ namespace DingusGaming
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(UnturnedPlayer caller, string[] command)
+        public void Execute(RocketPlayer caller, string[] command)
         {
             if (command.Length == 0 || command.Length > 2)
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buy itemID\" or \"/buy itemID quantity\".");
@@ -66,9 +66,9 @@ namespace DingusGaming
             }
         }
 
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
-        }
+//        public void Execute(IRocketPlayer caller, string[] command)
+//        {
+//            Execute((UnturnedPlayer)caller, command);
+//        }
     }
 }

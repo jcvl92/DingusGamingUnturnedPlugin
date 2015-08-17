@@ -1,18 +1,18 @@
-
-using Rocket.Unturned.Commands;
+using Rocket.RocketAPI;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
     public class CommandTransfer : IRocketCommand
     {
         private const string NAME = "transfer";
         private const string HELP = "Transfer credits to another player";
         private const string SYNTAX = "<amount> <player name>";
-        private const List<string> ALIASES = new List<string> { "gift", "giftcredits", "transfercredits", "sendcredits" };
+        private readonly List<string> ALIASES = new List<string> { "gift", "giftcredits", "transfercredits", "sendcredits" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -49,7 +49,7 @@ namespace DingusGaming
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(UnturnedPlayer caller, string[] command)
+        public void Execute(RocketPlayer caller, string[] command)
         {
             if (command.Length < 2)
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/transfer amount playerName\".");
@@ -61,7 +61,7 @@ namespace DingusGaming
                 else
                 {
                     string playerName = string.Join(" ", command.Skip(1).ToArray());
-                    UnturnedPlayer player;
+                    RocketPlayer player;
                     if ((player = DGPlugin.getPlayer(playerName)) == null)
                         DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                     else
@@ -78,9 +78,9 @@ namespace DingusGaming
             }
         }
 
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
-        }
+//        public void Execute(IRocketPlayer caller, string[] command)
+//        {
+//            Execute((UnturnedPlayer)caller, command);
+//        }
     }
 }

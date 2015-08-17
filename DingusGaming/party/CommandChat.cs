@@ -1,14 +1,17 @@
-namespace DingusGaming
+using Rocket.RocketAPI;
+using System.Collections.Generic;
+
+namespace DingusGaming.Party
 {
 	public class CommandChat : IRocketCommand
 	{
 		private const string NAME = "p"; 
 		private const string HELP = "Send a message to your party.";
 		private const string SYNTAX = "<message>";
-		private const List<string> ALIASES = new List<string> { "party", "pchat", "partychat" };
+		private readonly List<string> ALIASES = new List<string> { "party", "pchat", "partychat" };
 		private const bool ALLOW_FROM_CONSOLE = false;
 		private const bool RUN_FROM_CONSOLE = false;
-		private const List<string> REQUIRED_PERMISSIONS = new List<string>();
+		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 		
 		public bool RunFromConsole
 		{
@@ -45,7 +48,7 @@ namespace DingusGaming
 			get { return REQUIRED_PERMISSIONS; }
 		}
 
-		public void Execute(UnturnedPlayer caller, string[] command)
+		public void Execute(RocketPlayer caller, string[] command)
 		{
 			//check for parameter vaidity
 			if (command.Length == 0)
@@ -63,9 +66,9 @@ namespace DingusGaming
 				DGPlugin.messagePlayer(caller, "You are not in a party.");
 		}
 
-		public void Execute(IRocketPlayer caller, string[] command)
-		{
-			Execute((UnturnedPlayer)caller, command);
-		}
+//		public void Execute(IRocketPlayer caller, string[] command)
+//		{
+//			Execute((UnturnedPlayer)caller, command);
+//		}
 	}
 }
