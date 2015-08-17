@@ -388,13 +388,15 @@ namespace DingusGaming
 				{
 					string playerName = string.Join(" ", command.Skip(1).ToArray());
 					UnturnedPlayer player;
-					if((player = DGPlugin.getPlayer(playerName)) == null)
-						DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
-					else
-					{
-						Currency.transferCredits(caller, player, amount);
-						DGPlugin.messagePlayer(caller, "You have sent "+amount+" credits to "+playerName+".");
-					}
+				    if ((player = DGPlugin.getPlayer(playerName)) == null)
+				        DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
+				    else
+				    {
+				        if (Currency.transferCredits(caller, player, amount))
+				            DGPlugin.messagePlayer(caller, "You have sent " + amount + " credits to " + playerName + ".");
+				        else
+				            DGPlugin.messagePlayer(caller, "You cannot send negative credits!");
+				    }
 				}
 			}
 		}
