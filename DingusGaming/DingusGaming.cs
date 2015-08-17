@@ -8,7 +8,10 @@ using System.Xml;
 using System.Xml.Serialization;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Unturned;
 using Rocket.Unturned.Chat;
+using Rocket.Unturned.Enumerations;
+using Rocket.Unturned.Events;
 using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
@@ -19,8 +22,20 @@ namespace DingusGaming
     {
 		//contains helper functions for persisting data and centralizing common functions
 
-		protected override void Load() 
+		protected override void Load()
 		{
+		    /*AudioClip ac = new WWW("file:///G:/Unturned%20server/Servers/Dingus%20Gaming%20Open%20Beta/Rocket/rawdog.wav").GetAudioClip(false);
+            //AudioSource src = GetComponent<AudioSource>();
+            //src.PlayOneShot(ac, 1);
+            //src.Play();
+
+            UnturnedPlayerEvents.OnPlayerInventoryRemoved += delegate (UnturnedPlayer player, InventoryGroup inventoryGroup, byte inventoryIndex, ItemJar P)
+            {
+                messagePlayer(player, "Playing sound...");
+                player.Player.playSound(ac);
+                messagePlayer(player, "Done playing sound.");
+            };*/
+
             //Initialize components
             //Currency
 		    Currency.init();
