@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DingusGaming
 {
 	public class Stores
@@ -31,7 +33,7 @@ namespace DingusGaming
 				return "Store number does not exist!";
 
 			string str = "";
-			foreach(Store.Item item in stores[storeNumber-1].items)
+			foreach(Item item in stores[storeNumber-1].items)
 				str += "$"+item.cost+"-"+item.name + "("+item.itemID+"), ";
 			return str.Substring(0, str.Length - 2);
 		}
@@ -40,15 +42,17 @@ namespace DingusGaming
 		{
 			if(quantity <= 0)
 			{
-				return DGPlugin.messagePlayer(caller, "Invalid item quantity.");
+				DGPlugin.messagePlayer(caller, "Invalid item quantity.");
+                return;
 			}
 
 			//search for the item in one of the stores
-			Store.item item = findItemById(itemId);
+			Item item = findItemById(itemId);
 
 			if(item == null)
 			{
-				return DGPlugin.messagePlayer(caller, "Could not find item in the stores.");
+				DGPlugin.messagePlayer(caller, "Could not find item in the stores.");
+                return;
 			}
 
 			//check to see if the caller has sufficient funds to make the purchase
@@ -56,20 +60,20 @@ namespace DingusGaming
 			{
 				//subtract the cost of the item(s) from their balance
 				Currency.changeBalance(caller, item.cost * quantity * -1);
-				DGPlugin.givePlayerItem(caller, itemID, quantity);
+				DGPlugin.givePlayerItem(caller, itemId, quantity);
 				DGPlugin.messagePlayer(caller, "You have purchased "+quantity+" "+item.name+" for $"+item.cost*quantity+", current balance="+Currency.getBalance(caller)+".");
 			}
 			else
 				DGPlugin.messagePlayer(caller, "Insufficient funds to purchase "+quantity+" "+item.name+"($"+Currency.getBalance(caller)+"/$"+item.cost*quantity+").");
 		}
-	}
-	
-	private static Store.item findItemById(ushort itemId)
-	{
-		Store.Item item = null;
-			foreach(Store store in stores)
-				if((item = store.getItemById(itemID)) != null)
-					return item;
-		return null;					
-	}
+
+        private static Item findItemById(ushort itemId)
+        {
+            Item item = null;
+            foreach (Store store in stores)
+                if ((item = store.getItemById(itemId)) != null)
+                    return item;
+            return null;
+        }
+    }	
 }
