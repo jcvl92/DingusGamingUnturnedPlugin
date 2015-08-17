@@ -12,7 +12,7 @@ namespace DingusGaming
 {
 	public class Currency
 	{
-		static readonly int startingAmount = 5;
+		static readonly int startingAmount = 50;
 		static Dictionary<string, int> balances;
 
 		public static void init()
@@ -393,7 +393,10 @@ namespace DingusGaming
 				    else
 				    {
 				        if (Currency.transferCredits(caller, player, amount))
-				            DGPlugin.messagePlayer(caller, "You have sent " + amount + " credits to " + player.CharacterName + ".");
+				        {
+				            DGPlugin.messagePlayer(caller, "You sent " + amount + " credits to " + player.CharacterName + ".");
+                            DGPlugin.messagePlayer(player, player.CharacterName + " just gave you $"+amount+"!");
+                        }
 				        else
 				            DGPlugin.messagePlayer(caller, "You cannot send negative credits!");
 				    }

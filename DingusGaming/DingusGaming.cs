@@ -35,6 +35,7 @@ namespace DingusGaming
 		protected override void Unload()
 		{
 			//is called by Rocket before shutting down
+            Steam.OnServerShutdown.Invoke();
 		}
 
 		public void FixedUpdate()
