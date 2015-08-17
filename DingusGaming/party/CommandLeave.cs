@@ -3,68 +3,68 @@ using System.Collections.Generic;
 
 namespace DingusGaming.Party
 {
-	public class CommandLeave : IRocketCommand
-	{
-		private const string NAME = "leave"; 
-		private const string HELP = "Leave your current party.";
-		private const string SYNTAX = "";
-		private readonly List<string> ALIASES = new List<string> { "pleave", "leaveparty", "quit", "pquit" };
-		private const bool ALLOW_FROM_CONSOLE = false;
-		private const bool RUN_FROM_CONSOLE = false;
-		private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
-		
-		public bool RunFromConsole
-		{
-			get { return RUN_FROM_CONSOLE; }
-		}
+    public class CommandLeave : IRocketCommand
+    {
+        private const string NAME = "leave";
+        private const string HELP = "Leave your current party.";
+        private const string SYNTAX = "";
+        private readonly List<string> ALIASES = new List<string> { "pleave", "leaveparty", "quit", "pquit" };
+        private const bool ALLOW_FROM_CONSOLE = false;
+        private const bool RUN_FROM_CONSOLE = false;
+        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
-		public string Name
-		{
-			get { return NAME; }
-		}
+        public bool RunFromConsole
+        {
+            get { return RUN_FROM_CONSOLE; }
+        }
 
-		public string Help
-		{
-			get { return HELP; }
-		}
+        public string Name
+        {
+            get { return NAME; }
+        }
 
-		public string Syntax
-		{
-			get { return SYNTAX; }
-		}
+        public string Help
+        {
+            get { return HELP; }
+        }
 
-		public List<string> Aliases
-		{
-			get { return ALIASES; }
-		}
+        public string Syntax
+        {
+            get { return SYNTAX; }
+        }
 
-		public bool AllowFromConsole
-		{
-			get { return ALLOW_FROM_CONSOLE; }
-		}
+        public List<string> Aliases
+        {
+            get { return ALIASES; }
+        }
 
-		public List<string> Permissions
-		{
-			get { return REQUIRED_PERMISSIONS; }
-		}
+        public bool AllowFromConsole
+        {
+            get { return ALLOW_FROM_CONSOLE; }
+        }
 
-		public void Execute(RocketPlayer caller, string[] command)
-		{
-			Party party = Parties.getParty(caller);
+        public List<string> Permissions
+        {
+            get { return REQUIRED_PERMISSIONS; }
+        }
 
-			if (party != null)
-			{
-				party.removeMember(caller);
-				party.tellParty(caller.CharacterName + " has left the party.");
-				DGPlugin.messagePlayer(caller, "You have left the party.");
-			}
-			else
-				DGPlugin.messagePlayer(caller, "You are not in a party.");
-		}
+        public void Execute(RocketPlayer caller, string[] command)
+        {
+            Party party = Parties.getParty(caller);
 
-//		public void Execute(IRocketPlayer caller, string[] command)
-//		{
-//			Execute((UnturnedPlayer)caller, command);
-//		}
-	}
+            if (party != null)
+            {
+                party.removeMember(caller);
+                party.tellParty(caller.CharacterName + " has left the party.");
+                DGPlugin.messagePlayer(caller, "You have left the party.");
+            }
+            else
+                DGPlugin.messagePlayer(caller, "You are not in a party.");
+        }
+
+        //		public void Execute(IRocketPlayer caller, string[] command)
+        //		{
+        //			Execute((UnturnedPlayer)caller, command);
+        //		}
+    }
 }

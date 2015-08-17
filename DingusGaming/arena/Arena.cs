@@ -23,7 +23,7 @@ namespace Arena
             this.adminsIncluded = adminsIncluded;
 
             //newly connecting players are put in the holding area
-            RocketServerEvents.OnPlayerConnected += delegate(RocketPlayer player)
+            RocketServerEvents.OnPlayerConnected += delegate (RocketPlayer player)
             {
                 // addToTeleports(player); // TODO
                 moveToHoldingArea(player);
@@ -33,9 +33,9 @@ namespace Arena
             DGPlugin.disableCommands();
 
             //create the timer to stop the event if the max time has been reached
-            timer = new Timer((double) eventLength*1000);
+            timer = new Timer((double)eventLength * 1000);
             timer.AutoReset = false;
-            timer.Elapsed += delegate(object source, ElapsedEventArgs e)
+            timer.Elapsed += delegate (object source, ElapsedEventArgs e)
             {
                 stopArena();
             };
@@ -139,7 +139,7 @@ namespace Arena
 
         class TeleportInfo
         {
-            
+
         }
     }
 }

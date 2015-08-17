@@ -64,9 +64,9 @@ namespace DingusGaming.Store
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/store\" or \"/store storeNumber\".");
         }
 
-//        public void Execute(RocketPlayer caller, string[] command)
-//        {
-//            Execute((UnturnedPlayer)caller, command);
-//        }
+        //        public void Execute(RocketPlayer caller, string[] command)
+        //        {
+        //            Execute((UnturnedPlayer)caller, command);
+        //        }
     }
 }
