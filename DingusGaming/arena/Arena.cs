@@ -1,11 +1,12 @@
-using Rocket.Unturned.Player;
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Timers;
 using DingusGaming;
+using Steamworks;
+using Rocket.API;
+using SDG;
+using Rocket.RocketAPI.Events;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
-using SDG.Unturned;
-using Steamworks;
 
 namespace Arena
 {
@@ -24,9 +25,9 @@ namespace Arena
             this.adminsIncluded = adminsIncluded;
 
             //newly connecting players are put in the holding area
-            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player)
+            U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
             {
-                addToTeleports(player);
+                // addToTeleports(player); // TODO
                 moveToHoldingArea(player);
             };
 
@@ -34,9 +35,9 @@ namespace Arena
             DGPlugin.disableCommands();
 
             //create the timer to stop the event if the max time has been reached
-            timer = new Timer((double) eventLength*1000);
+            timer = new Timer((double)eventLength * 1000);
             timer.AutoReset = false;
-            timer.Elapsed += delegate(object source, ElapsedEventArgs e)
+            timer.Elapsed += delegate (object source, ElapsedEventArgs e)
             {
                 stopArena();
             };
@@ -63,6 +64,7 @@ namespace Arena
             //give them god-mode and vanish-mode
         }
 
+        /* TODO: Disabled because what is alive?
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             //TODO: is this stuff thread safe?
@@ -138,7 +140,7 @@ namespace Arena
 
         class TeleportInfo
         {
-            
+
         }
     }
-}
+}*/
