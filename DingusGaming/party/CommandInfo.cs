@@ -1,5 +1,6 @@
-using Rocket.RocketAPI;
+using Rocket.API;
 using System.Collections.Generic;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Party
 {
@@ -48,7 +49,7 @@ namespace DingusGaming.Party
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(RocketPlayer caller, string[] command)
+        public void Execute(UnturnedPlayer caller, string[] command)
         {
             string playerName = string.Join(" ", command);
 
@@ -66,7 +67,7 @@ namespace DingusGaming.Party
                 else
                 {
                     //check for player existence
-                    RocketPlayer player = DGPlugin.getPlayer(playerName);
+                    UnturnedPlayer player = DGPlugin.getPlayer(playerName);
                     if (player == null)
                     {
                         DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
@@ -92,9 +93,9 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(caller, "You are not in a party. You can only get info on party members.");
         }
 
-        //		public void Execute(IRocketPlayer caller, string[] command)
-        //		{
-        //			Execute((UnturnedPlayer)caller, command);
-        //		}
+        public void Execute(IRocketPlayer caller, string[] command)
+        {
+            Execute((UnturnedPlayer)caller, command);
+        }
     }
 }

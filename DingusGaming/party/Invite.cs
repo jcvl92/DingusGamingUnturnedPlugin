@@ -1,4 +1,5 @@
-using Rocket.RocketAPI;
+using Rocket.API;
+using Rocket.Unturned.Player;
 using Steamworks;
 
 namespace DingusGaming.Party
@@ -8,7 +9,7 @@ namespace DingusGaming.Party
         public Party party;
         public CSteamID requester, playerRequested;
 
-        public Invite(RocketPlayer requester, Party party, RocketPlayer playerRequested)
+        public Invite(UnturnedPlayer requester, Party party, UnturnedPlayer playerRequested)
         {
             this.requester = requester.CSteamID;
             this.party = party;

@@ -1,5 +1,6 @@
-using Rocket.RocketAPI;
+using Rocket.API;
 using System.Collections.Generic;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
 {
@@ -48,7 +49,7 @@ namespace DingusGaming.Store
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(RocketPlayer caller, string[] command)
+        public void Execute(UnturnedPlayer caller, string[] command)
         {
             if (command.Length == 0)
                 DGPlugin.messagePlayer(caller, Stores.listSubstores());
@@ -64,9 +65,9 @@ namespace DingusGaming.Store
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/store\" or \"/store storeNumber\".");
         }
 
-        //        public void Execute(RocketPlayer caller, string[] command)
-        //        {
-        //            Execute((UnturnedPlayer)caller, command);
-        //        }
+        public void Execute(IRocketPlayer caller, string[] command)
+        {
+            Execute((UnturnedPlayer)caller, command);
+        }
     }
 }

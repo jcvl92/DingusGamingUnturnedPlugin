@@ -1,5 +1,6 @@
-using Rocket.RocketAPI;
+using Rocket.API;
 using System.Collections.Generic;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
 {
@@ -39,7 +40,7 @@ namespace DingusGaming.Store
             return str.Substring(0, str.Length - 2);
         }
 
-        public static void purchase(RocketPlayer caller, ushort itemId, byte quantity)
+        public static void purchase(UnturnedPlayer caller, ushort itemId, byte quantity)
         {
             if (quantity <= 0)
             {

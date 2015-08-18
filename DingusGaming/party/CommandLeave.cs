@@ -1,5 +1,6 @@
-using Rocket.RocketAPI;
+using Rocket.API;
 using System.Collections.Generic;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Party
 {
@@ -48,7 +49,7 @@ namespace DingusGaming.Party
             get { return REQUIRED_PERMISSIONS; }
         }
 
-        public void Execute(RocketPlayer caller, string[] command)
+        public void Execute(UnturnedPlayer caller, string[] command)
         {
             Party party = Parties.getParty(caller);
 
@@ -62,9 +63,9 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(caller, "You are not in a party.");
         }
 
-        //		public void Execute(IRocketPlayer caller, string[] command)
-        //		{
-        //			Execute((UnturnedPlayer)caller, command);
-        //		}
+        public void Execute(IRocketPlayer caller, string[] command)
+        {
+            Execute((UnturnedPlayer)caller, command);
+        }
     }
 }

@@ -1,7 +1,8 @@
-using Rocket.RocketAPI;
+using Rocket.API;
 using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Party
 {
@@ -10,7 +11,7 @@ namespace DingusGaming.Party
         private CSteamID leader;
         private List<CSteamID> members;
 
-        public Party(RocketPlayer leader)
+        public Party(UnturnedPlayer leader)
         {
             this.leader = leader.CSteamID;
             members = new List<CSteamID>();
@@ -22,7 +23,7 @@ namespace DingusGaming.Party
             members.Clear();
         }
 
-        public bool isMember(RocketPlayer player)
+        public bool isMember(UnturnedPlayer player)
         {
             foreach (CSteamID member in members)
                 if (member.Equals(player.CSteamID))
@@ -30,7 +31,7 @@ namespace DingusGaming.Party
             return false;
         }
 
-        public bool isLeader(RocketPlayer player)
+        public bool isLeader(UnturnedPlayer player)
         {
             return leader.Equals(player.CSteamID);
         }
@@ -41,7 +42,7 @@ namespace DingusGaming.Party
 
             foreach (CSteamID member in members)
             {
-                RocketPlayer player = DGPlugin.getPlayer(member);
+                UnturnedPlayer player = DGPlugin.getPlayer(member);
                 info += player.CharacterName + (isLeader(player) ? "[L](" : "(") +
                         (player.Dead ? "dead" : player.Health + "/100") + "), ";
             }
@@ -49,7 +50,7 @@ namespace DingusGaming.Party
             return info.Substring(0, info.Length - 2);
         }
 
-        public RocketPlayer getLeader()
+        public UnturnedPlayer getLeader()
         {
             return DGPlugin.getPlayer(leader);
         }
@@ -60,7 +61,7 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
         }
 
-        public void chat(RocketPlayer caller, string text)
+        public void chat(UnturnedPlayer caller, string text)
         {
             if (isMember(caller))
                 tellParty(caller.CharacterName + (isLeader(caller) ? "[L]: " : "[P]: ") + text);
@@ -69,13 +70,13 @@ namespace DingusGaming.Party
         }
 
         //done through invites
-        public void addMember(RocketPlayer player)
+        public void addMember(UnturnedPlayer player)
         {
             members.Add(player.CSteamID);
             tellParty(player.CharacterName + " has joined the party!");
         }
 
-        public void kickMember(RocketPlayer caller, RocketPlayer player)
+        public void kickMember(UnturnedPlayer caller, UnturnedPlayer player)
         {
             if (!isMember(player))
             {
@@ -93,7 +94,7 @@ namespace DingusGaming.Party
                     "Only the party leader(" + DGPlugin.getPlayer(leader).CharacterName + ") can kick party members.");
         }
 
-        public void removeMember(RocketPlayer player)
+        public void removeMember(UnturnedPlayer player)
         {
             members.RemoveAt(members.FindIndex(0, x => x.Equals(player)));
 
@@ -112,7 +113,7 @@ namespace DingusGaming.Party
             }
         }
 
-        public void makeLeader(RocketPlayer caller, RocketPlayer player)
+        public void makeLeader(UnturnedPlayer caller, UnturnedPlayer player)
         {
             if (caller.Equals(player))
             {

@@ -1,13 +1,15 @@
-﻿using Rocket.Logging;
-using Rocket.RocketAPI;
-using SDG;
-using Steamworks;
+﻿using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using Rocket.Core.Logging;
+using Rocket.Core.Plugins;
+using Rocket.Unturned.Chat;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
 
 namespace DingusGaming
 {
@@ -38,7 +40,7 @@ namespace DingusGaming
 
         /********** HELPER FUNCTIONS **********/
 
-        public static RocketPlayer getKiller(RocketPlayer player, EDeathCause cause, CSteamID murderer)
+        public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
         {
             if (cause == EDeathCause.KILL)
                 //return !murderer.m_SteamID.Equals(90071992547409920) && !player.CSteamID.Equals(murderer);
@@ -58,18 +60,18 @@ namespace DingusGaming
 
         }
 
-        public static void messagePlayer(RocketPlayer player, string message)
+        public static void messagePlayer(UnturnedPlayer player, string message)
         {
-            List<string> strs = RocketChatManager.wrapMessage(message);
+            List<string> strs = UnturnedChat.wrapMessage(message);
             foreach (string str in strs)
-                RocketChatManager.Say(player, "0" + str);
+                UnturnedChat.Say(player, "0" + str);
         }
 
         public static void broadcastMessage(string text)
         {
-            List<string> strs = RocketChatManager.wrapMessage(text);
+            List<string> strs = UnturnedChat.wrapMessage(text);
             foreach (string str in strs)
-                RocketChatManager.Say(str);
+                UnturnedChat.Say(str);
         }
 
         public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)
@@ -88,24 +90,24 @@ namespace DingusGaming
             return dictionary;
         }
 
-        public static RocketPlayer getPlayer(string name)
+        public static UnturnedPlayer getPlayer(string name)
         {
-            return RocketPlayer.FromName(name);
+            return UnturnedPlayer.FromName(name);
         }
 
-        public static void givePlayerItem(RocketPlayer player, ushort itemID, byte quantity)
+        public static void givePlayerItem(UnturnedPlayer player, ushort itemID, byte quantity)
         {
             player.GiveItem(itemID, quantity);
         }
 
-        public static string getConstantID(RocketPlayer player)
+        public static string getConstantID(UnturnedPlayer player)
         {
             return player.CSteamID.ToString();
         }
 
-        public static RocketPlayer getPlayer(CSteamID playerID)
+        public static UnturnedPlayer getPlayer(CSteamID playerID)
         {
-            return RocketPlayer.FromCSteamID(playerID);
+            return UnturnedPlayer.FromCSteamID(playerID);
         }
 
         public static void writeToFile(object obj, string fileName)

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Rocket.Unturned;
 using Steamworks;
-using SDG;
-using Rocket.RocketAPI.Events;
-using Rocket.RocketAPI;
+using Rocket.Unturned.Events;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
 
 namespace DingusGaming.Party
 {
@@ -20,8 +21,8 @@ namespace DingusGaming.Party
         private static void registerOnPlayerDeath()
         {
             //notify party of death
-            RocketPlayerEvents.OnPlayerDeath +=
-                delegate (RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+            UnturnedPlayerEvents.OnPlayerDeath +=
+                delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
                 {
                     getParty(player)?.tellParty(player.CharacterName + " has died!");
                 };
@@ -29,7 +30,7 @@ namespace DingusGaming.Party
 
         private static void registerOnPlayerDisconnected()
         {
-            RocketServerEvents.OnPlayerDisconnected += delegate (RocketPlayer player)
+            U.Events.OnPlayerDisconnected += delegate (UnturnedPlayer player)
             {
                 //remove them from their party
                 Party party = getParty(player);
@@ -41,7 +42,7 @@ namespace DingusGaming.Party
             };
         }
 
-        public static void invitePlayer(RocketPlayer caller, RocketPlayer player)
+        public static void invitePlayer(UnturnedPlayer caller, UnturnedPlayer player)
         {
             if (getParty(player) != null)
             {
@@ -59,7 +60,7 @@ namespace DingusGaming.Party
             DGPlugin.messagePlayer(caller, "Invite sent to " + player.CharacterName + ".");
         }
 
-        private static Invite getInvite(RocketPlayer player)
+        private static Invite getInvite(UnturnedPlayer player)
         {
             foreach (Invite invite in invites)
                 if (invite.playerRequested.Equals(player))
@@ -67,7 +68,7 @@ namespace DingusGaming.Party
             return null;
         }
 
-        public static void acceptInvite(RocketPlayer caller)
+        public static void acceptInvite(UnturnedPlayer caller)
         {
             Invite invite = getInvite(caller);
             if (invite == null)
@@ -79,7 +80,7 @@ namespace DingusGaming.Party
             }
         }
 
-        public static void declineInvite(RocketPlayer caller)
+        public static void declineInvite(UnturnedPlayer caller)
         {
             Invite invite = getInvite(caller);
             if (invite == null)
@@ -92,20 +93,20 @@ namespace DingusGaming.Party
             }
         }
 
-        public static void removeInvite(RocketPlayer player)
+        public static void removeInvite(UnturnedPlayer player)
         {
             Invite invite = getInvite(player);
             if (invite != null)
                 invites.Remove(invite);
         }
 
-        public static void createParty(RocketPlayer leader)
+        public static void createParty(UnturnedPlayer leader)
         {
             Party newParty = new Party(leader);
             parties.Add(newParty);
         }
 
-        public static Party getParty(RocketPlayer player)
+        public static Party getParty(UnturnedPlayer player)
         {
             foreach (Party party in parties)
                 if (party.isMember(player))

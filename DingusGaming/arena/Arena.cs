@@ -1,10 +1,12 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Timers;
 using DingusGaming;
 using Steamworks;
-using Rocket.RocketAPI;
+using Rocket.API;
 using SDG;
 using Rocket.RocketAPI.Events;
+using Rocket.Unturned;
+using Rocket.Unturned.Events;
 
 namespace Arena
 {
@@ -23,7 +25,7 @@ namespace Arena
             this.adminsIncluded = adminsIncluded;
 
             //newly connecting players are put in the holding area
-            RocketServerEvents.OnPlayerConnected += delegate (RocketPlayer player)
+            U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
             {
                 // addToTeleports(player); // TODO
                 moveToHoldingArea(player);
@@ -41,7 +43,7 @@ namespace Arena
             };
 
             //hook in player death event
-            // RocketPlayerEvents.OnPlayerDeath += onPlayerDeath; //TODO
+            UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
         }
 
         ~ArenaEvent()
@@ -49,13 +51,12 @@ namespace Arena
             timer.Close();
         }
 
-        /* Disabled because RocketPlayer constructor
-        private void addToTeleports(RocketPlayer player)
+        private void addToTeleports(UnturnedPlayer player)
         {
-            new RocketPlayer().Inventory.Items
-        } */
+            new UnturnedPlayer().Inventory.Items
+        }
 
-        private void moveToHoldingArea(RocketPlayer player)
+        private void moveToHoldingArea(UnturnedPlayer player)
         {
             //isolate player so they can watch and be out of the way
             //move them to a holding location(spawn location but in the sky a little bit - enough to not get in the way)
@@ -64,7 +65,7 @@ namespace Arena
         }
 
         /* TODO: Disabled because what is alive?
-        private void onPlayerDeath(RocketPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+        private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             //TODO: is this stuff thread safe?
             //TODO: have suiciding cause a decrement in score rather than increment(pending method evaluation in Currency)
@@ -92,7 +93,7 @@ namespace Arena
             }
             else
                 DGPlugin.broadcastMessage(alive.Count + " players left!");
-        }*/
+        }
 
         public void beginArena()
         {
@@ -123,7 +124,7 @@ namespace Arena
             timer.Stop();
 
             //unhook player death event
-            // RocketPlayerEvents.OnPlayerDeath -= onPlayerDeath; // TODO
+            UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
 
             //notify everyone of how many people they killed/credits they earned/what place they earned out of everyone(e.g. 4/10, 4th highest score)
 
@@ -142,4 +143,4 @@ namespace Arena
 
         }
     }
-}
+}*/
