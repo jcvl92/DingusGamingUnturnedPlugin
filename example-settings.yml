@@ -1,8 +1,4 @@
-
-
-database.driver: MongoDB.driver
-database.host: localhost
-database.user: username
-database.password: password
+db.type: dynamo
 
 stores.file: DGPlugin_stores.xml
+balances.file: DGPlugin_balances.xml

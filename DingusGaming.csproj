@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
+    <ProjectGuid>{1D68FC7E-8489-49DC-BEB2-F8A63721A80F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>ClassLibrary</AssemblyName>
@@ -27,14 +27,153 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>DingusGaming</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Unturned.Rocket.Foundation.4.6.1.1\lib\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="AWSSDK.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>packages\AWSSDK.Core.3.1.0.0\lib\net35\AWSSDK.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AWSSDK.DynamoDBv2, Version=3.1.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>packages\AWSSDK.DynamoDBv2.3.1.0.0\lib\net35\AWSSDK.DynamoDBv2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Rocket.API">
+      <HintPath>packages\Unturned.Rocket.Foundation.4.6.1.1\lib\Rocket.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Core">
+      <HintPath>packages\Unturned.Rocket.Foundation.4.6.1.1\lib\Rocket.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Unturned">
+      <HintPath>packages\Unturned.Rocket.Foundation.4.6.1.1\lib\Rocket.Unturned.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="YamlDotNet, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\YamlDotNet.3.6.1\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
+    <Content Include="packages\NUnit.2.6.4\lib\nunit.framework.dll" />
+    <Content Include="packages\NUnit.2.6.4\lib\nunit.framework.xml" />
+    <Content Include="packages\NUnit.2.6.4\license.txt" />
+    <Content Include="packages\NUnit.Runners.2.6.4\license.txt" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Circles\Failure.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Circles\Ignored.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Circles\Inconclusive.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Circles\Skipped.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Circles\Success.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Classic\Failure.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Classic\Ignored.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Classic\Inconclusive.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Classic\Skipped.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Classic\Success.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Default\Failure.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Default\Ignored.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Default\Inconclusive.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Default\Skipped.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Default\Success.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\Failure.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\Ignored.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\Inconclusive.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\SeriousWarning.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\Skipped.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\Images\Tree\Visual Studio\Success.png" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\log4net.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit-console-runner.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit-gui-runner.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit.uiexception.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit.uikit.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\lib\nunit.util.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-agent-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-agent.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-console-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-console.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-editor.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\nunit.framework.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\pnunit-agent.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\pnunit-launcher.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\pnunit.framework.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.4\tools\pnunit.tests.dll" />
+    <Content Include="packages\Unturned.Rocket.Foundation.4.6.1.1\lib\Assembly-CSharp.dll" />
+    <Content Include="packages\Unturned.Rocket.Foundation.4.6.1.1\lib\RocketAPI.dll" />
+    <Content Include="packages\Unturned.Rocket.Foundation.4.6.1.1\lib\UnityEngine.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="example-settings.yml" />
+    <None Include="packages.config" />
+    <None Include="packages\NUnit.2.6.4\NUnit.2.6.4.nupkg" />
+    <None Include="packages\NUnit.Runners.2.6.4\NUnit.Runners.2.6.4.nupkg" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\agent.conf" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\agent.log.conf" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\launcher.log.conf" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit-agent-x86.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit-agent.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit-console-x86.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit-console.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit-x86.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\nunit.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\pnunit-agent.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\pnunit-launcher.exe.config" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\runpnunit.bat" />
+    <None Include="packages\NUnit.Runners.2.6.4\tools\test.conf" />
+    <None Include="packages\Unturned.Rocket.Foundation.4.6.1.1\content\LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DingusGaming\arena\Arena.cs" />
+    <Compile Include="DingusGaming\data\DataAccess.cs" />
+    <Compile Include="DingusGaming\data\DataAccessFactory.cs" />
+    <Compile Include="DingusGaming\data\Dynamo.cs" />
+    <Compile Include="DingusGaming\data\Xml.cs" />
+    <Compile Include="DingusGaming\DingusGaming.cs" />
+    <Compile Include="DingusGaming\helper\Conversion.cs" />
+    <Compile Include="DingusGaming\helper\File.cs" />
+    <Compile Include="DingusGaming\helper\Settings.cs" />
+    <Compile Include="DingusGaming\party\CommandAccept.cs" />
+    <Compile Include="DingusGaming\party\CommandChat.cs" />
+    <Compile Include="DingusGaming\party\CommandDecline.cs" />
+    <Compile Include="DingusGaming\party\CommandDisband.cs" />
+    <Compile Include="DingusGaming\party\CommandInfo.cs" />
+    <Compile Include="DingusGaming\party\CommandInvite.cs" />
+    <Compile Include="DingusGaming\party\CommandKick.cs" />
+    <Compile Include="DingusGaming\party\CommandLeader.cs" />
+    <Compile Include="DingusGaming\party\CommandLeave.cs" />
+    <Compile Include="DingusGaming\party\CommandTeleport.cs" />
+    <Compile Include="DingusGaming\party\Invite.cs" />
+    <Compile Include="DingusGaming\party\Parties.cs" />
+    <Compile Include="DingusGaming\party\Party.cs" />
+    <Compile Include="DingusGaming\store\CommandBalance.cs" />
+    <Compile Include="DingusGaming\store\CommandBuy.cs" />
+    <Compile Include="DingusGaming\store\CommandStore.cs" />
+    <Compile Include="DingusGaming\store\CommandTransfer.cs" />
+    <Compile Include="DingusGaming\store\Currency.cs" />
+    <Compile Include="DingusGaming\store\Item.cs" />
+    <Compile Include="DingusGaming\store\Store.cs" />
+    <Compile Include="DingusGaming\store\Stores.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".git\" />
+    <Folder Include=".vs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

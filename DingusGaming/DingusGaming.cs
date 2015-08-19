@@ -74,22 +74,6 @@ namespace DingusGaming
                 UnturnedChat.Say(str);
         }
 
-        public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)
-        {
-            List<DictionaryEntry> entries = new List<DictionaryEntry>(dictionary.Count);
-            foreach (object key in dictionary.Keys)
-                entries.Add(new DictionaryEntry(key, dictionary[key]));
-            return entries;
-        }
-
-        public static Dictionary<TKey, TValue> convertToDictionary<TKey, TValue>(List<DictionaryEntry> entries)
-        {
-            Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
-            foreach (DictionaryEntry entry in entries)
-                dictionary[(TKey)entry.Key] = (TValue)entry.Value;
-            return dictionary;
-        }
-
         public static UnturnedPlayer getPlayer(string name)
         {
             return UnturnedPlayer.FromName(name);
@@ -110,44 +94,6 @@ namespace DingusGaming
             return UnturnedPlayer.FromCSteamID(playerID);
         }
 
-        public static void writeToFile(object obj, string fileName)
-        {
-            XmlSerializer serializer = new XmlSerializer(obj.GetType(), "");
-            XmlTextWriter xmlTextWriter = null;
-
-            try
-            {
-                xmlTextWriter = new XmlTextWriter("DGPLugin_" + fileName, Encoding.UTF8);
-                xmlTextWriter.Formatting = Formatting.Indented;
-                serializer.Serialize(xmlTextWriter, obj);
-            }
-            finally
-            {
-                xmlTextWriter?.Close();
-            }
-        }
-
-        public static T readFromFile<T>(string fileName)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-            XmlTextReader xmlTextReader = null;
-
-            try
-            {
-                xmlTextReader = new XmlTextReader("DGPLugin_" + fileName);
-
-                if (serializer.CanDeserialize(xmlTextReader))
-                    return (T)serializer.Deserialize(xmlTextReader);
-                return default(T);
-            }
-            catch (FileNotFoundException)
-            {
-                return default(T);
-            }
-            finally
-            {
-                xmlTextReader?.Close();
-            }
-        }
+        
     }
 }
