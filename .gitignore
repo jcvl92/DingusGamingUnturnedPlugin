@@ -1,13 +1,9 @@
-*.suo
-*.sln
-*.csproj
-*.dll
 *.pdb
 *.xml
 *.cache
 *.txt
 *.DS_Store
-packages
+packages/
 bin/
 obj/
 Dingus Gaming.csproj.user
