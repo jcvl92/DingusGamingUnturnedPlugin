@@ -1,0 +1,8 @@
+
+
+database.driver: MongoDB.driver
+database.host: localhost
+database.user: username
+database.password: password
+
+stores.file: DGPlugin_stores.xml

@@ -1,6 +1,7 @@
 using Rocket.API;
 using System.Collections.Generic;
 using Rocket.Unturned.Player;
+using DingusGaming.DingusGaming.helper;
 
 namespace DingusGaming.Store
 {
@@ -15,8 +16,7 @@ namespace DingusGaming.Store
 
         private static void loadStoreData()
         {
-            //read in the stores data
-            stores = DGPlugin.readFromFile<List<Store>>("stores.xml");
+            stores = File.readFromXml<List<Store>>(Settings.getSettings()["stores.file"]);
         }
 
         public static string listSubstores()
