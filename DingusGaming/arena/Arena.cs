@@ -10,24 +10,27 @@ using Rocket.Unturned.Events;
 
 namespace Arena
 {
+    //TODO: is this stuff thread safe?(scores and alive)
     public class ArenaEvent
     {
         public Timer timer;
         public bool adminsIncluded;
         private string location, holdingArea;
         private List<TeleportInfo> teleports = new List<TeleportInfo>();
+        private List<int> scores = new List<int>();
+        private List<CSteamID> alive = new List<CSteamID>();
 
         public ArenaEvent(ushort eventLength = 120, byte startItem = 0,
             byte dropItem = 0, bool adminsIncluded = false)
         {
-            this.location = "Oulton's Isle";
+            location = "Oulton's Isle";
             holdingArea = "Pirate Cave";
             this.adminsIncluded = adminsIncluded;
 
             //newly connecting players are put in the holding area
             U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
             {
-                // addToTeleports(player); // TODO
+                addToTeleports(player);
                 moveToHoldingArea(player);
             };
 
@@ -64,21 +67,32 @@ namespace Arena
             //give them god-mode and vanish-mode
         }
 
-        /* TODO: Disabled because what is alive?
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
-            //TODO: is this stuff thread safe?
-            //TODO: have suiciding cause a decrement in score rather than increment(pending method evaluation in Currency)
+            murderer = DGPlugin.getMurderer(player, cause, murderer);
+
+            //move them to the holding area
             moveToHoldingArea(player);
 
-            //remove from alive list
+            //resurrect them
+            player.rezzPls();
+
+            //give them godmode and vanish
+            player.godmode(true);
+            player.vanish(true);
+
+            //remove them from alive list
             alive.Remove(player.CSteamID);
 
             //update score of killing player
-            ++score[murderer];
+            scores[murderer]++;
 
-            DGPlugin.broadcastMessage(player.CharacterName + " has been killed by " +
+            //TODO: this can be fixed once we have kill tracking implemented
+            if(!murderer.equals(default(CSteamID)))
+                DGPlugin.broadcastMessage(player.CharacterName + " has been killed by " +
                                       DGPlugin.getPlayer(murderer).CharacterName + ".");
+            else
+                DGPlugin.broadcastMessage(player.CharacterName + " has died.");
 
             //see if 1 or 0 people are left alive(to end the event)
             if (alive.Count == 0)
@@ -127,6 +141,7 @@ namespace Arena
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
 
             //notify everyone of how many people they killed/credits they earned/what place they earned out of everyone(e.g. 4/10, 4th highest score)
+            foreach()
 
             //at the end of the arena, the top 3 people are allowed to choose a prize, scores are published to chat(and credits earned)
             //this way, you don't have to kill everyone and if someone just hides or leaves, they will only impact themselves
