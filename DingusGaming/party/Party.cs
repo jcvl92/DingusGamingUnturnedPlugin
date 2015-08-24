@@ -98,6 +98,8 @@ namespace DingusGaming.Party
         {
             members.RemoveAt(members.FindIndex(0, x => x.Equals(player.CSteamID)));
 
+            Parties.toggleChat(player, false);
+
             //promote a new leader if the leader was removed
             if (members.Count > 1)
             {

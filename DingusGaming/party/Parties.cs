@@ -11,6 +11,7 @@ namespace DingusGaming.Party
     {
         static readonly List<Party> parties = new List<Party>();
         static readonly List<Invite> invites = new List<Invite>();
+        static readonly HashSet<CSteamID> chatToggles = new HashSet<CSteamID>();
 
         public static void init()
         {
@@ -40,6 +41,29 @@ namespace DingusGaming.Party
                 //clear pending invites
                 removeInvite(player);
             };
+        }
+
+        public static void toggleChat(UnturnedPlayer player)
+        {
+            if(!chatToggles.Remove(player.CSteamID))
+                chatToggles.Add(player.CSteamID);
+        }
+
+        public static void toggleChat(UnturnedPlayer player, bool enabled)
+        {
+            if(enabled)
+            {
+                chatToggles.Add(player.CSteamID);
+            }
+            else
+            {
+                chatToggles.Remove(player.CSteamID);
+            }
+        }
+
+        public static bool isChatToggled(UnturnedPlayer player)
+        {
+            return chatToggles.Contains(player.CSteamID);
         }
 
         public static void invitePlayer(UnturnedPlayer caller, UnturnedPlayer player)

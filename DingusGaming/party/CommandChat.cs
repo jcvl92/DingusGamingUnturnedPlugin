@@ -7,8 +7,8 @@ namespace DingusGaming.Party
     public class CommandChat : IRocketCommand
     {
         private const string NAME = "p";
-        private const string HELP = "Send a message to your party.";
-        private const string SYNTAX = "<message>";
+        private const string HELP = "Toggle party chat on/off.";
+        private const string SYNTAX = "";
         private readonly List<string> ALIASES = new List<string> { "party", "pchat", "partychat" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
@@ -51,20 +51,20 @@ namespace DingusGaming.Party
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            //check for parameter vaidity
-            if (command.Length == 0)
+            //check message
+            if (command.Length > 0)
             {
-                DGPlugin.messagePlayer(caller, "No message entered. Format is \"/p message\".");
-                return;
+            	Parties.toggleChat(caller, true);
+
+                string message = string.Join(" ", command);
+	            Party party = Parties.getParty(caller);
+	            if (party != null)
+	                party.chat(caller, message);
+	            else
+	                DGPlugin.messagePlayer(caller, "You are not in a party.");
             }
-
-            string message = string.Join(" ", command);
-
-            Party party = Parties.getParty(caller);
-            if (party != null)
-                party.chat(caller, message);
             else
-                DGPlugin.messagePlayer(caller, "You are not in a party.");
+            	Parties.toggleChat(caller);
         }
 
         public void Execute(IRocketPlayer caller, string[] command)
