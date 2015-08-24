@@ -64,7 +64,7 @@ namespace DingusGaming
         {
             List<string> strs = UnturnedChat.wrapMessage(message);
             foreach (string str in strs)
-                UnturnedChat.Say(player, "0" + str);
+                UnturnedChat.Say(player, str);
         }
 
         public static void broadcastMessage(string text)

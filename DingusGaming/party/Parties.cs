@@ -63,7 +63,7 @@ namespace DingusGaming.Party
         private static Invite getInvite(UnturnedPlayer player)
         {
             foreach (Invite invite in invites)
-                if (invite.playerRequested.Equals(player))
+                if (invite.playerRequested.Equals(player.CSteamID))
                     return invite;
             return null;
         }

@@ -1,4 +1,3 @@
-using Rocket.API;
 using Steamworks;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +24,11 @@ namespace DingusGaming.Party
 
         public bool isMember(UnturnedPlayer player)
         {
-            foreach (CSteamID member in members)
+            return members.Contains(player.CSteamID);
+            /*foreach (CSteamID member in members)
                 if (member.Equals(player.CSteamID))
                     return true;
-            return false;
+            return false;*/
         }
 
         public bool isLeader(UnturnedPlayer player)
@@ -84,7 +84,7 @@ namespace DingusGaming.Party
                 return;
             }
 
-            if (leader.Equals(caller))
+            if (leader.Equals(caller.CSteamID))
             {
                 removeMember(player);
                 DGPlugin.messagePlayer(player, "You were removed from the party.");
@@ -96,12 +96,12 @@ namespace DingusGaming.Party
 
         public void removeMember(UnturnedPlayer player)
         {
-            members.RemoveAt(members.FindIndex(0, x => x.Equals(player)));
+            members.RemoveAt(members.FindIndex(0, x => x.Equals(player.CSteamID)));
 
             //promote a new leader if the leader was removed
             if (members.Count > 1)
             {
-                if (leader.Equals(player))
+                if (leader.Equals(player.CSteamID))
                 {
                     leader = members.First();
                     tellParty(DGPlugin.getPlayer(leader).CharacterName + " has been made party leader!");
