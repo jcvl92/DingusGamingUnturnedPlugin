@@ -7,8 +7,8 @@ namespace DingusGaming.Party
     public class CommandChat : IRocketCommand
     {
         private const string NAME = "p";
-        private const string HELP = "Toggle party chat on/off.";
-        private const string SYNTAX = "";
+        private const string HELP = "Send a message to your party.";
+        private const string SYNTAX = "<message>";
         private readonly List<string> ALIASES = new List<string> { "party", "pchat", "partychat" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;

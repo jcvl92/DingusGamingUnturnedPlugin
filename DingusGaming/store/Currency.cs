@@ -1,6 +1,7 @@
 using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
+using DingusGaming.Party;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
@@ -43,7 +44,7 @@ namespace DingusGaming.Store
             {
                 // Grant the killing user 5 credits + 10% of their victim's credits
                 UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
-                if (killer != null)
+                if (killer != null && !Parties.getParty(player).isMember(DGPlugin.getPlayer(murderer)))
                     changeBalance(killer, 5 + getBalance(player) / 10);
             };
         }
