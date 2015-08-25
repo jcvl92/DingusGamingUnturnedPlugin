@@ -25,10 +25,6 @@ namespace DingusGaming.Party
         public bool isMember(UnturnedPlayer player)
         {
             return members.Contains(player.CSteamID);
-            /*foreach (CSteamID member in members)
-                if (member.Equals(player.CSteamID))
-                    return true;
-            return false;*/
         }
 
         public bool isLeader(UnturnedPlayer player)
