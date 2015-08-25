@@ -1,5 +1,4 @@
 using Steamworks;
-using System.Collections;
 using System.Collections.Generic;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
@@ -30,8 +29,7 @@ namespace DingusGaming.Store
 
         private static void saveBalances()
         {
-            dataAccessor.setBalances(balances);
-            
+            dataAccessor.setBalances(balances);  
         }
 
         private static void registerOnPlayerDeath()
@@ -41,7 +39,7 @@ namespace DingusGaming.Store
                 // Grant the killing user 5 credits + 10% of their victim's credits
                 UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
                 if (killer != null)
-                    changeBalance(killer, 5 + getBalance(player) / 10); // TODO: Shouldn't you transfer credits? The dead player should lose the credits?
+                    changeBalance(killer, 5 + getBalance(player) / 10);
             };
         }
 
