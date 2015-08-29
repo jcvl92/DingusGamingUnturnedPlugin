@@ -85,10 +85,7 @@ namespace DingusGaming.Party
                     DGPlugin.messagePlayer(caller, "Only the party leader(" + party.getLeader().CharacterName + ") can invite members.");
             }
             else
-            {
-                Parties.createParty(caller);
                 Parties.invitePlayer(caller, player);
-            }
         }
 
         public void Execute(IRocketPlayer caller, string[] command)

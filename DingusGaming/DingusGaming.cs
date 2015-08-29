@@ -42,9 +42,7 @@ namespace DingusGaming
 
         public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
         {
-            if (cause == EDeathCause.KILL)
-                //return !murderer.m_SteamID.Equals(90071992547409920) && !player.CSteamID.Equals(murderer);
-                //get the last player that damaged them before they die(timeout is 30 seconds)
+            if(cause == EDeathCause.GUN || cause == EDeathCause.MELEE || cause == EDeathCause.PUNCH || cause == EDeathCause.ROADKILL)
                 return getPlayer(murderer);
             else
                 return null;

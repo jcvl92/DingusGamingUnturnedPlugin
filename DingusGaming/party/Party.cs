@@ -1,5 +1,6 @@
 using Steamworks;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Rocket.Unturned.Player;
 
@@ -15,6 +16,11 @@ namespace DingusGaming.Party
             this.leader = leader.CSteamID;
             members = new List<CSteamID>();
             addMember(leader);
+        }
+
+        public ReadOnlyCollection<CSteamID> getMembers()
+        {
+            return members.AsReadOnly();
         }
 
         public void disband()

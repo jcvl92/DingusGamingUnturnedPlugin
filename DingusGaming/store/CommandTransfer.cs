@@ -67,13 +67,18 @@ namespace DingusGaming.Store
                         DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
                     else
                     {
-                        if (Currency.transferCredits(caller, player, amount))
+                        if (amount < 1)
+                            DGPlugin.messagePlayer(caller, "You cannot send negative credits!");
+                        else if (Currency.transferCredits(caller, player, amount))
                         {
-                            DGPlugin.messagePlayer(caller, "You sent " + amount + " credits to " + player.CharacterName + ".");
-                            DGPlugin.messagePlayer(player, player.CharacterName + " just gave you $" + amount + "!");
+                            DGPlugin.messagePlayer(caller,
+                                "You sent " + amount + " credits to " + player.CharacterName + ".");
+                            DGPlugin.messagePlayer(player, caller.CharacterName + " just gave you $" + amount + "!");
                         }
                         else
-                            DGPlugin.messagePlayer(caller, "You cannot send negative credits!");
+                        {
+                            DGPlugin.messagePlayer(caller, "Insufficient funds.");
+                        }
                     }
                 }
             }

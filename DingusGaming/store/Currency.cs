@@ -44,8 +44,13 @@ namespace DingusGaming.Store
             {
                 // Grant the killing user 5 credits + 10% of their victim's credits
                 UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
-                if (killer != null && !Parties.getParty(player).isMember(DGPlugin.getPlayer(murderer)))
-                    changeBalance(killer, 5 + getBalance(player) / 10);
+                if (killer != null && (Parties.getParty(player)==null || !Parties.getParty(player).isMember(killer)))
+                {
+                    int amount = 5 + getBalance(player)/10;
+                    changeBalance(killer, amount);
+                    DGPlugin.messagePlayer(killer, "You earned $" + amount + " from killing " + player.CharacterName + ".");
+                    DGPlugin.messagePlayer(player, killer.CharacterName+" got $" + amount + " from killing you.");
+                }
             };
         }
 

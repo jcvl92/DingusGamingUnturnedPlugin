@@ -5,14 +5,22 @@ namespace DingusGaming.Party
 {
     public class Invite
     {
-        public Party party;
         public CSteamID requester, playerRequested;
 
-        public Invite(UnturnedPlayer requester, Party party, UnturnedPlayer playerRequested)
+        public Invite(UnturnedPlayer requester, UnturnedPlayer playerRequested)
         {
             this.requester = requester.CSteamID;
-            this.party = party;
             this.playerRequested = playerRequested.CSteamID;
+        }
+
+        public void join()
+        {
+            Party party = Parties.getParty(DGPlugin.getPlayer(requester));
+
+            if(party == null)
+                party = Parties.createParty(DGPlugin.getPlayer(requester));
+
+            party.addMember(DGPlugin.getPlayer(playerRequested));
         }
     }
 }

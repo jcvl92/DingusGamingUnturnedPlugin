@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Rocket.Unturned;
 using Steamworks;
 using Rocket.Unturned.Events;
@@ -79,7 +80,7 @@ namespace DingusGaming.Party
                 return;
             }
 
-            invites.Add(new Invite(caller, getParty(caller), player));
+            invites.Add(new Invite(caller, player));
             DGPlugin.messagePlayer(player, caller.CharacterName + " is inviting you to join a party. Enter /accept or /decline to respond.");
             DGPlugin.messagePlayer(caller, "Invite sent to " + player.CharacterName + ".");
         }
@@ -99,7 +100,7 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(caller, "You have no pending invites!");
             else
             {
-                invite.party.addMember(DGPlugin.getPlayer(invite.playerRequested));
+                invite.join();
                 invites.Remove(invite);
             }
         }
@@ -124,10 +125,11 @@ namespace DingusGaming.Party
                 invites.Remove(invite);
         }
 
-        public static void createParty(UnturnedPlayer leader)
+        public static Party createParty(UnturnedPlayer leader)
         {
             Party newParty = new Party(leader);
             parties.Add(newParty);
+            return newParty;
         }
 
         public static Party getParty(UnturnedPlayer player)
@@ -140,6 +142,7 @@ namespace DingusGaming.Party
 
         public static void disbandParty(Party party)
         {
+            ReadOnlyCollection<CSteamID> members = party.getMembers();
             party.tellParty("Party has been disbanded!");
             party.disband();
             parties.Remove(party);
@@ -147,8 +150,9 @@ namespace DingusGaming.Party
             //remove all related invites
             List<Invite> toRemove = new List<Invite>();
             foreach (Invite invite in invites)
-                if (invite.party.Equals(party))
-                    toRemove.Add(invite);
+                foreach (CSteamID member in members)
+                    if (invite.requester.Equals(member))
+                        toRemove.Add(invite);
             foreach (Invite invite in toRemove)
                 invites.Remove(invite);
         }

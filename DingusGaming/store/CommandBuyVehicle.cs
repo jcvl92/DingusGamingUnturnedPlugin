@@ -4,12 +4,13 @@ using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
 {
-    public class CommandBuy : IRocketCommand
+    public class CommandBuyVehicle : IRocketCommand
     {
-        private const string NAME = "buy";
-        private const string HELP = "Purchase an item from the store.";
-        private const string SYNTAX = "<itemID> (<quantity>)";
-        private readonly List<string> ALIASES = new List<string> { "purchase", "b", "buyitem", "purchaseitem" };
+        private const int cost = 25;
+        private const string NAME = "buycar";
+        private const string HELP = "Purchase a vehicle.";
+        private const string SYNTAX = "<vehicleID>";
+        private readonly List<string> ALIASES = new List<string> { "purchasecar", "buyvehicle", "purchasevehicle", "buyv" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
         private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
@@ -51,19 +52,23 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length == 0 || command.Length > 2)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buy itemID\" or \"/buy itemID quantity\".");
+            if (command.Length != 1)
+                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buycar vehicleID\".");
             else
             {
-                ushort itemID;
-                byte quantity = 1;
+                ushort vehicleID;
 
-                if (!ushort.TryParse(command[0], out itemID))
-                    DGPlugin.messagePlayer(caller, "Invalid itemID.");
-                else if (command.Length == 2 && !byte.TryParse(command[1], out quantity))
-                    DGPlugin.messagePlayer(caller, "Invalid quantity.");
+                if (!ushort.TryParse(command[0], out vehicleID))
+                    DGPlugin.messagePlayer(caller, "Invalid vehicleID.");
+                else if (Currency.getBalance(caller) >= cost)
+                {
+                    if(caller.GiveVehicle(vehicleID))
+                        Currency.changeBalance(caller, -cost);
+                    else
+                        DGPlugin.messagePlayer(caller, "Invalid vehicleID.");
+                }
                 else
-                    Stores.purchase(caller, itemID, quantity);
+                    DGPlugin.messagePlayer(caller, "Insufficient funds($"+Currency.getBalance(caller)+"/$25).");
             }
         }
 
