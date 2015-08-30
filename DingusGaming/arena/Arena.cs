@@ -1,12 +1,12 @@
 /*using System.Collections.Generic;
 using System.Timers;
 using DingusGaming;
+using DingusGaming.helper;
 using Steamworks;
-using Rocket.API;
-using SDG;
-using Rocket.RocketAPI.Events;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
 
 namespace Arena
 {
@@ -16,9 +16,9 @@ namespace Arena
         public Timer timer;
         public bool adminsIncluded;
         private string location, holdingArea;
-        private List<TeleportInfo> teleports = new List<TeleportInfo>();
         private List<int> scores = new List<int>();
         private List<CSteamID> alive = new List<CSteamID>();
+        private Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
 
         public ArenaEvent(ushort eventLength = 120, byte startItem = 0,
             byte dropItem = 0, bool adminsIncluded = false)
@@ -30,7 +30,7 @@ namespace Arena
             //newly connecting players are put in the holding area
             U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
             {
-                addToTeleports(player);
+                savePlayerState(player);
                 moveToHoldingArea(player);
             };
 
@@ -54,9 +54,9 @@ namespace Arena
             timer.Close();
         }
 
-        private void addToTeleports(UnturnedPlayer player)
+        private void savePlayerState (UnturnedPlayer player)
         {
-            new UnturnedPlayer().Inventory.Items
+            states.Add(player.CSteamID, PlayerState.getState(player));
         }
 
         private void moveToHoldingArea(UnturnedPlayer player)
@@ -69,7 +69,7 @@ namespace Arena
 
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
-            murderer = DGPlugin.getMurderer(player, cause, murderer);
+            murderer = DGPlugin.getKiller(player, cause, murderer).CSteamID;
 
             //move them to the holding area
             moveToHoldingArea(player);

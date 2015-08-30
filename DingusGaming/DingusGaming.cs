@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Chat;
+using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 

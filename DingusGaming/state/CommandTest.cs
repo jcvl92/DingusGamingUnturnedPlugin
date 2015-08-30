@@ -1,17 +1,16 @@
 using Rocket.API;
 using System.Collections.Generic;
+using DingusGaming.helper;
 using Rocket.Unturned.Player;
-using SDG.Unturned;
 
 namespace DingusGaming.Store
 {
-    public class CommandBuyVehicle : IRocketCommand
+    public class CommandTest : IRocketCommand
     {
-        private const int cost = 25;
-        private const string NAME = "buycar";
-        private const string HELP = "Purchase a vehicle.";
-        private const string SYNTAX = "<vehicleID>";
-        private readonly List<string> ALIASES = new List<string> { "purchasecar", "buyvehicle", "purchasevehicle", "buyv" };
+        private const string NAME = "test";
+        private const string HELP = "";
+        private const string SYNTAX = "<playerName>";
+        private readonly List<string> ALIASES = new List<string> {};
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
         private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
@@ -54,25 +53,18 @@ namespace DingusGaming.Store
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             if (command.Length != 1)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buycar vehicleID\".");
+                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test playerName\".");
             else
             {
-                ushort vehicleID;
+                UnturnedPlayer subject = UnturnedPlayer.FromName(command[0]);
 
-                if (!ushort.TryParse(command[0], out vehicleID))
-                    DGPlugin.messagePlayer(caller, "Invalid vehicleID.");
-                else if (Currency.getBalance(caller) >= cost)
-                {
-                    if (caller.GiveVehicle(vehicleID))
-                    {
-                        VehicleManager.vehicles[VehicleManager.vehicles.Count - 1].askFill(ushort.MaxValue);
-                        Currency.changeBalance(caller, -cost);
-                    }
-                    else
-                        DGPlugin.messagePlayer(caller, "Invalid vehicleID.");
-                }
-                else
-                    DGPlugin.messagePlayer(caller, "Insufficient funds($"+Currency.getBalance(caller)+"/$25).");
+                PlayerState subjectState = PlayerState.getState(subject);
+                PlayerState callerState = PlayerState.getState(caller);
+
+                subjectState.setCompleteState(caller);
+                callerState.setCompleteState(subject);
+
+                DGPlugin.broadcastMessage("Swapped "+subject.CharacterName+" with "+caller.CharacterName+"!");
             }
         }
 
