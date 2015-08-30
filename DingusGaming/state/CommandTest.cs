@@ -9,11 +9,12 @@ namespace DingusGaming.Store
     {
         private const string NAME = "test";
         private const string HELP = "";
-        private const string SYNTAX = "<playerName>";
+        private const string SYNTAX = "";
         private readonly List<string> ALIASES = new List<string> {};
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
         private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
+        private static PlayerState state = null;
 
         public bool RunFromConsole
         {
@@ -52,19 +53,18 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length != 1)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test playerName\".");
+            if (command.Length != 0)
+                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test\".");
+            else if (state == null)
+            {
+                state = PlayerState.getState(caller);
+                DGPlugin.broadcastMessage("Saved player state!");
+            }
             else
             {
-                UnturnedPlayer subject = UnturnedPlayer.FromName(command[0]);
-
-                PlayerState subjectState = PlayerState.getState(subject);
-                PlayerState callerState = PlayerState.getState(caller);
-
-                subjectState.setCompleteState(caller);
-                callerState.setCompleteState(subject);
-
-                DGPlugin.broadcastMessage("Swapped "+subject.CharacterName+" with "+caller.CharacterName+"!");
+                state.setCompleteState(caller);
+                state = null;
+                DGPlugin.broadcastMessage("Loaded player state!");
             }
         }
 

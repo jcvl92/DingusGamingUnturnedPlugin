@@ -1,4 +1,5 @@
-﻿using Rocket.Unturned.Player;
+﻿using System.Collections.Generic;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
 
@@ -93,62 +94,108 @@ namespace DingusGaming.helper
 
         private class PlayerInventory
         {
-            private bool isEquipped;
-            private byte equippedPage, equipped_x, equipped_y;
-            private Item[] items;
+            private byte equippedPage, equipped_x, equipped_y,
+                bpQuality, gQuality, hQuality, mQuality, pQuality, sQuality, vQuality;
+            private ushort backpack, glasses, hat, mask, pants, shirt, vest;
+            private Dictionary<Items, List<ItemJar>> itemsMap;
 
             public static PlayerInventory getInventory(UnturnedPlayer player)
             {
-                //TODO: following this: https://github.com/Zamirathe/ZaupClearInventoryLib/blob/master/ZaupClearInventoryLib.cs
                 Player p = player.Player;
-                
 
                 //get the items
-                Item[] items = new Item[p.Inventory.Items.Length];
-                p.Inventory.Items.CopyTo(items, 0);
+                Dictionary<Items, List<ItemJar>> itemsMap = new Dictionary<Items, List<ItemJar>>();
+                foreach (Items items in p.Inventory.Items)
+                {
+                    List<ItemJar> itemList = new List<ItemJar>();
+                    for (byte i = 0; i < items.getItemCount(); ++i)
+                        itemList.Add(items.getItem(i));//TODO: possibly clone this if it doesn't work(or scrape it's details) - we will know if it works or not after this is tested after clearing
+                    itemsMap.Add(items, itemList);
+                }
 
                 return new PlayerInventory
                 {
                     //save the equipped item data
-                    isEquipped = p.Equipment.isEquipped,
                     equippedPage = p.Equipment.equippedPage,
                     equipped_x = p.Equipment.equipped_x,
                     equipped_y = p.Equipment.equipped_y,
 
-                    //save the holding slots
-
-
                     //save all the gear
-                    items = items
+                    itemsMap = itemsMap,
 
-                    //save all the clothes/accessories
-                    //p.Clothing.
+                    //save all the clothes/accessories and their states
+                    backpack = p.Clothing.backpack,
+                    bpQuality = p.Clothing.backpackQuality,
+                    glasses = p.Clothing.glasses,
+                    gQuality = p.Clothing.glassesQuality,
+                    hat = p.Clothing.hat,
+                    hQuality = p.Clothing.hatQuality,
+                    mask = p.Clothing.mask,
+                    mQuality = p.clothing.maskQuality,
+                    pants = p.Clothing.pants,
+                    pQuality = p.Clothing.pantsQuality,
+                    shirt = p.Clothing.shirt,
+                    sQuality = p.Clothing.shirtQuality,
+                    vest = p.Clothing.vest,
+                    vQuality = p.Clothing.vestQuality
                 };
             }
 
             public void setInventory(UnturnedPlayer player)
             {
-                //askInventory?
+                Player p = player.Player;
 
-                //equip the item if they had one equipped
-                if(isEquipped)
-                    player.Player.Equipment.equip(equippedPage, equipped_x, equipped_y);
+                //TODO: clear the inventory first? maybe do that somewhere else
+
+                //add clothes
+                p.Clothing.askWearBackpack(backpack, bpQuality, new byte[0]);
+                p.Clothing.askWearGlasses(glasses, gQuality, new byte[0]);
+                p.Clothing.askWearHat(hat, hQuality, new byte[0]);
+                p.Clothing.askWearMask(mask, mQuality, new byte[0]);
+                p.Clothing.askWearPants(pants, pQuality, new byte[0]);
+                p.Clothing.askWearShirt(shirt, sQuality, new byte[0]);
+                p.Clothing.askWearVest(vest, vQuality, new byte[0]);
+
+                foreach (Items items in p.Inventory.Items)
+                    foreach(ItemJar item in itemsMap[items])
+                        items.addItem(item.PositionX, item.PositionY, item.Item);
+
+                p.Equipment.tryEquip(equippedPage, equipped_x, equipped_y);
+
+                //p.Inventory.askInventory(player.CSteamID);
             }
         }
 
         private class PlayerSkills
         {
+            private byte[][] skills;
             public static PlayerSkills getSkills(UnturnedPlayer player)
             {
+                Skill[][] oldSkills = player.Player.Skills.skills;
+                byte[][] newSkills = new byte[oldSkills.Length][];
+
+                for (int i = 0; i < oldSkills.Length; ++i)
+                    for (int j = 0; j < oldSkills[i].Length; ++j)
+                    {
+                        newSkills[i] = new byte[oldSkills[i].Length];
+                        newSkills[i][j] = oldSkills[i][j].level;
+                    }
+
                 return new PlayerSkills
                 {
-
+                    skills = newSkills
                 };
             }
 
             public void setSkills(UnturnedPlayer player)
             {
+                Skill[][] currentSkills = player.Player.Skills.skills;
 
+                for (int i=0; i<currentSkills.Length; ++i)
+                    for (int j = 0; j < currentSkills[i].Length; ++j)
+                        currentSkills[i][j].level = skills[i][j];
+
+                //update the client-side?
             }
         }
     }
