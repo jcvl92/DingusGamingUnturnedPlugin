@@ -10,6 +10,7 @@ namespace DingusGaming.helper
     {
         private Vector3 position;
         private float rotation;
+        private uint experience;
         private PlayerInventory inventory;
         private PlayerSkills skills;
         private PlayerSurvivalStats stats;
@@ -22,12 +23,74 @@ namespace DingusGaming.helper
             state.rotation = player.Rotation;
 
             state.inventory = PlayerInventory.getInventory(player);
-
+            
+            state.experience = player.Experience;
             state.skills = PlayerSkills.getSkills(player);
 
             state.stats = PlayerSurvivalStats.getStats(player);
 
             return state;
+        }
+
+        public static void clearInventory(UnturnedPlayer player)
+        {
+            Player p = player.Player;
+
+            //dequip anything they have equipped
+            p.Equipment.dequip();//TODO: fix this. it leaves pinned visual on character(holstered)
+
+            //remove items
+            foreach (Items items in p.Inventory.Items)
+                for (; items.getItemCount() > 0;)
+                    p.Inventory.removeItem(items.page,
+                        items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
+
+            //remove clothes
+            if (p.Clothing.backpack != 0)
+            {
+                p.Clothing.askWearBackpack(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.glasses != 0)
+            {
+                p.Clothing.askWearGlasses(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.hat != 0)
+            {
+                p.Clothing.askWearHat(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.mask != 0)
+            {
+                p.Clothing.askWearMask(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.pants != 0)
+            {
+                p.Clothing.askWearPants(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.shirt != 0)
+            {
+                p.Clothing.askWearShirt(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+            if (p.Clothing.vest != 0)
+            {
+                p.Clothing.askWearVest(0, 0, new byte[0]);
+                p.Inventory.removeItem(2, 0);
+            }
+        }
+
+        public static void clearStats(UnturnedPlayer player)
+        {
+            player.Hunger = 0;
+            player.Infection = 0;
+            player.Thirst = 0;
+            player.Heal(100);
+            player.Bleeding = false;
+            player.Broken = false;
         }
 
         public void setCompleteState(UnturnedPlayer player)
@@ -50,6 +113,7 @@ namespace DingusGaming.helper
 
         public void setSkills(UnturnedPlayer player)
         {
+            player.Experience = Math.Max(experience, player.Experience);
             skills.setSkills(player);
         }
 
@@ -167,57 +231,6 @@ namespace DingusGaming.helper
                 p.Equipment.tryEquip(equippedPage, equipped_x, equipped_y);
 
                 //p.Inventory.askInventory(player.CSteamID);
-            }
-
-            public void clearInventory(UnturnedPlayer player)
-            {
-                Player p = player.Player;
-
-                //dequip anything they have equipped
-                p.Equipment.dequip();//TODO: fix this. it leaves pinned visual on character(holstered)
-
-                //remove items
-                foreach (Items items in p.Inventory.Items)
-                    for (;items.getItemCount() > 0;)
-                        p.Inventory.removeItem(items.page,
-                            items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
-
-                //remove clothes
-                if (p.Clothing.backpack != 0)
-                {
-                    p.Clothing.askWearBackpack(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.glasses!= 0)
-                {
-                    p.Clothing.askWearGlasses(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.hat != 0)
-                {
-                    p.Clothing.askWearHat(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.mask != 0)
-                {
-                    p.Clothing.askWearMask(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.pants != 0)
-                {
-                    p.Clothing.askWearPants(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.shirt != 0)
-                {
-                    p.Clothing.askWearShirt(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
-                if (p.Clothing.vest != 0)
-                {
-                    p.Clothing.askWearVest(0, 0, new byte[0]);
-                    p.Inventory.removeItem(2, 0);
-                }
             }
         }
 

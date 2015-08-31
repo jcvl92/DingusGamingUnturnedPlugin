@@ -73,7 +73,10 @@ namespace DingusGaming.Party
             {
                 if (party.isMember(player))
                 {
-                    caller.Teleport(player);
+                    if (!player.Dead)
+                        caller.Teleport(player);
+                    else
+                        DGPlugin.messagePlayer(caller, player.CharacterName + " is dead. You can't teleport to dead players.");
                 }
                 else
                     DGPlugin.messagePlayer(caller, player.CharacterName + " is not in your party. You can only teleport to party members.");

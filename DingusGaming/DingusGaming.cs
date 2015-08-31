@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
@@ -45,18 +46,17 @@ namespace DingusGaming
         {
             if(cause == EDeathCause.GUN || cause == EDeathCause.MELEE || cause == EDeathCause.PUNCH || cause == EDeathCause.ROADKILL)
                 return getPlayer(murderer);
-            else
-                return null;
+            return null;
         }
 
         public static void disableCommands()
         {
-
+            //TODO: implement this
         }
 
         public static void enableCommands()
         {
-
+            //TODO: implement this
         }
 
         public static void messagePlayer(UnturnedPlayer player, string message)
