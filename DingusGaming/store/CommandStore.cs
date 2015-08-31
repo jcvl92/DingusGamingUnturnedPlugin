@@ -9,7 +9,7 @@ namespace DingusGaming.Store
         private const string NAME = "store";
         private const string HELP = "Access the store.";
         private const string SYNTAX = "(<storeNumber>)";
-        private readonly List<string> ALIASES = new List<string> { "viewstore", "s" };
+        private readonly List<string> ALIASES = new List<string> { "viewstore", "s", "shop" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
         private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();

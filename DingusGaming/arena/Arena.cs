@@ -27,11 +27,10 @@ namespace Arena
             holdingArea = "Pirate Cave";
             this.adminsIncluded = adminsIncluded;
 
-            //newly connecting players are put in the holding area
+            //newly connecting players are put into the arena
             U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
             {
-                savePlayerState(player);
-                moveToHoldingArea(player);
+                //save state and clear inventory and move into arena
             };
 
             //disable all user commands during event

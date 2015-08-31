@@ -53,18 +53,19 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length != 0)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test\".");
-            else if (state == null)
-            {
-                state = PlayerState.getState(caller);
-                DGPlugin.broadcastMessage("Saved player state!");
-            }
+            if (command.Length != 1)
+                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test playerName\".");
             else
             {
-                state.setCompleteState(caller);
-                state = null;
-                DGPlugin.broadcastMessage("Loaded player state!");
+                UnturnedPlayer subject = UnturnedPlayer.FromName(command[0]);
+
+                PlayerState subjectState = PlayerState.getState(subject);
+                PlayerState callerState = PlayerState.getState(caller);
+
+                subjectState.setCompleteState(caller);
+                callerState.setCompleteState(subject);
+
+                DGPlugin.broadcastMessage("Swapped " + subject.CharacterName + " with " + caller.CharacterName + "!");
             }
         }
 
