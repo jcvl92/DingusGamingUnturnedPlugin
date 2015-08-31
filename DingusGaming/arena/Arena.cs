@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
@@ -7,23 +7,28 @@ using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming.Arena
 {
     public class ArenaEvent
     {
+        public static ArenaEvent currentEvent;
         private readonly bool adminsIncluded;
-        private readonly ConcurrentDictionary<CSteamID, int> scores = new ConcurrentDictionary<CSteamID, int>();
+        private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>();
         private readonly ushort startItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
         private readonly Timer timer;
-        private string location;
+        private readonly Vector3 location;
+        private readonly float rotation;
 
-        public ArenaEvent(string location, ushort eventLength = 120, ushort startItem = 0,
+        public ArenaEvent(Vector3 location, float rotation, ushort eventLength = 120, ushort startItem = 0,
             byte dropItem = 0, bool adminsIncluded = true)
         {
             this.adminsIncluded = adminsIncluded;
             this.startItem = startItem;
+            this.location = location;
+            this.rotation = rotation;
 
             //disable all user commands during event
             DGPlugin.disableCommands();
@@ -50,10 +55,14 @@ namespace DingusGaming.Arena
             }
 
             //respawn player
-            player.Player.PlayerLife.askRespawn(player.CSteamID, false);
-
-            //teleport player to location
-            player.Teleport(location);
+            var respawnTimer = new Timer(3000);
+            respawnTimer.AutoReset = false;
+            respawnTimer.Elapsed += delegate
+            {
+                player.Player.life.sendRespawn(false);
+                player.Player.life.askRespawn(player.CSteamID, false);
+            };
+            respawnTimer.Start();
         }
 
         public void beginArena()
@@ -68,7 +77,7 @@ namespace DingusGaming.Arena
                     continue;
 
                 //add player to scores list
-                scores.TryAdd(player.CSteamID, 0);
+                scores.Add(player.CSteamID, 0);
 
                 //save player state
                 states.Add(player.CSteamID, PlayerState.getState(DGPlugin.getPlayer(player.CSteamID)));
@@ -90,7 +99,7 @@ namespace DingusGaming.Arena
                 }
 
                 //teleport player to arena location
-                player.Teleport(location);
+                player.Teleport(location, rotation);
             }
 
             //TODO: drop starting items on location
@@ -99,13 +108,14 @@ namespace DingusGaming.Arena
             UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
 
             //start 10 second timer that will remove vanish-mode
-            var vanishTimer = new Timer(10000);
+            var vanishTimer = new Timer(5000);
             vanishTimer.AutoReset = false;
             vanishTimer.Elapsed += delegate
             {
                 foreach (var score in scores)
                     DGPlugin.getPlayer(score.Key).Features.VanishMode = false;
             };
+            vanishTimer.Start();
 
             //start event timer
             timer.Start();
@@ -128,7 +138,7 @@ namespace DingusGaming.Arena
             foreach (var score in scores)
                 DGPlugin.messagePlayer(DGPlugin.getPlayer(score.Key),
                     "Arena has finished. You killed " + score.Value + " people! You earned place " +
-                    (list.FindIndex(x => x == score.Value) + 1) + "/" + scores.Count + "!");
+                    (list.FindIndex(x => x == score.Value)+1) + "/" + scores.Count + "!");
 
             //re-enable commands
             DGPlugin.enableCommands();

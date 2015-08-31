@@ -7,8 +7,8 @@ namespace DingusGaming.Arena
     public class CommandArena : IRocketCommand
     {
         private const string NAME = "arena";
-        private const string HELP = "Start an arena event.";
-        private const string SYNTAX = "<location>";
+        private const string HELP = "Start/set the location for an arena event.";
+        private const string SYNTAX = "<start|set>";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
 
@@ -32,7 +32,7 @@ namespace DingusGaming.Arena
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases { get; } = new List<string> {"startarena", "beginarena"};
+        public List<string> Aliases { get; } = new List<string>();
 
         public bool AllowFromConsole
         {
@@ -48,16 +48,17 @@ namespace DingusGaming.Arena
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length == 0)
+            if (command.Length != 1 || !(command[0].Equals("set") || command[0].Equals("start")))
             {
-                ArenaEvent ae = null; //new ArenaEvent("Oulton's Isle", startItem: 1036, eventLength: 30);
-                ae.beginArena();
+                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"arena set\" or \"arena start\".");
             }
             else
             {
-                //TODO: check for valid location name before creating arena and add specification of startItem
-                ArenaEvent ae = null; //new ArenaEvent(string.Join(" ", command), startItem: 1036);
-                ae.beginArena();
+                //TODO: add specification of drop item/start item
+                if(command[0].Equals("set"))
+                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 519/*1036*/, eventLength: 30);
+                else
+                    ArenaEvent.currentEvent.beginArena();
             }
         }
     }
