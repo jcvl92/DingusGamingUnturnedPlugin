@@ -1,4 +1,3 @@
-using Steamworks;
 using System.Collections;
 using System.Collections.Generic;
 using DingusGaming.Party;
@@ -6,13 +5,14 @@ using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Steamworks;
 
 namespace DingusGaming.Store
 {
     public class Currency
     {
-        static readonly int startingAmount = 50;
-        static Dictionary<string, int> balances;
+        private static readonly int startingAmount = 50;
+        private static Dictionary<string, int> balances;
 
         public static void init()
         {
@@ -25,7 +25,7 @@ namespace DingusGaming.Store
         private static void loadBalances()
         {
             // TODO: Refactor this to service
-            List<DictionaryEntry> temp = DGPlugin.readFromFile<List<DictionaryEntry>>("balances.xml");
+            var temp = DGPlugin.readFromFile<List<DictionaryEntry>>("balances.xml");
             if (temp != null)
                 balances = DGPlugin.convertToDictionary<string, int>(temp);
             else
@@ -40,34 +40,31 @@ namespace DingusGaming.Store
 
         private static void registerOnPlayerDeath()
         {
-            UnturnedPlayerEvents.OnPlayerDeath += delegate (UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
-            {
-                // Grant the killing user 5 credits + 10% of their victim's credits
-                UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
-                if (killer != null && (Parties.getParty(player)==null || !Parties.getParty(player).isMember(killer)))
+            UnturnedPlayerEvents.OnPlayerDeath +=
+                delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
                 {
-                    int amount = 10;//5 + getBalance(player)/10;
-                    changeBalance(killer, amount);
-                    DGPlugin.messagePlayer(killer, "You earned $" + amount + " from killing " + player.CharacterName + ".");
-                    DGPlugin.messagePlayer(player, killer.CharacterName+" got $" + amount + " from killing you.");
-                }
-            };
+                    // Grant the killing user 5 credits + 10% of their victim's credits
+                    var killer = DGPlugin.getKiller(player, cause, murderer);
+                    if (killer != null &&
+                        (Parties.getParty(player) == null || !Parties.getParty(player).isMember(killer)))
+                    {
+                        var amount = 10; //5 + getBalance(player)/10;
+                        changeBalance(killer, amount);
+                        DGPlugin.messagePlayer(killer,
+                            "You earned $" + amount + " from killing " + player.CharacterName + ".");
+                        DGPlugin.messagePlayer(player, killer.CharacterName + " got $" + amount + " from killing you.");
+                    }
+                };
         }
 
         private static void registerOnServerShutdown()
         {
-            Steam.OnServerShutdown += delegate ()
-            {
-                saveBalances();
-            };
+            Steam.OnServerShutdown += delegate { saveBalances(); };
         }
 
         private static void registerPlayerOnConnected()
         {
-            U.Events.OnPlayerConnected += delegate (UnturnedPlayer player)
-            {
-                addPlayer(player);
-            };
+            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player) { addPlayer(player); };
         }
 
         public static void addPlayer(UnturnedPlayer player)

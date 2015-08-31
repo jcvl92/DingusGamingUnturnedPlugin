@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using DingusGaming.helper;
-using Steamworks;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Steamworks;
 
 namespace DingusGaming.Arena
 {
     public class ArenaEvent
     {
-        private Timer timer;
-        private bool adminsIncluded;
-        private string location;
-        private readonly ushort startItem;
+        private readonly bool adminsIncluded;
         private readonly ConcurrentDictionary<CSteamID, int> scores = new ConcurrentDictionary<CSteamID, int>();
+        private readonly ushort startItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
+        private readonly Timer timer;
+        private string location;
 
         public ArenaEvent(string location, ushort eventLength = 120, ushort startItem = 0,
             byte dropItem = 0, bool adminsIncluded = true)
@@ -29,19 +29,16 @@ namespace DingusGaming.Arena
             DGPlugin.disableCommands();
 
             //create the timer to stop the event when the max time has been reached
-            timer = new Timer((double)eventLength * 1000);
+            timer = new Timer((double) eventLength*1000);
             timer.AutoReset = false;
-            timer.Elapsed += delegate (object source, ElapsedEventArgs e)
-            {
-                stopArena();
-            };
+            timer.Elapsed += delegate { stopArena(); };
         }
 
         ~ArenaEvent()
         {
             timer.Close();
         }
-        
+
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             if (DGPlugin.getKiller(player, cause, murderer) != null)
@@ -62,10 +59,10 @@ namespace DingusGaming.Arena
         public void beginArena()
         {
             //remember to check the adminsIncluded flag
-            foreach (SDG.Unturned.SteamPlayer plr in SDG.Unturned.Steam.Players)
+            foreach (var plr in Steam.Players)
             {
-                UnturnedPlayer player = DGPlugin.getPlayer(plr.playerID.CSteamID);
-                
+                var player = DGPlugin.getPlayer(plr.playerID.CSteamID);
+
                 //skip admins
                 if (!player.IsAdmin && adminsIncluded)
                     continue;
@@ -102,11 +99,11 @@ namespace DingusGaming.Arena
             UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
 
             //start 10 second timer that will remove vanish-mode
-            Timer vanishTimer = new Timer(10000);
+            var vanishTimer = new Timer(10000);
             vanishTimer.AutoReset = false;
-            vanishTimer.Elapsed += delegate (object source, ElapsedEventArgs e)
+            vanishTimer.Elapsed += delegate
             {
-                foreach (KeyValuePair<CSteamID, int> score in scores)
+                foreach (var score in scores)
                     DGPlugin.getPlayer(score.Key).Features.VanishMode = false;
             };
 
@@ -120,16 +117,18 @@ namespace DingusGaming.Arena
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
 
             //restore the player states
-            foreach (KeyValuePair<CSteamID, PlayerState> state in states)
+            foreach (var state in states)
             {
                 state.Value.setCompleteState(DGPlugin.getPlayer(state.Key));
             }
 
             //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
-            List<int> list = scores.Values.ToList();
+            var list = scores.Values.ToList();
             list.Sort();
-            foreach (KeyValuePair<CSteamID, int> score in scores)
-                DGPlugin.messagePlayer(DGPlugin.getPlayer(score.Key), "Arena has finished. You killed "+score.Value+" people! You earned place "+(list.FindIndex(x => x==score.Value)+1)+"/"+scores.Count+"!");
+            foreach (var score in scores)
+                DGPlugin.messagePlayer(DGPlugin.getPlayer(score.Key),
+                    "Arena has finished. You killed " + score.Value + " people! You earned place " +
+                    (list.FindIndex(x => x == score.Value) + 1) + "/" + scores.Count + "!");
 
             //re-enable commands
             DGPlugin.enableCommands();

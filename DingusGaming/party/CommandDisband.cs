@@ -1,5 +1,5 @@
-using Rocket.API;
 using System.Collections.Generic;
+using Rocket.API;
 using Rocket.Unturned.Player;
 
 namespace DingusGaming.Party
@@ -9,10 +9,8 @@ namespace DingusGaming.Party
         private const string NAME = "disband";
         private const string HELP = "Disband your party.";
         private const string SYNTAX = "";
-        private readonly List<string> ALIASES = new List<string> { "disbandparty" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -34,24 +32,23 @@ namespace DingusGaming.Party
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases
-        {
-            get { return ALIASES; }
-        }
+        public List<string> Aliases { get; } = new List<string> {"disbandparty"};
 
         public bool AllowFromConsole
         {
             get { return ALLOW_FROM_CONSOLE; }
         }
 
-        public List<string> Permissions
+        public List<string> Permissions { get; } = new List<string>();
+
+        public void Execute(IRocketPlayer caller, string[] command)
         {
-            get { return REQUIRED_PERMISSIONS; }
+            Execute((UnturnedPlayer) caller, command);
         }
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            Party party = Parties.getParty(caller);
+            var party = Parties.getParty(caller);
             if (party != null)
             {
                 if (party.isLeader(caller))
@@ -61,16 +58,12 @@ namespace DingusGaming.Party
                 }
                 else
                 {
-                    DGPlugin.messagePlayer(caller, "Only the party leader(" + party.getLeader().CharacterName + ") can disband that party.");
+                    DGPlugin.messagePlayer(caller,
+                        "Only the party leader(" + party.getLeader().CharacterName + ") can disband that party.");
                 }
             }
             else
                 DGPlugin.messagePlayer(caller, "You are not in a party.");
-        }
-
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
         }
     }
 }

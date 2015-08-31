@@ -1,5 +1,5 @@
-using Rocket.API;
 using System.Collections.Generic;
+using Rocket.API;
 using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
@@ -9,10 +9,8 @@ namespace DingusGaming.Store
         private const string NAME = "store";
         private const string HELP = "Access the store.";
         private const string SYNTAX = "(<storeNumber>)";
-        private readonly List<string> ALIASES = new List<string> { "viewstore", "s", "shop" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -34,19 +32,18 @@ namespace DingusGaming.Store
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases
-        {
-            get { return ALIASES; }
-        }
+        public List<string> Aliases { get; } = new List<string> {"viewstore", "s", "shop"};
 
         public bool AllowFromConsole
         {
             get { return ALLOW_FROM_CONSOLE; }
         }
 
-        public List<string> Permissions
+        public List<string> Permissions { get; } = new List<string>();
+
+        public void Execute(IRocketPlayer caller, string[] command)
         {
-            get { return REQUIRED_PERMISSIONS; }
+            Execute((UnturnedPlayer) caller, command);
         }
 
         public void Execute(UnturnedPlayer caller, string[] command)
@@ -62,12 +59,8 @@ namespace DingusGaming.Store
                     DGPlugin.messagePlayer(caller, "Invalid storeNumber.");
             }
             else
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/store\" or \"/store storeNumber\".");
-        }
-
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
+                DGPlugin.messagePlayer(caller,
+                    "Invalid amount of parameters. Format is \"/store\" or \"/store storeNumber\".");
         }
     }
 }

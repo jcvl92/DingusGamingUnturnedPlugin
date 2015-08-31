@@ -1,15 +1,15 @@
-using Steamworks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Rocket.Unturned.Player;
+using Steamworks;
 
 namespace DingusGaming.Party
 {
     public class Party
     {
+        private readonly List<CSteamID> members;
         private CSteamID leader;
-        private List<CSteamID> members;
 
         public Party(UnturnedPlayer leader)
         {
@@ -40,11 +40,11 @@ namespace DingusGaming.Party
 
         public string getInfo()
         {
-            string info = "";
+            var info = "";
 
-            foreach (CSteamID member in members)
+            foreach (var member in members)
             {
-                UnturnedPlayer player = DGPlugin.getPlayer(member);
+                var player = DGPlugin.getPlayer(member);
                 info += player.CharacterName + (isLeader(player) ? "[L](" : "(") +
                         (player.Dead ? "dead" : player.Health + "/100") + "), ";
             }
@@ -59,7 +59,7 @@ namespace DingusGaming.Party
 
         public void tellParty(string text)
         {
-            foreach (CSteamID member in members)
+            foreach (var member in members)
                 DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
         }
 
@@ -133,7 +133,8 @@ namespace DingusGaming.Party
                 }
                 else
                 {
-                    DGPlugin.messagePlayer(caller, "Only the party leader(" + DGPlugin.getPlayer(leader).CharacterName + ") switch leaders.");
+                    DGPlugin.messagePlayer(caller,
+                        "Only the party leader(" + DGPlugin.getPlayer(leader).CharacterName + ") switch leaders.");
                 }
             }
             else

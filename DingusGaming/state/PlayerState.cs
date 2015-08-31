@@ -8,22 +8,22 @@ namespace DingusGaming.helper
 {
     internal class PlayerState
     {
-        private Vector3 position;
-        private float rotation;
         private uint experience;
         private PlayerInventory inventory;
+        private Vector3 position;
+        private float rotation;
         private PlayerSkills skills;
         private PlayerSurvivalStats stats;
 
         public static PlayerState getState(UnturnedPlayer player)
         {
-            PlayerState state = new PlayerState();
+            var state = new PlayerState();
 
             state.position = player.Position;
             state.rotation = player.Rotation;
 
             state.inventory = PlayerInventory.getInventory(player);
-            
+
             state.experience = player.Experience;
             state.skills = PlayerSkills.getSkills(player);
 
@@ -34,13 +34,13 @@ namespace DingusGaming.helper
 
         public static void clearInventory(UnturnedPlayer player)
         {
-            Player p = player.Player;
+            var p = player.Player;
 
             //dequip anything they have equipped
-            p.Equipment.dequip();//TODO: fix this. it leaves pinned visual on character(holstered)
+            p.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
 
             //remove items
-            foreach (Items items in p.Inventory.Items)
+            foreach (var items in p.Inventory.Items)
                 for (; items.getItemCount() > 0;)
                     p.Inventory.removeItem(items.page,
                         items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
@@ -142,15 +142,15 @@ namespace DingusGaming.helper
 
             public void setStats(UnturnedPlayer player)
             {
-                player.Hunger = (byte)(100-hunger);
-                player.Infection = (byte)(100 -infection);
-                player.Thirst = (byte)(100 -thirst);
+                player.Hunger = (byte) (100 - hunger);
+                player.Infection = (byte) (100 - infection);
+                player.Thirst = (byte) (100 - thirst);
 
-                int healthDiff = health - player.Health;
+                var healthDiff = health - player.Health;
                 if (healthDiff > 0)
-                    player.Heal((byte)healthDiff);
+                    player.Heal((byte) healthDiff);
                 else if (healthDiff < 0)
-                    player.Damage((byte)-healthDiff, player.Position, EDeathCause.KILL, ELimb.SPINE, player.CSteamID);
+                    player.Damage((byte) -healthDiff, player.Position, EDeathCause.KILL, ELimb.SPINE, player.CSteamID);
 
                 player.Bleeding = bleeding;
                 player.Broken = broken;
@@ -159,23 +159,33 @@ namespace DingusGaming.helper
 
         private class PlayerInventory
         {
-            private byte equippedPage, equipped_x, equipped_y,
-                bpQuality, gQuality, hQuality, mQuality, pQuality, sQuality, vQuality;
             private ushort backpack, glasses, hat, mask, pants, shirt, vest;
+
+            private byte equippedPage,
+                equipped_x,
+                equipped_y,
+                bpQuality,
+                gQuality,
+                hQuality,
+                mQuality,
+                pQuality,
+                sQuality,
+                vQuality;
+
             private Dictionary<byte, List<ItemJar>> itemsMap;
 
             public static PlayerInventory getInventory(UnturnedPlayer player)
             {
-                Player p = player.Player;
+                var p = player.Player;
 
                 //get the items
-                Dictionary<byte, List<ItemJar>> itemsMap = new Dictionary<byte, List<ItemJar>>();
-                foreach (Items items in p.Inventory.Items)
+                var itemsMap = new Dictionary<byte, List<ItemJar>>();
+                foreach (var items in p.Inventory.Items)
                 {
-                    List<ItemJar> itemList = new List<ItemJar>();
+                    var itemList = new List<ItemJar>();
                     for (byte i = 0; i < items.getItemCount(); ++i)
                     {
-                        ItemJar itemJar = items.getItem(i);
+                        var itemJar = items.getItem(i);
                         itemList.Add(new ItemJar(itemJar.PositionX, itemJar.PositionY, itemJar.item));
                     }
                     itemsMap.Add(items.page, itemList);
@@ -211,8 +221,8 @@ namespace DingusGaming.helper
 
             public void setInventory(UnturnedPlayer player)
             {
-                Player p = player.Player;
-                
+                var p = player.Player;
+
                 clearInventory(player);
 
                 //add clothes - states are blank because I don't think they are needed
@@ -224,8 +234,8 @@ namespace DingusGaming.helper
                 p.Clothing.askWearShirt(shirt, sQuality, new byte[0]);
                 p.Clothing.askWearVest(vest, vQuality, new byte[0]);
 
-                foreach (Items items in p.Inventory.Items)
-                    foreach(ItemJar item in itemsMap[items.page])
+                foreach (var items in p.Inventory.Items)
+                    foreach (var item in itemsMap[items.page])
                         items.addItem(item.PositionX, item.PositionY, item.Item);
 
                 p.Equipment.tryEquip(equippedPage, equipped_x, equipped_y);
@@ -240,13 +250,13 @@ namespace DingusGaming.helper
 
             public static PlayerSkills getSkills(UnturnedPlayer player)
             {
-                Skill[][] oldSkills = player.Player.Skills.skills;
-                byte[][] newSkills = new byte[oldSkills.Length][];
+                var oldSkills = player.Player.Skills.skills;
+                var newSkills = new byte[oldSkills.Length][];
 
-                for (int i = 0; i < oldSkills.Length; ++i)
+                for (var i = 0; i < oldSkills.Length; ++i)
                 {
                     newSkills[i] = new byte[oldSkills[i].Length];
-                    for (int j = 0; j < oldSkills[i].Length; ++j)
+                    for (var j = 0; j < oldSkills[i].Length; ++j)
                         newSkills[i][j] = oldSkills[i][j].level;
                 }
 
@@ -258,10 +268,10 @@ namespace DingusGaming.helper
 
             public void setSkills(UnturnedPlayer player)
             {
-                Skill[][] currentSkills = player.Player.Skills.skills;
+                var currentSkills = player.Player.Skills.skills;
 
-                for (int i=0; i<currentSkills.Length; ++i)
-                    for (int j = 0; j < currentSkills[i].Length; ++j)
+                for (var i = 0; i < currentSkills.Length; ++i)
+                    for (var j = 0; j < currentSkills[i].Length; ++j)
                         currentSkills[i][j].level = Math.Max(skills[i][j], currentSkills[i][j].level);
 
                 //update the client-side

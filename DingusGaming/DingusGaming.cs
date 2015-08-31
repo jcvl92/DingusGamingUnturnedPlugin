@@ -1,17 +1,17 @@
-﻿using Steamworks;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using DingusGaming.Party;
+using DingusGaming.Store;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
-using Rocket.Unturned;
 using Rocket.Unturned.Chat;
-using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Steamworks;
 
 namespace DingusGaming
 {
@@ -22,9 +22,9 @@ namespace DingusGaming
         protected override void Load()
         {
             //Initialize components
-            Store.Currency.init();
-            Store.Stores.init();
-            Party.Parties.init();
+            Currency.init();
+            Stores.init();
+            Parties.init();
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
         }
@@ -44,7 +44,8 @@ namespace DingusGaming
 
         public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
         {
-            if(cause == EDeathCause.GUN || cause == EDeathCause.MELEE || cause == EDeathCause.PUNCH || cause == EDeathCause.ROADKILL)
+            if (cause == EDeathCause.GUN || cause == EDeathCause.MELEE || cause == EDeathCause.PUNCH ||
+                cause == EDeathCause.ROADKILL)
                 return getPlayer(murderer);
             return null;
         }
@@ -61,31 +62,31 @@ namespace DingusGaming
 
         public static void messagePlayer(UnturnedPlayer player, string message)
         {
-            List<string> strs = UnturnedChat.wrapMessage(message);
-            foreach (string str in strs)
+            var strs = UnturnedChat.wrapMessage(message);
+            foreach (var str in strs)
                 UnturnedChat.Say(player, str);
         }
 
         public static void broadcastMessage(string text)
         {
-            List<string> strs = UnturnedChat.wrapMessage(text);
-            foreach (string str in strs)
+            var strs = UnturnedChat.wrapMessage(text);
+            foreach (var str in strs)
                 UnturnedChat.Say(str);
         }
 
         public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)
         {
-            List<DictionaryEntry> entries = new List<DictionaryEntry>(dictionary.Count);
-            foreach (object key in dictionary.Keys)
+            var entries = new List<DictionaryEntry>(dictionary.Count);
+            foreach (var key in dictionary.Keys)
                 entries.Add(new DictionaryEntry(key, dictionary[key]));
             return entries;
         }
 
         public static Dictionary<TKey, TValue> convertToDictionary<TKey, TValue>(List<DictionaryEntry> entries)
         {
-            Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
-            foreach (DictionaryEntry entry in entries)
-                dictionary[(TKey)entry.Key] = (TValue)entry.Value;
+            var dictionary = new Dictionary<TKey, TValue>();
+            foreach (var entry in entries)
+                dictionary[(TKey) entry.Key] = (TValue) entry.Value;
             return dictionary;
         }
 
@@ -111,7 +112,7 @@ namespace DingusGaming
 
         public static void writeToFile(object obj, string fileName)
         {
-            XmlSerializer serializer = new XmlSerializer(obj.GetType(), "");
+            var serializer = new XmlSerializer(obj.GetType(), "");
             XmlTextWriter xmlTextWriter = null;
 
             try
@@ -128,7 +129,7 @@ namespace DingusGaming
 
         public static T readFromFile<T>(string fileName)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof (T));
             XmlTextReader xmlTextReader = null;
 
             try
@@ -136,7 +137,7 @@ namespace DingusGaming
                 xmlTextReader = new XmlTextReader("DGPLugin_" + fileName);
 
                 if (serializer.CanDeserialize(xmlTextReader))
-                    return (T)serializer.Deserialize(xmlTextReader);
+                    return (T) serializer.Deserialize(xmlTextReader);
                 return default(T);
             }
             catch (FileNotFoundException)

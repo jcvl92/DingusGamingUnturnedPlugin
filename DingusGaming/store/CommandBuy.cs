@@ -1,5 +1,5 @@
-using Rocket.API;
 using System.Collections.Generic;
+using Rocket.API;
 using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
@@ -9,10 +9,8 @@ namespace DingusGaming.Store
         private const string NAME = "buy";
         private const string HELP = "Purchase an item from the store.";
         private const string SYNTAX = "<itemID> (<quantity>)";
-        private readonly List<string> ALIASES = new List<string> { "purchase", "b", "buyitem", "purchaseitem" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -34,25 +32,25 @@ namespace DingusGaming.Store
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases
-        {
-            get { return ALIASES; }
-        }
+        public List<string> Aliases { get; } = new List<string> {"purchase", "b", "buyitem", "purchaseitem"};
 
         public bool AllowFromConsole
         {
             get { return ALLOW_FROM_CONSOLE; }
         }
 
-        public List<string> Permissions
+        public List<string> Permissions { get; } = new List<string>();
+
+        public void Execute(IRocketPlayer caller, string[] command)
         {
-            get { return REQUIRED_PERMISSIONS; }
+            Execute((UnturnedPlayer) caller, command);
         }
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             if (command.Length == 0 || command.Length > 2)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buy itemID\" or \"/buy itemID quantity\".");
+                DGPlugin.messagePlayer(caller,
+                    "Invalid amount of parameters. Format is \"/buy itemID\" or \"/buy itemID quantity\".");
             else
             {
                 ushort itemID;
@@ -65,11 +63,6 @@ namespace DingusGaming.Store
                 else
                     Stores.purchase(caller, itemID, quantity);
             }
-        }
-
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
         }
     }
 }

@@ -1,6 +1,6 @@
-using Rocket.API;
 using System.Collections.Generic;
 using System.Linq;
+using Rocket.API;
 using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
@@ -10,10 +10,8 @@ namespace DingusGaming.Store
         private const string NAME = "transfer";
         private const string HELP = "Transfer credits to another player";
         private const string SYNTAX = "<amount> <player name>";
-        private readonly List<string> ALIASES = new List<string> { "gift", "giftcredits", "transfercredits", "sendcredits" };
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private readonly List<string> REQUIRED_PERMISSIONS = new List<string>();
 
         public bool RunFromConsole
         {
@@ -35,25 +33,31 @@ namespace DingusGaming.Store
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases
+        public List<string> Aliases { get; } = new List<string>
         {
-            get { return ALIASES; }
-        }
+            "gift",
+            "giftcredits",
+            "transfercredits",
+            "sendcredits"
+        };
 
         public bool AllowFromConsole
         {
             get { return ALLOW_FROM_CONSOLE; }
         }
 
-        public List<string> Permissions
+        public List<string> Permissions { get; } = new List<string>();
+
+        public void Execute(IRocketPlayer caller, string[] command)
         {
-            get { return REQUIRED_PERMISSIONS; }
+            Execute((UnturnedPlayer) caller, command);
         }
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
             if (command.Length < 2)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/transfer amount playerName\".");
+                DGPlugin.messagePlayer(caller,
+                    "Invalid amount of parameters. Format is \"/transfer amount playerName\".");
             else
             {
                 int amount;
@@ -61,7 +65,7 @@ namespace DingusGaming.Store
                     DGPlugin.messagePlayer(caller, "Invalid amount.");
                 else
                 {
-                    string playerName = string.Join(" ", command.Skip(1).ToArray());
+                    var playerName = string.Join(" ", command.Skip(1).ToArray());
                     UnturnedPlayer player;
                     if ((player = DGPlugin.getPlayer(playerName)) == null)
                         DGPlugin.messagePlayer(caller, "Failed to find player named \"" + playerName + "\"");
@@ -82,11 +86,6 @@ namespace DingusGaming.Store
                     }
                 }
             }
-        }
-
-        public void Execute(IRocketPlayer caller, string[] command)
-        {
-            Execute((UnturnedPlayer)caller, command);
         }
     }
 }
