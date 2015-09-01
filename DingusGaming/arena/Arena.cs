@@ -46,23 +46,17 @@ namespace DingusGaming.Arena
 
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
-            if (DGPlugin.getKiller(player, cause, murderer) != null)
-            {
-                murderer = DGPlugin.getKiller(player, cause, murderer).CSteamID;
-
-                //update score of killing player
+            murderer = DGPlugin.getKiller(player, cause, murderer).CSteamID;
+            //update score of killing player
+            if (murderer != null)
                 scores[murderer]++;
-            }
 
-            //respawn player
-            var respawnTimer = new Timer(3000);
-            respawnTimer.AutoReset = false;
-            respawnTimer.Elapsed += delegate
-            {
-                player.Player.life.sendRespawn(false);
-                player.Player.life.askRespawn(player.CSteamID, false);
-            };
-            respawnTimer.Start();
+            //clear their inventory so that they don't drop anything
+            PlayerState.clearInventory(player);
+
+            //respawn player and teleport them back
+            DGPlugin.respawnPlayer(player);
+            player.Teleport(location);
         }
 
         public void beginArena()
@@ -129,6 +123,9 @@ namespace DingusGaming.Arena
             //restore the player states
             foreach (var state in states)
             {
+                if(player.Player.life.isDead())
+                    DGPlugin.respawnPlayer(player);
+
                 state.Value.setCompleteState(DGPlugin.getPlayer(state.Key));
             }
 
@@ -137,11 +134,18 @@ namespace DingusGaming.Arena
             list.Sort();
             foreach (var score in scores)
                 DGPlugin.messagePlayer(DGPlugin.getPlayer(score.Key),
-                    "Arena has finished. You killed " + score.Value + " people! You earned place " +
-                    (list.FindIndex(x => x == score.Value)+1) + "/" + scores.Count + "!");
+                    "Arena has finished. You killed " + score.Value + " people! You earned place " + getPlace(score.Value) + "/" + scores.Count + "!");
 
             //re-enable commands
             DGPlugin.enableCommands();
+        }
+
+        private int getPlace(int score)
+        {
+            for(int i=0; i<scores.Count; ++i)
+                if(scores[i] == score)
+                    return i+1;
+            return -1;
         }
     }
 }

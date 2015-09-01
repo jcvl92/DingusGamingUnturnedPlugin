@@ -60,6 +60,16 @@ namespace DingusGaming
             //TODO: implement this
         }
 
+        public static void respawnPlayer(UnturnedPlayer player)
+        {
+            //zero their last respawn time in order to circumvent the timer(using reflection)
+            typeof(PlayerLife).GetField("lastRespawn", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(player.Player.life, 0);
+
+            //respawn them
+            player.Player.life.sendRespawn(false);
+            player.Player.life.askRespawn(player.CSteamID, false);
+        }
+
         public static void messagePlayer(UnturnedPlayer player, string message)
         {
             var strs = UnturnedChat.wrapMessage(message);
