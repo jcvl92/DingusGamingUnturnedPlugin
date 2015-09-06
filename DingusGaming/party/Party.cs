@@ -66,7 +66,7 @@ namespace DingusGaming.Party
         public void tellParty(string text, UnturnedPlayer skipPlayer)
         {
             foreach (var member in members)
-                if(member.Equals(skipPlayer.CSteamID))
+                if(!member.Equals(skipPlayer.CSteamID))
                     DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
         }
 

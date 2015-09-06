@@ -45,7 +45,7 @@ namespace DingusGaming
             Timer saveTimer = new Timer(5*60*1000);
             saveTimer.Elapsed += delegate
             {
-                Steam.OnServerShutdown.Invoke();
+                Currency.saveBalances();
                 Logger.LogWarning("DGPlugin state saved.");
             };
             saveTimer.Start();
@@ -54,7 +54,8 @@ namespace DingusGaming
         protected override void Unload()
         {
             //is called by Rocket before shutting down
-            Steam.OnServerShutdown.Invoke();
+            //Steam.OnServerShutdown.Invoke();
+            Currency.saveBalances();
         }
 
         public void FixedUpdate()

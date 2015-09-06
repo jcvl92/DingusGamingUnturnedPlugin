@@ -37,7 +37,7 @@ namespace DingusGaming.Store
                 balances = new Dictionary<string, int>();
         }
 
-        private static void saveBalances()
+        public static void saveBalances()
         {
             // TODO: Refactor this to service
             DGPlugin.writeToFile(DGPlugin.convertFromDictionary(balances), "balances.xml");
@@ -79,7 +79,7 @@ namespace DingusGaming.Store
 
         public static int valueOfPlayer(UnturnedPlayer player)
         {
-            int minutesAlive = (int) (Time.realtimeSinceStartup-player.Player.PlayerLife.lastRespawn);
+            int minutesAlive = (int) (Time.realtimeSinceStartup-player.Player.PlayerLife.lastRespawn)/60;
             int playersKilledSinceSpawn = 0;
 
             if (killsSinceSpawn.ContainsKey(player.CSteamID))

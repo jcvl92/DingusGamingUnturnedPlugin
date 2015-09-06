@@ -36,8 +36,13 @@ namespace DingusGaming.Party
                             getParty(player)?.tellParty(player.CharacterName + " has died!");
                         else
                         {
-                            getParty(player)?.tellParty(player.CharacterName + " has been killed by " + killer.CharacterName + "!");
-                            getParty(killer)?.tellParty(killer.CharacterName + " has killed " + player.CharacterName + "!", killer);
+                            if (getParty(player) != null && getParty(killer) != null && getParty(player).Equals(getParty(killer)))
+                                getParty(player).tellParty(killer.CharacterName + " has killed partymember, " + player.CharacterName + "!", killer);
+                            else
+                            {
+                                getParty(player)?.tellParty(player.CharacterName + " has been killed by " + killer.CharacterName + "!");
+                                getParty(killer)?.tellParty(killer.CharacterName + " has killed " + player.CharacterName + "!", killer);
+                            }
                         }
                     }
 

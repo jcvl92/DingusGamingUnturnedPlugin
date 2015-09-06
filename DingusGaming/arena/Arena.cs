@@ -176,8 +176,8 @@ namespace DingusGaming.Arena
                         player.Features.VanishMode = false;
 
                         //update player position so you can't hide vanished in the beginning
-                        typeof (UnturnedPlayerFeatures).GetMethod("FixedUpdate",
-                            BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] {});
+                        /*typeof (UnturnedPlayerFeatures).GetMethod("FixedUpdate",
+                            BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] {});*/
                     }
                 };
                 vanishTimer.Start();
