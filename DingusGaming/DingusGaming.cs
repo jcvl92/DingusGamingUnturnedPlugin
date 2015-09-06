@@ -1,17 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Timers;
 using System.Xml;
 using System.Xml.Serialization;
 using DingusGaming.Party;
 using DingusGaming.Store;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Unturned;
 using Rocket.Unturned.Chat;
+using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming
 {
@@ -27,6 +33,22 @@ namespace DingusGaming
             Parties.init();
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
+
+            U.Settings.Instance.AutomaticSave.Interval = 5*60;
+
+            UnturnedPlayerEvents.OnPlayerChatted += delegate (UnturnedPlayer player, ref Color color, string message, EChatMode chatMode)
+            {
+                //TODO: put in color changing logic here
+            };
+
+            //Save every 5 minutes
+            Timer saveTimer = new Timer(5*60*1000);
+            saveTimer.Elapsed += delegate
+            {
+                Steam.OnServerShutdown.Invoke();
+                Logger.LogWarning("DGPlugin state saved.");
+            };
+            saveTimer.Start();
         }
 
         protected override void Unload()
@@ -50,9 +72,41 @@ namespace DingusGaming
             return null;
         }
 
+        public static void teleportPlayer(UnturnedPlayer player, UnturnedPlayer target)
+        {
+            removeFromVehicle(player);
+            //put them into the target's vehicle, if they are in one
+            if(player.Player.Movement.getVehicle() != null)
+                addToVehicle(player, player.Player.Movement.getVehicle().index);
+            else
+                player.Teleport(target);
+        }
+
+        public static void teleportPlayer(UnturnedPlayer player, Vector3 position, float rotation)
+        {
+            removeFromVehicle(player);
+            player.Teleport(position, rotation);
+        }
+
+        public static void teleportPlayer(UnturnedPlayer player, string nodeName)
+        {
+            removeFromVehicle(player);
+            player.Teleport(nodeName);
+        }
+
+        public static void removeFromVehicle(UnturnedPlayer player)
+        {
+            ((VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null))?.askExitVehicle(player.CSteamID, new Vector3(0.0f, 0.0f, 0.0f));
+        }
+
+        public static void addToVehicle(UnturnedPlayer player, ushort index)
+        {
+            ((VehicleManager)typeof(VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null))?.askEnterVehicle(player.CSteamID, index);
+        }
+
         public static void disableCommands()
         {
-            //TODO: implement this
+            
         }
 
         public static void enableCommands()
@@ -63,7 +117,7 @@ namespace DingusGaming
         public static void respawnPlayer(UnturnedPlayer player)
         {
             //zero their last respawn time in order to circumvent the timer(using reflection)
-            typeof(PlayerLife).GetField("lastRespawn", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(player.Player.life, 0);
+            typeof (PlayerLife).GetField("_lastRespawn", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(player.Player.life, 0);
 
             //respawn them
             player.Player.life.sendRespawn(false);
@@ -105,9 +159,9 @@ namespace DingusGaming
             return UnturnedPlayer.FromName(name);
         }
 
-        public static void givePlayerItem(UnturnedPlayer player, ushort itemID, byte quantity)
+        public static bool givePlayerItem(UnturnedPlayer player, ushort itemID, byte quantity)
         {
-            player.GiveItem(itemID, quantity);
+            return player.GiveItem(itemID, quantity);
         }
 
         public static string getConstantID(UnturnedPlayer player)

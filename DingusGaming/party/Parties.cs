@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using DingusGaming.Store;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming.Party
 {
@@ -12,6 +15,7 @@ namespace DingusGaming.Party
         private static readonly List<Party> parties = new List<Party>();
         private static readonly List<Invite> invites = new List<Invite>();
         private static readonly HashSet<CSteamID> chatToggles = new HashSet<CSteamID>();
+        public static bool showDeathMessages = true;
 
         public static void init()
         {
@@ -25,7 +29,19 @@ namespace DingusGaming.Party
             UnturnedPlayerEvents.OnPlayerDeath +=
                 delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
                 {
-                    getParty(player)?.tellParty(player.CharacterName + " has died!");
+                    if (showDeathMessages)
+                    {
+                        UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
+                        if (killer == null)
+                            getParty(player)?.tellParty(player.CharacterName + " has died!");
+                        else
+                        {
+                            getParty(player)?.tellParty(player.CharacterName + " has been killed by " + killer.CharacterName + "!");
+                            getParty(killer)?.tellParty(killer.CharacterName + " has killed " + player.CharacterName + "!", killer);
+                        }
+                    }
+
+                    CommandTeleport.playerDied(player);
                 };
         }
 
@@ -101,11 +117,27 @@ namespace DingusGaming.Party
             var invite = getInvite(caller);
             if (invite == null)
                 DGPlugin.messagePlayer(caller, "You have no pending invites!");
+            else if (getParty(caller) != null)
+            {
+                DGPlugin.messagePlayer(caller, "You cannot accept an invite while in a party!");
+                invites.Remove(invite);
+            }
             else
             {
                 invite.join();
                 invites.Remove(invite);
+                removeSentInvites(caller);
             }
+        }
+
+        public static void removeSentInvites(UnturnedPlayer player)
+        {
+            List<Invite> invitesToRemove = new List<Invite>();
+            foreach (var invite in invites)
+                if (invite.requester.Equals(player.CSteamID))
+                    invitesToRemove.Add(invite);
+            foreach (var inviteToRemove in invitesToRemove)
+                invites.Remove(inviteToRemove);
         }
 
         public static void declineInvite(UnturnedPlayer caller)

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DingusGaming.helper;
 using Rocket.API;
 using Rocket.Unturned.Player;
 
@@ -49,20 +48,7 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length != 1)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/test playerName\".");
-            else
-            {
-                var subject = UnturnedPlayer.FromName(command[0]);
-
-                var subjectState = PlayerState.getState(subject);
-                var callerState = PlayerState.getState(caller);
-
-                subjectState.setCompleteState(caller);
-                callerState.setCompleteState(subject);
-
-                DGPlugin.broadcastMessage("Swapped " + subject.CharacterName + " with " + caller.CharacterName + "!");
-            }
+            
         }
     }
 }

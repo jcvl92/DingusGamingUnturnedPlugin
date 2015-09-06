@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DingusGaming.helper
 {
-    internal class PlayerState
+    public class PlayerState
     {
         private uint experience;
         private PlayerInventory inventory;
@@ -14,6 +14,7 @@ namespace DingusGaming.helper
         private float rotation;
         private PlayerSkills skills;
         private PlayerSurvivalStats stats;
+        public ushort? vehicleID = null;
 
         public static PlayerState getState(UnturnedPlayer player)
         {
@@ -29,6 +30,9 @@ namespace DingusGaming.helper
 
             state.stats = PlayerSurvivalStats.getStats(player);
 
+            if (player.Player.Movement.getVehicle() != null)
+                state.vehicleID = player.Player.Movement.getVehicle().index;
+
             return state;
         }
 
@@ -38,6 +42,7 @@ namespace DingusGaming.helper
 
             //dequip anything they have equipped
             p.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
+            //p.Equipment.askToggleVision(player.CSteamID);//^see if this works - it doesn't, I don't think
 
             //remove items
             foreach (var items in p.Inventory.Items)

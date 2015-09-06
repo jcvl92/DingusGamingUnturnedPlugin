@@ -4,11 +4,10 @@ using Rocket.Unturned.Player;
 
 namespace DingusGaming.Store
 {
-    public class CommandBuyExperience : IRocketCommand
+    public class CommandSellExperience : IRocketCommand
     {
-        public const int cost = 1;
-        private const string NAME = "buyexp";
-        private const string HELP = "Purchase experience points.";
+        private const string NAME = "sellexp";
+        private const string HELP = "Sell experience points.";
         private const string SYNTAX = "<amount>";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
@@ -33,7 +32,7 @@ namespace DingusGaming.Store
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases { get; } = new List<string> {"buyexperience", "buyskill", "buyskills"};
+        public List<string> Aliases { get; } = new List<string> {"sellexperience", "sellskill", "sellskills"};
 
         public bool AllowFromConsole
         {
@@ -49,23 +48,23 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
+            int cost = CommandBuyExperience.cost;
             if (command.Length != 1)
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/buyexp amount\".");
+                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/sellexp amount\".");
             else
             {
                 uint amount;
 
                 if (!uint.TryParse(command[0], out amount))
                     DGPlugin.messagePlayer(caller, "Invalid amount.");
-                else if (Currency.getBalance(caller) >= cost*amount)
+                else if (caller.Experience >= amount)
                 {
-                    Currency.changeBalance(caller, -cost*(int) amount);
-                    caller.Experience += amount;
-                    DGPlugin.messagePlayer(caller, amount + " experience purchased! Your new balance is $" + Currency.getBalance(caller) + ".");
+                    caller.Experience -= amount;
+                    Currency.changeBalance(caller, cost*(int) amount);
+                    DGPlugin.messagePlayer(caller, amount + " experience sold! Your new balance is $"+Currency.getBalance(caller)+".");
                 }
                 else
-                    DGPlugin.messagePlayer(caller,
-                        "Insufficient funds($" + Currency.getBalance(caller) + "/$" + amount*cost + ").");
+                    DGPlugin.messagePlayer(caller, "Insufficient experience(" + caller.Experience + "/" + amount + " exp).");
             }
         }
     }

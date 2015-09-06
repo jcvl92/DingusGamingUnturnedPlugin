@@ -63,6 +63,13 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
         }
 
+        public void tellParty(string text, UnturnedPlayer skipPlayer)
+        {
+            foreach (var member in members)
+                if(member.Equals(skipPlayer.CSteamID))
+                    DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
+        }
+
         public void chat(UnturnedPlayer caller, string text)
         {
             if (isMember(caller))

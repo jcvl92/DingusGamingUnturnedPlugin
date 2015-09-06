@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Timers;
 using DingusGaming.helper;
+using DingusGaming.Party;
+using DingusGaming.Store;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -15,14 +18,17 @@ namespace DingusGaming.Arena
     {
         public static ArenaEvent currentEvent;
         private readonly bool adminsIncluded;
+        private static bool occurring = false;
         private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>();
+        private readonly Dictionary<CSteamID, int> deaths = new Dictionary<CSteamID, int>();
+        private List<int> sortedScores = new List<int>();
         private readonly ushort startItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
-        private readonly Timer timer;
+        private readonly Timer timer = null;
         private readonly Vector3 location;
         private readonly float rotation;
 
-        public ArenaEvent(Vector3 location, float rotation, ushort eventLength = 120, ushort startItem = 0,
+        public ArenaEvent(Vector3 location, float rotation, ushort eventLength = 60, ushort startItem = 0,
             byte dropItem = 0, bool adminsIncluded = true)
         {
             this.adminsIncluded = adminsIncluded;
@@ -30,13 +36,15 @@ namespace DingusGaming.Arena
             this.location = location;
             this.rotation = rotation;
 
-            //disable all user commands during event
-            DGPlugin.disableCommands();
-
             //create the timer to stop the event when the max time has been reached
             timer = new Timer((double) eventLength*1000);
             timer.AutoReset = false;
             timer.Elapsed += delegate { stopArena(); };
+        }
+
+        public static bool isOccurring
+        {
+            get { return occurring; }
         }
 
         ~ArenaEvent()
@@ -44,108 +52,248 @@ namespace DingusGaming.Arena
             timer.Close();
         }
 
+        private void suppressMessages()
+        {
+            Currency.showCreditEarnings = false;
+            Parties.showDeathMessages = false;
+        }
+
+        private void unSuppressMessages()
+        {
+            Currency.showCreditEarnings = true;
+            Parties.showDeathMessages = true;
+        }
+
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
-            murderer = DGPlugin.getKiller(player, cause, murderer).CSteamID;
+            UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
             //update score of killing player
-            if (murderer != null)
-                scores[murderer]++;
+            if (killer != null)
+                scores[killer.CSteamID]++;
+            //update the deaths of the victim
+            deaths[player.CSteamID]++;
 
             //clear their inventory so that they don't drop anything
             PlayerState.clearInventory(player);
 
-            //respawn player and teleport them back
-            DGPlugin.respawnPlayer(player);
-            player.Teleport(location);
+            //respawn player
+            LifeUpdated playerDied = null;
+            playerDied = delegate (bool isDead)
+            {
+                if(isDead)
+                    DGPlugin.respawnPlayer(player);
+                
+                player.Player.PlayerLife.OnUpdateLife -= playerDied;
+            };
+            player.Player.PlayerLife.OnUpdateLife += playerDied;
+        }
+
+        private void onPlayerRevive(UnturnedPlayer player, Vector3 position, byte angle)
+        {
+            LifeUpdated playerRevived = null;
+            playerRevived = delegate (bool isDead)
+            {
+                if (!isDead)
+                {
+                    //give them the starting item
+                    PlayerState.clearInventory(player);
+                    if (startItem != 0)
+                    {
+                        player.GiveItem(startItem, 1);
+                        player.Player.Equipment.equip(2, 1, 1);
+                    }
+
+                    DGPlugin.teleportPlayer(player, location, rotation);
+                }
+
+                player.Player.PlayerLife.OnUpdateLife -= playerRevived;
+            };
+            player.Player.PlayerLife.OnUpdateLife += playerRevived;
         }
 
         public void beginArena()
         {
-            //remember to check the adminsIncluded flag
-            foreach (var plr in Steam.Players)
+            if (!occurring)
             {
-                var player = DGPlugin.getPlayer(plr.playerID.CSteamID);
+                occurring = true;
 
-                //skip admins
-                if (!player.IsAdmin && adminsIncluded)
-                    continue;
+                suppressMessages();
 
-                //add player to scores list
-                scores.Add(player.CSteamID, 0);
+                //disable all user commands during event
+                DGPlugin.disableCommands();
 
-                //save player state
-                states.Add(player.CSteamID, PlayerState.getState(DGPlugin.getPlayer(player.CSteamID)));
+                states.Clear();
+                scores.Clear();
+                deaths.Clear();
 
-                //clear player inventory
-                PlayerState.clearInventory(player);
-
-                //heal up all survival stats
-                PlayerState.clearStats(player);
-
-                //give players vanish-mode
-                player.Features.VanishMode = true;
-
-                //give players starting item if present
-                if (startItem != 0)
+                //remember to check the adminsIncluded flag
+                foreach (var plr in Steam.Players)
                 {
-                    player.GiveItem(startItem, 1);
-                    player.Player.Equipment.equip(2, 1, 1);
+                    var player = DGPlugin.getPlayer(plr.playerID.CSteamID);
+
+                    //skip admins
+                    if (player.IsAdmin && !adminsIncluded)
+                        continue;
+
+                    //revive player if dead
+                    if (player.Player.life.isDead)
+                    {
+                        LifeUpdated playerDied = null;
+                        playerDied = delegate (bool isDead)
+                        {
+                            if (!isDead)
+                            {
+                                preparePlayer(player);
+
+                                player.Player.PlayerLife.OnUpdateLife -= playerDied;
+                            }
+                            else
+                                DGPlugin.respawnPlayer(player);
+                        };
+                        player.Player.PlayerLife.OnUpdateLife += playerDied;
+
+                        DGPlugin.respawnPlayer(player);
+                    }
+                    else
+                        preparePlayer(player);
                 }
 
-                //teleport player to arena location
-                player.Teleport(location, rotation);
+                //TODO: drop starting items on location
+
+                //hook in player death/revive events
+                UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
+                UnturnedPlayerEvents.OnPlayerRevive += onPlayerRevive;
+
+                //start 3 second timer that will remove vanish-mode
+                var vanishTimer = new Timer(3000);
+                vanishTimer.AutoReset = false;
+                vanishTimer.Elapsed += delegate
+                {
+                    foreach (var score in scores)
+                    {
+                        UnturnedPlayer player = DGPlugin.getPlayer(score.Key);
+                        player.Features.GodMode = false;
+                        player.Features.VanishMode = false;
+
+                        //update player position so you can't hide vanished in the beginning
+                        typeof (UnturnedPlayerFeatures).GetMethod("FixedUpdate",
+                            BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] {});
+                    }
+                };
+                vanishTimer.Start();
+
+                //start event timer
+                timer.Start();
             }
+        }
 
-            //TODO: drop starting items on location
+        private void preparePlayer(UnturnedPlayer player)
+        {
+            //save player state
+            states.Add(player.CSteamID, PlayerState.getState(DGPlugin.getPlayer(player.CSteamID)));
 
-            //hook in player death event
-            UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
+            //add player to scores and deaths lists
+            scores.Add(player.CSteamID, 0);
+            deaths.Add(player.CSteamID, 0);
 
-            //start 10 second timer that will remove vanish-mode
-            var vanishTimer = new Timer(5000);
-            vanishTimer.AutoReset = false;
-            vanishTimer.Elapsed += delegate
+            //clear player inventory
+            PlayerState.clearInventory(player);
+
+            //heal up all survival stats
+            PlayerState.clearStats(player);
+
+            //give players vanish-mode and god-mode
+            player.Features.VanishMode = true;
+            player.Features.GodMode = true;
+
+            //teleport player to arena location
+            DGPlugin.teleportPlayer(player, location, rotation);
+
+            //give players starting item if present
+            if (startItem != 0)
             {
-                foreach (var score in scores)
-                    DGPlugin.getPlayer(score.Key).Features.VanishMode = false;
-            };
-            vanishTimer.Start();
-
-            //start event timer
-            timer.Start();
+                player.GiveItem(startItem, 1);
+                player.Player.Equipment.equip(2, 1, 1);
+            }
         }
 
         private void stopArena()
         {
-            //unhook player death event
+            //unhook player death/revive events
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
+            UnturnedPlayerEvents.OnPlayerRevive -= onPlayerRevive;
 
             //restore the player states
             foreach (var state in states)
             {
-                if(player.Player.life.isDead())
-                    DGPlugin.respawnPlayer(player);
+                try
+                {
+                    UnturnedPlayer player = DGPlugin.getPlayer(state.Key);
+                    if (player.Player.life.isDead)
+                    {
+                        DGPlugin.respawnPlayer(player);
+                        //set their state when they respawn
+                        LifeUpdated playerRevived = null;
+                        playerRevived = delegate(bool isDead)
+                        {
+                            if (!isDead)
+                            {
+                                restorePlayer(player, state.Value);
 
-                state.Value.setCompleteState(DGPlugin.getPlayer(state.Key));
+                                player.Player.PlayerLife.OnUpdateLife -= playerRevived;
+                            }
+                            else
+                                DGPlugin.respawnPlayer(player);
+                        };
+                        player.Player.PlayerLife.OnUpdateLife += playerRevived;
+                    }
+                    else
+                        restorePlayer(player, state.Value);
+                }
+                catch (Exception)
+                {
+                    //catch exceptions here so that if one restore fails, the rest of function doesn't die
+                }
             }
 
             //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
-            var list = scores.Values.ToList();
-            list.Sort();
+            sortedScores = scores.Values.ToList();
+            sortedScores.Sort();
             foreach (var score in scores)
-                DGPlugin.messagePlayer(DGPlugin.getPlayer(score.Key),
-                    "Arena has finished. You killed " + score.Value + " people! You earned place " + getPlace(score.Value) + "/" + scores.Count + "!");
+            {
+                UnturnedPlayer player = DGPlugin.getPlayer(score.Key);
+                DGPlugin.messagePlayer(player,
+                    "Arena has finished. You killed " + score.Value + " people and died " +
+                    deaths[player.CSteamID]+" times! You earned place " + getPlace(score.Value) + "/" + scores.Count + "!");
+            }
 
             //re-enable commands
             DGPlugin.enableCommands();
+
+            unSuppressMessages();
+
+            occurring = false;
+        }
+
+        public void restorePlayer(UnturnedPlayer player, PlayerState state)
+        {
+            if (state.vehicleID == null)
+                //teleport them back
+                DGPlugin.teleportPlayer(player, location, rotation);
+            else
+                //put them back in the car they were in, if any
+                DGPlugin.addToVehicle(player, state.vehicleID.Value);
+
+            //completely restore their state
+            state.setCompleteState(player);
         }
 
         private int getPlace(int score)
         {
-            for(int i=0; i<scores.Count; ++i)
-                if(scores[i] == score)
-                    return i+1;
-            return -1;
+            for(int i=0; i<sortedScores.Count; ++i)
+                if(sortedScores[i] == score)
+                    return sortedScores.Count-i;
+            return 0;
         }
     }
 }

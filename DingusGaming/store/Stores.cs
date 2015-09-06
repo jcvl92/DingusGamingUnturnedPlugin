@@ -59,17 +59,21 @@ namespace DingusGaming.Store
             //check to see if the caller has sufficient funds to make the purchase
             if (Currency.getBalance(caller) >= item.cost*quantity)
             {
-                //subtract the cost of the item(s) from their balance
-                Currency.changeBalance(caller, item.cost*quantity*-1);
-                DGPlugin.givePlayerItem(caller, itemId, quantity);
-                DGPlugin.messagePlayer(caller,
-                    "You have purchased " + quantity + " " + item.name + " for $" + item.cost*quantity +
-                    ", current balance=" + Currency.getBalance(caller) + ".");
+                if (DGPlugin.givePlayerItem(caller, itemId, quantity))
+                {
+                    //subtract the cost of the item(s) from their balance
+                    Currency.changeBalance(caller, item.cost*quantity*-1);
+                    DGPlugin.messagePlayer(caller,
+                        "You have purchased " + quantity + " " + item.name + " for $" + item.cost*quantity +
+                        ". Your new balance is $" + Currency.getBalance(caller) + ".");
+                }
+                else
+                    DGPlugin.messagePlayer(caller, item.name+" could not be purchased. Please file a bug report.");
             }
             else
                 DGPlugin.messagePlayer(caller,
                     "Insufficient funds to purchase " + quantity + " " + item.name + "($" + Currency.getBalance(caller) +
-                    "/$" + item.cost*quantity + ").");
+                    "/$" + item.cost*quantity + ")!");
         }
 
         private static Item findItemById(ushort itemId)

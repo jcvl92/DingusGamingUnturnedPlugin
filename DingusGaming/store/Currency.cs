@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using DingusGaming.Arena;
 using DingusGaming.Party;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming.Store
 {
@@ -13,6 +16,8 @@ namespace DingusGaming.Store
     {
         private static readonly int startingAmount = 50;
         private static Dictionary<string, int> balances;
+        public static bool showCreditEarnings = true;
+        private static readonly Dictionary<CSteamID, int> killsSinceSpawn = new Dictionary<CSteamID, int>();
 
         public static void init()
         {
@@ -48,13 +53,43 @@ namespace DingusGaming.Store
                     if (killer != null &&
                         (Parties.getParty(player) == null || !Parties.getParty(player).isMember(killer)))
                     {
-                        var amount = 10; //5 + getBalance(player)/10;
+                        var amount = valueOfPlayer(player);
+
+                        //clear the victim's kills since spawn
+                        killsSinceSpawn.Remove(player.CSteamID);
+
+                        //add to the killer's kills since spawn
+                        if (killsSinceSpawn.ContainsKey(killer.CSteamID))
+                            killsSinceSpawn[killer.CSteamID]++;
+                        else
+                            killsSinceSpawn.Add(killer.CSteamID, 1);
+
                         changeBalance(killer, amount);
-                        DGPlugin.messagePlayer(killer,
-                            "You earned $" + amount + " from killing " + player.CharacterName + ".");
-                        DGPlugin.messagePlayer(player, killer.CharacterName + " got $" + amount + " from killing you.");
+
+                        if (showCreditEarnings)
+                        {
+                            DGPlugin.messagePlayer(killer,
+                                "You earned $" + amount + " from killing " + player.CharacterName + ".");
+                            DGPlugin.messagePlayer(player,
+                                killer.CharacterName + " got $" + amount + " from killing you.");
+                        }
                     }
                 };
+        }
+
+        public static int valueOfPlayer(UnturnedPlayer player)
+        {
+            int minutesAlive = (int) (Time.realtimeSinceStartup-player.Player.PlayerLife.lastRespawn);
+            int playersKilledSinceSpawn = 0;
+
+            if (killsSinceSpawn.ContainsKey(player.CSteamID))
+                playersKilledSinceSpawn = killsSinceSpawn[player.CSteamID];
+            int valueOfPlayer = Math.Min(minutesAlive, 10) + playersKilledSinceSpawn * 5;
+
+            if (ArenaEvent.isOccurring)
+                return Math.Max(valueOfPlayer, 10);
+            return valueOfPlayer;
+
         }
 
         private static void registerOnServerShutdown()
