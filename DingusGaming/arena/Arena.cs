@@ -26,15 +26,16 @@ namespace DingusGaming.Arena
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
         private readonly Timer timer = null;
         private readonly Vector3 location;
-        private readonly float rotation;
+        private readonly float rotation, radius;
 
-        public ArenaEvent(Vector3 location, float rotation, ushort eventLength = 60, ushort startItem = 0,
+        public ArenaEvent(Vector3 location, float rotation, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
             byte dropItem = 0, bool adminsIncluded = true)
         {
             this.adminsIncluded = adminsIncluded;
             this.startItem = startItem;
             this.location = location;
             this.rotation = rotation;
+            this.radius = radius;
 
             //create the timer to stop the event when the max time has been reached
             timer = new Timer((double) eventLength*1000);
@@ -103,7 +104,7 @@ namespace DingusGaming.Arena
                         player.Player.Equipment.equip(2, 1, 1);
                     }
 
-                    DGPlugin.teleportPlayer(player, location, rotation);
+                    DGPlugin.teleportPlayerInRadius(player, location, radius);
                 }
 
                 player.Player.PlayerLife.OnUpdateLife -= playerRevived;
@@ -207,7 +208,7 @@ namespace DingusGaming.Arena
             player.Features.GodMode = true;
 
             //teleport player to arena location
-            DGPlugin.teleportPlayer(player, location, rotation);
+            DGPlugin.teleportPlayerInRadius(player, location, radius);
 
             //give players starting item if present
             if (startItem != 0)
@@ -223,6 +224,10 @@ namespace DingusGaming.Arena
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
             UnturnedPlayerEvents.OnPlayerRevive -= onPlayerRevive;
 
+            //sort the scores for placements
+            sortedScores = scores.Values.ToList();
+            sortedScores.Sort();
+
             //restore the player states
             foreach (var state in states)
             {
@@ -232,6 +237,7 @@ namespace DingusGaming.Arena
                     if (player.Player.life.isDead)
                     {
                         DGPlugin.respawnPlayer(player);
+
                         //set their state when they respawn
                         LifeUpdated playerRevived = null;
                         playerRevived = delegate(bool isDead)
@@ -249,6 +255,11 @@ namespace DingusGaming.Arena
                     }
                     else
                         restorePlayer(player, state.Value);
+
+                    //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
+                    DGPlugin.messagePlayer(player,
+                        "Arena has finished. You killed " + scores[state.Key] + " people and died " +
+                        deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) + "/" + scores.Count + "!");
                 }
                 catch (Exception)
                 {
@@ -256,22 +267,9 @@ namespace DingusGaming.Arena
                 }
             }
 
-            //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
-            sortedScores = scores.Values.ToList();
-            sortedScores.Sort();
-            foreach (var score in scores)
-            {
-                UnturnedPlayer player = DGPlugin.getPlayer(score.Key);
-                DGPlugin.messagePlayer(player,
-                    "Arena has finished. You killed " + score.Value + " people and died " +
-                    deaths[player.CSteamID]+" times! You earned place " + getPlace(score.Value) + "/" + scores.Count + "!");
-            }
-
-            //re-enable commands
+            //unset toggles
             DGPlugin.enableCommands();
-
             unSuppressMessages();
-
             occurring = false;
         }
 

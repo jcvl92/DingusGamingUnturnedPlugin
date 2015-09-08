@@ -166,16 +166,7 @@ namespace DingusGaming.helper
         {
             private ushort backpack, glasses, hat, mask, pants, shirt, vest;
 
-            private byte equippedPage,
-                equipped_x,
-                equipped_y,
-                bpQuality,
-                gQuality,
-                hQuality,
-                mQuality,
-                pQuality,
-                sQuality,
-                vQuality;
+            private byte equippedPage, equipped_x, equipped_y, bpQuality, gQuality, hQuality, mQuality, pQuality, sQuality, vQuality;
 
             private Dictionary<byte, List<ItemJar>> itemsMap;
 

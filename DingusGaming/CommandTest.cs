@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Timers;
 using Rocket.API;
 using Rocket.Unturned.Player;
 
@@ -48,7 +49,13 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            
+            ushort id = caller.Player.Movement.getVehicle().index;
+
+            DGPlugin.removeFromVehicle(caller);
+
+            DGPlugin.broadcastMessage("isinvehicle="+(caller.Player.Movement.getVehicle()!=null));
+
+            DGPlugin.addToVehicle(caller, id);
         }
     }
 }

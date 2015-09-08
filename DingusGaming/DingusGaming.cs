@@ -24,6 +24,7 @@ namespace DingusGaming
     public class DGPlugin : RocketPlugin
     {
         //contains helper functions for persisting data and centralizing common functions
+        private static VehicleManager vehicleManager;
 
         protected override void Load()
         {
@@ -33,6 +34,8 @@ namespace DingusGaming
             Parties.init();
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
+
+            vehicleManager = ((VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null));
 
             U.Settings.Instance.AutomaticSave.Interval = 5*60;
 
@@ -67,8 +70,8 @@ namespace DingusGaming
 
         public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
         {
-            if (cause == EDeathCause.GUN || cause == EDeathCause.MELEE || cause == EDeathCause.PUNCH ||
-                cause == EDeathCause.ROADKILL)
+            if (cause == EDeathCause.GUN || cause == EDeathCause.MELEE ||
+                cause == EDeathCause.PUNCH || cause == EDeathCause.ROADKILL)
                 return getPlayer(murderer);
             return null;
         }
@@ -76,9 +79,10 @@ namespace DingusGaming
         public static void teleportPlayer(UnturnedPlayer player, UnturnedPlayer target)
         {
             removeFromVehicle(player);
+
             //put them into the target's vehicle, if they are in one
-            if(player.Player.Movement.getVehicle() != null)
-                addToVehicle(player, player.Player.Movement.getVehicle().index);
+            if (target.Player.Movement.getVehicle() != null)
+                addToVehicle(player, target.Player.Movement.getVehicle().index);
             else
                 player.Teleport(target);
         }
@@ -86,28 +90,51 @@ namespace DingusGaming
         public static void teleportPlayer(UnturnedPlayer player, Vector3 position, float rotation)
         {
             removeFromVehicle(player);
+
+            //level them with the ground
+            position.y = LevelGround.getHeight(position);
+
             player.Teleport(position, rotation);
         }
 
         public static void teleportPlayer(UnturnedPlayer player, string nodeName)
         {
             removeFromVehicle(player);
+
             player.Teleport(nodeName);
+        }
+
+        public static void teleportPlayerInRadius(UnturnedPlayer player, Vector3 position, float radius)
+        {
+            System.Random random = new System.Random();
+
+            //change the x and z values to be within the radius
+            float newX = position.x + (float)(random.NextDouble() * radius * 2) - radius;
+            float newZ = position.z + (float)(random.NextDouble() * radius * 2) - radius;
+
+            //rotate them towards the center of the point
+            float rotation = (float)(Math.Atan2(newX - position.x, newZ - position.z)*180/Math.PI) + 180;
+
+            position.x = newX;
+            position.z = newZ;
+
+            teleportPlayer(player, position, rotation);
         }
 
         public static void removeFromVehicle(UnturnedPlayer player)
         {
-            ((VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null))?.askExitVehicle(player.CSteamID, new Vector3(0.0f, 0.0f, 0.0f));
+            if(player.Player.Movement.getVehicle() != null)
+                vehicleManager.askExitVehicle(player.CSteamID, player.Position);
         }
 
         public static void addToVehicle(UnturnedPlayer player, ushort index)
         {
-            ((VehicleManager)typeof(VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null))?.askEnterVehicle(player.CSteamID, index);
+            vehicleManager.askEnterVehicle(player.CSteamID, index);
         }
 
         public static void disableCommands()
         {
-            
+            //TODO: implement this
         }
 
         public static void enableCommands()
