@@ -38,19 +38,18 @@ namespace DingusGaming.helper
 
         public static void clearInventory(UnturnedPlayer player)
         {
-            var p = player.Player;
-
             //dequip anything they have equipped
-            p.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
+            player.Player.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
             //p.Equipment.askToggleVision(player.CSteamID);//^see if this works - it doesn't, I don't think
 
             //remove items
-            foreach (var items in p.Inventory.Items)
+            foreach (var items in player.Inventory.Items)
                 for (; items.getItemCount() > 0;)
-                    p.Inventory.removeItem(items.page,
+                    player.Inventory.removeItem(items.page,
                         items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
 
             //remove clothes
+            var p = player.Player;
             if (p.Clothing.backpack != 0)
             {
                 p.Clothing.askWearBackpack(0, 0, new byte[0]);

@@ -280,7 +280,7 @@ namespace DingusGaming.Arena
                 DGPlugin.teleportPlayer(player, location, rotation);
             else
                 //put them back in the car they were in, if any
-                DGPlugin.addToVehicle(player, state.vehicleID.Value);
+                DGPlugin.addToVehicle(player, VehicleManager.getVehicle(state.vehicleID.Value));
 
             //completely restore their state
             state.setCompleteState(player);

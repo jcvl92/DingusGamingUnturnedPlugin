@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Timers;
 using Rocket.API;
 using Rocket.Unturned.Player;
+using UnityEngine;
 
 namespace DingusGaming.Store
 {
@@ -12,6 +12,8 @@ namespace DingusGaming.Store
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
+        private Vector3 pos;
+        private float rot;
 
         public bool RunFromConsole
         {
@@ -49,13 +51,13 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            ushort id = caller.Player.Movement.getVehicle().index;
-
-            DGPlugin.removeFromVehicle(caller);
-
-            DGPlugin.broadcastMessage("isinvehicle="+(caller.Player.Movement.getVehicle()!=null));
-
-            DGPlugin.addToVehicle(caller, id);
+            if (command.Length>0 && command[0].Equals("save"))
+            {
+                pos = caller.Position;
+                rot = caller.Rotation;
+            }
+            else
+                caller.Teleport(pos, rot);
         }
     }
 }

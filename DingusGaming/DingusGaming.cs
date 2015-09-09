@@ -44,6 +44,74 @@ namespace DingusGaming
                 //TODO: put in color changing logic here
             };
 
+            UnturnedPlayerEvents.OnPlayerDeath += delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+            {
+                //remove loadout items
+                ushort[] loadout = PlayerInventory.loadout;
+                foreach (var items in player.Inventory.Items)
+                    for (int i = 0; i < items.getItemCount(); ++i)
+                        for (int j = 0; j < loadout.Length; ++j)
+                            if(items.getItem(0).Item.ItemID.Equals(loadout[j]))
+                            {
+                                player.Inventory.removeItem(items.page,
+                                    items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
+                                i--;
+                                break;
+                            }
+
+                //drop all other gear(to make room for dropping clothing)
+                foreach (var items in player.Inventory.Items)
+                    for (int i = 0; i < items.getItemCount(); ++i)
+                    {
+                        player.Inventory.sendDropItem(items.page, items.getItem(0).PositionX,
+                            items.getItem(0).PositionY);
+                        player.Inventory.askDropItem(player.CSteamID, items.page, items.getItem(0).PositionX,
+                            items.getItem(0).PositionY);
+                    }
+
+                //remove all gear
+                var p = player.Player;
+                for (int i = 0; i < loadout.Length; ++i)
+                {
+                    if (p.Clothing.backpack == loadout[i])
+                    {
+                        p.Clothing.askWearBackpack(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.glasses == loadout[i])
+                    {
+                        p.Clothing.askWearGlasses(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.hat == loadout[i])
+                    {
+                        p.Clothing.askWearHat(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.mask == loadout[i])
+                    {
+                        p.Clothing.askWearMask(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.pants == loadout[i])
+                    {
+                        p.Clothing.askWearPants(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.shirt == loadout[i])
+                    {
+                        p.Clothing.askWearShirt(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                    else if (p.Clothing.vest == loadout[i])
+                    {
+                        p.Clothing.askWearVest(0, 0, new byte[0]);
+                        p.Inventory.removeItem(2, 0);
+                    }
+                }
+
+            };
+
             //Save every 5 minutes
             Timer saveTimer = new Timer(5*60*1000);
             saveTimer.Elapsed += delegate
@@ -81,8 +149,9 @@ namespace DingusGaming
             removeFromVehicle(player);
 
             //put them into the target's vehicle, if they are in one
-            if (target.Player.Movement.getVehicle() != null)
-                addToVehicle(player, target.Player.Movement.getVehicle().index);
+            InteractableVehicle vehicle = target.Player.Movement.getVehicle();
+            if (vehicle != null)
+                addToVehicle(player, vehicle);
             else
                 player.Teleport(target);
         }
@@ -123,13 +192,18 @@ namespace DingusGaming
 
         public static void removeFromVehicle(UnturnedPlayer player)
         {
-            if(player.Player.Movement.getVehicle() != null)
-                vehicleManager.askExitVehicle(player.CSteamID, player.Position);
+            if (player.Player.Movement.getVehicle() != null)
+                vehicleManager.askExitVehicle(player.CSteamID, new Vector3(0, 0, 0));//player.Position);
         }
 
-        public static void addToVehicle(UnturnedPlayer player, ushort index)
+        public static void addToVehicle(UnturnedPlayer player, InteractableVehicle vehicle)
         {
-            vehicleManager.askEnterVehicle(player.CSteamID, index);
+            //teleport them close enough to the car to get in
+            Vector3 pos = vehicle.transform.position;
+            pos.x += 2; pos.z += 2;
+            player.Teleport(pos, 0);
+
+            vehicleManager.askEnterVehicle(player.CSteamID, vehicle.index);
         }
 
         public static void disableCommands()
