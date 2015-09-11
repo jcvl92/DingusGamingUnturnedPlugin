@@ -6,6 +6,7 @@ namespace DingusGaming.Store
 {
     public class CommandSellExperience : IRocketCommand
     {
+        public const int cost = 5;//experience cost per credit
         private const string NAME = "sellexp";
         private const string HELP = "Sell experience points.";
         private const string SYNTAX = "<amount>";
@@ -48,19 +49,20 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            int cost = CommandBuyExperience.cost;
             if (command.Length != 1)
                 DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/sellexp amount\".");
             else
             {
                 uint amount;
 
-                if (!uint.TryParse(command[0], out amount))
+                if (!uint.TryParse(command[0], out amount) || amount == 0)
                     DGPlugin.messagePlayer(caller, "Invalid amount.");
+                else if(amount%cost != 0 )
+                    DGPlugin.messagePlayer(caller, "Invalid amount. Enter a multiple of "+cost+".");
                 else if (caller.Experience >= amount)
                 {
                     caller.Experience -= amount;
-                    Currency.changeBalance(caller, cost*(int) amount);
+                    Currency.changeBalance(caller, (int) amount/cost);
                     DGPlugin.messagePlayer(caller, amount + " experience sold! Your new balance is $"+Currency.getBalance(caller)+".");
                 }
                 else

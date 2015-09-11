@@ -6,7 +6,7 @@ namespace DingusGaming.Store
 {
     public class CommandBuyExperience : IRocketCommand
     {
-        public const int cost = 1;
+        public const int cost = 2;//credit cost per experience point
         private const string NAME = "buyexp";
         private const string HELP = "Purchase experience points.";
         private const string SYNTAX = "<amount>";
@@ -55,7 +55,7 @@ namespace DingusGaming.Store
             {
                 uint amount;
 
-                if (!uint.TryParse(command[0], out amount))
+                if (!uint.TryParse(command[0], out amount) || amount == 0)
                     DGPlugin.messagePlayer(caller, "Invalid amount.");
                 else if (Currency.getBalance(caller) >= cost*amount)
                 {
