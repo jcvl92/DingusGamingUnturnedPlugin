@@ -7,6 +7,7 @@ using System.Text;
 using System.Timers;
 using System.Xml;
 using System.Xml.Serialization;
+using DingusGaming.Arena;
 using DingusGaming.helper;
 using DingusGaming.Party;
 using DingusGaming.Store;
@@ -26,6 +27,7 @@ namespace DingusGaming
     {
         //contains helper functions for persisting data and centralizing common functions
         private static VehicleManager vehicleManager;
+        private static System.Object fileLock = new System.Object();
 
         protected override void Load()
         {
@@ -48,79 +50,77 @@ namespace DingusGaming
             UnturnedPlayerEvents.OnPlayerDeath += delegate(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
             {
                 //NOTE: try-catch blocks in this function in case inventory gets bugged, as it sometimes does
+                if (!ArenaEvent.isOccurring)
+                {
+                    //remove loadout items
+                    foreach (var items in player.Inventory.Items)
+                        for (int i=items.getItemCount()-1; i >= 0; --i)
+                            try
+                            {
+                                if (isItemInLoadout(items.getItem((byte)i).Item.ItemID))
+                                    player.Inventory.removeItem(items.page,
+                                        items.getIndex(items.getItem((byte)i).PositionX,
+                                            items.getItem((byte)i).PositionY));
+                            }
+                            catch (Exception) {}
 
-                //remove loadout items
-                ushort[] loadout = PlayerInventory.loadout;
-                foreach (var items in player.Inventory.Items)
-                    for (int i = 0, removeCount = 0; i-removeCount < items.getItemCount(); ++i)
+                    //drop all other gear(to make room for dropping clothing)
+                    foreach (var items in player.Inventory.Items)
+                        for (int i=items.getItemCount()-1; i >= 0; --i)
+                            try
+                            {
+                                //if(!player.Inventory.getItem(items.page, (byte)i).item.Equals(default(SDG.Unturned.Item)))//make sure this is a valid item to prevent game freezing
+                                player.Inventory.askDropItem(player.CSteamID, items.page, items.getItem(0).PositionX,items.getItem(0).PositionY);
+                            }
+                            catch (Exception){}
+
+                    //remove clothing in the loadout
+                    ushort[] loadout = PlayerInventory.loadout;
+                    var p = player.Player;
+                    for (int i=0; i < loadout.Length; ++i)
+                    {
                         try
                         {
-                            byte nextItem = (byte)(i-removeCount);
-                            if (isItemInLoadout(items.getItem(nextItem).Item.ItemID))
+                            if (p.Clothing.backpack == loadout[i])
                             {
-                                player.Inventory.removeItem(items.page,
-                                    items.getIndex(items.getItem(nextItem).PositionX,
-                                        items.getItem(nextItem).PositionY));
-                                removeCount++;
+                                p.Clothing.askWearBackpack(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.glasses == loadout[i])
+                            {
+                                p.Clothing.askWearGlasses(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.hat == loadout[i])
+                            {
+                                p.Clothing.askWearHat(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.mask == loadout[i])
+                            {
+                                p.Clothing.askWearMask(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.pants == loadout[i])
+                            {
+                                p.Clothing.askWearPants(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.shirt == loadout[i])
+                            {
+                                p.Clothing.askWearShirt(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
+                            }
+                            else if (p.Clothing.vest == loadout[i])
+                            {
+                                p.Clothing.askWearVest(0, 0, new byte[0]);
+                                p.Inventory.removeItem(2, 0);
                             }
                         }
                         catch (Exception){}
-
-                //drop all other gear(to make room for dropping clothing)
-                foreach (var items in player.Inventory.Items)
-                    while (items.getItemCount() > 0)
-                        try
-                        {
-                            player.Inventory.askDropItem(player.CSteamID, items.page, items.getItem(0).PositionX,
-                            items.getItem(0).PositionY);
-                        }
-                        catch (Exception){}
-
-                //remove clothing in the loadout
-                var p = player.Player;
-                for (int i = 0; i < loadout.Length; ++i)
-                {
-                    try
-                    {
-                        if (p.Clothing.backpack == loadout[i])
-                        {
-                            p.Clothing.askWearBackpack(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.glasses == loadout[i])
-                        {
-                            p.Clothing.askWearGlasses(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.hat == loadout[i])
-                        {
-                            p.Clothing.askWearHat(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.mask == loadout[i])
-                        {
-                            p.Clothing.askWearMask(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.pants == loadout[i])
-                        {
-                            p.Clothing.askWearPants(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.shirt == loadout[i])
-                        {
-                            p.Clothing.askWearShirt(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
-                        else if (p.Clothing.vest == loadout[i])
-                        {
-                            p.Clothing.askWearVest(0, 0, new byte[0]);
-                            p.Inventory.removeItem(2, 0);
-                        }
                     }
-                    catch (Exception){}
                 }
-        };
+            };
 
             //Save every 5 minutes
             Timer saveTimer = new Timer(5*60*1000);
@@ -297,41 +297,34 @@ namespace DingusGaming
 
         public static void writeToFile(object obj, string fileName)
         {
-            var serializer = new XmlSerializer(obj.GetType(), "");
-            XmlTextWriter xmlTextWriter = null;
-
-            try
+            lock (fileLock)
             {
-                xmlTextWriter = new XmlTextWriter("DGPLugin_" + fileName, Encoding.UTF8);
-                xmlTextWriter.Formatting = Formatting.Indented;
-                serializer.Serialize(xmlTextWriter, obj);
-            }
-            finally
-            {
-                xmlTextWriter?.Close();
+                using (XmlTextWriter writer = new XmlTextWriter("DGPLugin_" + fileName, Encoding.UTF8))
+                {
+                    writer.Formatting = Formatting.Indented;
+                    new XmlSerializer(obj.GetType(), "").Serialize(writer, obj);
+                }
             }
         }
 
         public static T readFromFile<T>(string fileName)
         {
-            var serializer = new XmlSerializer(typeof (T));
-            XmlTextReader xmlTextReader = null;
-
-            try
+            lock (fileLock)
             {
-                xmlTextReader = new XmlTextReader("DGPLugin_" + fileName);
-
-                if (serializer.CanDeserialize(xmlTextReader))
-                    return (T) serializer.Deserialize(xmlTextReader);
-                return default(T);
-            }
-            catch (FileNotFoundException)
-            {
-                return default(T);
-            }
-            finally
-            {
-                xmlTextReader?.Close();
+                try
+                {
+                    using (XmlTextReader xmlTextReader = new XmlTextReader("DGPLugin_" + fileName))
+                    {
+                        var serializer = new XmlSerializer(typeof (T));
+                        if (serializer.CanDeserialize(xmlTextReader))
+                            return (T) serializer.Deserialize(xmlTextReader);
+                        return default(T);
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    return default(T);
+                }
             }
         }
     }

@@ -40,13 +40,12 @@ namespace DingusGaming.helper
         {
             //dequip anything they have equipped
             player.Player.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
-            //p.Equipment.askToggleVision(player.CSteamID);//^see if this works - it doesn't, I don't think
 
             //remove items
             foreach (var items in player.Inventory.Items)
-                for (; items.getItemCount() > 0;)
+                for (int i=items.getItemCount()-1; i >= 0; --i)
                     player.Inventory.removeItem(items.page,
-                        items.getIndex(items.getItem(0).PositionX, items.getItem(0).PositionY));
+                        items.getIndex(items.getItem((byte)i).PositionX, items.getItem((byte)i).PositionY));
 
             //remove clothes
             var p = player.Player;
@@ -267,7 +266,7 @@ namespace DingusGaming.helper
 
                 for (var i = 0; i < currentSkills.Length; ++i)
                     for (var j = 0; j < currentSkills[i].Length; ++j)
-                        currentSkills[i][j].level = Math.Max(skills[i][j], currentSkills[i][j].level);
+                        currentSkills[i][j].level = skills[i][j];
 
                 //update the client-side
                 player.Player.Skills.askSkills(player.CSteamID);

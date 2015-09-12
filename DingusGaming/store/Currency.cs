@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DingusGaming.Arena;
 using DingusGaming.Party;
 using Rocket.Unturned;
@@ -40,6 +41,12 @@ namespace DingusGaming.Store
         public static void saveBalances()
         {
             // TODO: Refactor this to service
+
+            //remove entries with default amount to reduce clutter
+            var itemsToRemove = balances.Where(x => x.Value == startingAmount).ToArray();
+            foreach (var item in itemsToRemove)
+                balances.Remove(item.Key);
+
             DGPlugin.writeToFile(DGPlugin.convertFromDictionary(balances), "balances.xml");
         }
 
