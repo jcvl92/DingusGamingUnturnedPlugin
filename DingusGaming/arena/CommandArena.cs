@@ -57,7 +57,7 @@ namespace DingusGaming.Arena
                 //TODO: add specification of drop item/start item
                 if (command[0].Equals("set"))
                 {
-                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036);//519
+                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036, dropItem: 1021);//519
                     DGPlugin.messagePlayer(caller, "Arena set at your location.");
                 }
                 else if (ArenaEvent.currentEvent != null)

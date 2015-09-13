@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Timers;
 using DingusGaming.helper;
 using DingusGaming.Party;
@@ -20,6 +19,7 @@ namespace DingusGaming.Arena
         private readonly bool adminsIncluded;
         private static bool occurring = false;
         private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>();
+        public readonly Dictionary<CSteamID, int> credits = new Dictionary<CSteamID, int>();
         private readonly Dictionary<CSteamID, int> deaths = new Dictionary<CSteamID, int>();
         private List<int> sortedScores = new List<int>();
         private readonly ushort startItem, dropItem;
@@ -29,7 +29,7 @@ namespace DingusGaming.Arena
         private readonly float rotation, radius;
 
         public ArenaEvent(Vector3 location, float rotation, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
-            byte dropItem = 0, bool adminsIncluded = true)
+            ushort dropItem = 0, bool adminsIncluded = true)
         {
             this.adminsIncluded = adminsIncluded;
             this.startItem = startItem;
@@ -69,9 +69,11 @@ namespace DingusGaming.Arena
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
+
             //update score of killing player
             if (killer != null)
                 scores[killer.CSteamID]++;
+
             //update the deaths of the victim
             deaths[player.CSteamID]++;
 
@@ -126,6 +128,7 @@ namespace DingusGaming.Arena
 
                 states.Clear();
                 scores.Clear();
+                credits.Clear();
                 deaths.Clear();
 
                 //remember to check the adminsIncluded flag
@@ -199,6 +202,7 @@ namespace DingusGaming.Arena
 
             //add player to scores and deaths lists
             scores.Add(player.CSteamID, 0);
+            credits.Add(player.CSteamID, 0);
             deaths.Add(player.CSteamID, 0);
 
             //clear player inventory
@@ -262,7 +266,7 @@ namespace DingusGaming.Arena
 
                     //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
                     DGPlugin.messagePlayer(player,
-                        "Arena has finished. You killed " + scores[state.Key] + " people and died " +
+                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + credits[state.Key] + ") and died " +
                         deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) + "/" + scores.Count + "!");
                 }
                 catch (Exception)

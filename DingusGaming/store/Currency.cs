@@ -41,12 +41,6 @@ namespace DingusGaming.Store
         public static void saveBalances()
         {
             // TODO: Refactor this to service
-
-            //remove entries with default amount to reduce clutter
-            var itemsToRemove = balances.Where(x => x.Value == startingAmount).ToArray();
-            foreach (var item in itemsToRemove)
-                balances.Remove(item.Key);
-
             DGPlugin.writeToFile(DGPlugin.convertFromDictionary(balances), "balances.xml");
         }
 
@@ -61,6 +55,8 @@ namespace DingusGaming.Store
                         (Parties.getParty(player) == null || !Parties.getParty(player).isMember(killer)))
                     {
                         var amount = valueOfPlayer(player);
+                        if (ArenaEvent.isOccurring)
+                            ArenaEvent.currentEvent.credits[killer.CSteamID] += amount;
 
                         //clear the victim's kills since spawn
                         killsSinceSpawn.Remove(player.CSteamID);
@@ -87,14 +83,12 @@ namespace DingusGaming.Store
         public static int valueOfPlayer(UnturnedPlayer player)
         {
             int minutesAlive = (int) (Time.realtimeSinceStartup-player.Player.PlayerLife.lastRespawn)/60;
-            int playersKilledSinceSpawn = 0;
-
-            if (killsSinceSpawn.ContainsKey(player.CSteamID))
-                playersKilledSinceSpawn = killsSinceSpawn[player.CSteamID];
+            int playersKilledSinceSpawn = (killsSinceSpawn.ContainsKey(player.CSteamID) ? killsSinceSpawn[player.CSteamID] : 0);
             int valueOfPlayer = Math.Min(minutesAlive, 10) + playersKilledSinceSpawn * 5;
 
             if (ArenaEvent.isOccurring)
                 return Math.Max(valueOfPlayer, 10);
+
             return valueOfPlayer;
 
         }

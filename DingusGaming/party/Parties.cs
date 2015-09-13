@@ -40,8 +40,8 @@ namespace DingusGaming.Party
                                 getParty(player).tellParty(killer.CharacterName + " has killed partymember, " + player.CharacterName + "!", killer);
                             else
                             {
-                                getParty(player)?.tellParty(player.CharacterName + " has been killed by " + killer.CharacterName + "!");
-                                getParty(killer)?.tellParty(killer.CharacterName + " has killed " + player.CharacterName + "!", killer);
+                                getParty(player)?.tellParty(player.CharacterName + "($" + Currency.valueOfPlayer(player) + ") has been killed by " + killer.CharacterName + "!");
+                                getParty(killer)?.tellParty(killer.CharacterName + " has killed " + player.CharacterName + "($" + Currency.valueOfPlayer(player) + ")!", killer);
                             }
                         }
                     }
