@@ -22,7 +22,7 @@ namespace DingusGaming.Arena
         private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>();
         private readonly Dictionary<CSteamID, int> deaths = new Dictionary<CSteamID, int>();
         private List<int> sortedScores = new List<int>();
-        private readonly ushort startItem;
+        private readonly ushort startItem, dropItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
         private readonly Timer timer = null;
         private readonly Vector3 location;
@@ -33,6 +33,7 @@ namespace DingusGaming.Arena
         {
             this.adminsIncluded = adminsIncluded;
             this.startItem = startItem;
+            this.dropItem = dropItem;
             this.location = location;
             this.rotation = rotation;
             this.radius = radius;
@@ -159,7 +160,10 @@ namespace DingusGaming.Arena
                         preparePlayer(player);
                 }
 
-                //TODO: drop starting items on location
+                //drop starting items on location
+                if(dropItem != 0)
+                    for(int i=0; i<scores.Count; ++i)
+                        ItemManager.dropItem(new SDG.Unturned.Item(dropItem, 1, 100), location, true, false, true);
 
                 //hook in player death/revive events
                 UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
