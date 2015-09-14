@@ -163,16 +163,18 @@ namespace DingusGaming
             return null;
         }
 
-        public static void teleportPlayer(UnturnedPlayer player, UnturnedPlayer target)
+        public static bool teleportPlayer(UnturnedPlayer player, UnturnedPlayer target)
         {
             removeFromVehicle(player);
 
             //put them into the target's vehicle, if they are in one
             InteractableVehicle vehicle = target.Player.Movement.getVehicle();
             if (vehicle != null)
-                addToVehicle(player, vehicle);
-            else
-                player.Teleport(target);
+                return addToVehicle(player, vehicle);
+
+            //otherwise teleport them to the target
+            player.Teleport(target);
+            return true;
         }
 
         public static void teleportPlayer(UnturnedPlayer player, Vector3 position, float rotation)
@@ -212,17 +214,21 @@ namespace DingusGaming
         public static void removeFromVehicle(UnturnedPlayer player)
         {
             if (player.Player.Movement.getVehicle() != null)
-                vehicleManager.askExitVehicle(player.CSteamID, new Vector3(0, 0, 0));//player.Position);
+                vehicleManager.askExitVehicle(player.CSteamID, new Vector3(0, 0, 0));
         }
 
-        public static void addToVehicle(UnturnedPlayer player, InteractableVehicle vehicle)
+        public static bool addToVehicle(UnturnedPlayer player, InteractableVehicle vehicle)
         {
-            //teleport them close enough to the car to get in
-            Vector3 pos = vehicle.transform.position;
-            pos.x += 2; pos.z += 2;
-            player.Teleport(pos, 0);
+            if (player == null || vehicle == null)
+                return false;
 
-            vehicleManager.askEnterVehicle(player.CSteamID, vehicle.index);
+            byte seat;
+            if (vehicle.tryAddPlayer(out seat))
+            {
+                vehicleManager.channel.send("tellEnterVehicle", (ESteamCall)1, (ESteamPacket)15, new object[]{vehicle.index, seat, player.CSteamID});
+                return true;
+            }
+            return false;
         }
 
         public static void disableCommands()

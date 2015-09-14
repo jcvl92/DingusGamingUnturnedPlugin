@@ -86,11 +86,15 @@ namespace DingusGaming.Party
                         //add them to the CD list if they aren't in it
                         if (!lastTP.ContainsKey(caller.CSteamID) || Time.realtimeSinceStartup - lastTP[caller.CSteamID] > cooldownTime)
                         {
-                            lastTP[caller.CSteamID] = Time.realtimeSinceStartup;
-
-                            DGPlugin.teleportPlayer(caller, player);
-
-                            DGPlugin.messagePlayer(player, caller.CharacterName+" has teleported to you!");
+                            if(DGPlugin.teleportPlayer(caller, player))
+                            {
+                                lastTP[caller.CSteamID] = Time.realtimeSinceStartup;
+                                DGPlugin.messagePlayer(player, caller.CharacterName + " has teleported to you!");
+                            }
+                            else
+                            {
+                                DGPlugin.messagePlayer(player, "Could not teleport to " + caller.CharacterName + " because their vehicle is full.");
+                            }
                         }
                         //if the cooldown has not passed
                         else

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
-using UnityEngine;
+using SDG.Unturned;
 
-namespace DingusGaming.Store
+namespace DingusGaming
 {
     public class CommandTest : IRocketCommand
     {
@@ -12,8 +12,7 @@ namespace DingusGaming.Store
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private Vector3 pos;
-        private float rot;
+        private InteractableVehicle vehicle = null;
 
         public bool RunFromConsole
         {
@@ -51,13 +50,18 @@ namespace DingusGaming.Store
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length>0 && command[0].Equals("save"))
+            if (vehicle == null)
             {
-                pos = caller.Position;
-                rot = caller.Rotation;
+                vehicle = caller.Player.Movement.getVehicle();
+                DGPlugin.removeFromVehicle(caller);
             }
             else
-                caller.Teleport(pos, rot);
+            {
+                DGPlugin.addToVehicle(caller, vehicle);
+                vehicle = null;
+            }
+
+            DGPlugin.broadcastMessage("isinvehicle=" + (caller.Player.Movement.getVehicle() != null));
         }
     }
 }
