@@ -14,7 +14,7 @@ namespace DingusGaming.helper
         private float rotation;
         private PlayerSkills skills;
         private PlayerSurvivalStats stats;
-        public ushort? vehicleID = null;
+        public InteractableVehicle vehicle;
 
         public static PlayerState getState(UnturnedPlayer player)
         {
@@ -30,8 +30,7 @@ namespace DingusGaming.helper
 
             state.stats = PlayerSurvivalStats.getStats(player);
 
-            if (player.Player.Movement.getVehicle() != null)
-                state.vehicleID = player.Player.Movement.getVehicle().index;
+            state.vehicle = player.Player.Movement.getVehicle();
 
             return state;
         }
@@ -106,7 +105,10 @@ namespace DingusGaming.helper
 
         public void setLocation(UnturnedPlayer player)
         {
-            player.Teleport(position, rotation);
+            if (vehicle != null)
+                DGPlugin.addToVehicle(player, vehicle);
+            else
+                DGPlugin.teleportPlayer(player, position, rotation);
         }
 
         public void setInventory(UnturnedPlayer player)

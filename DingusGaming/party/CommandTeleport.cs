@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
@@ -14,13 +15,14 @@ namespace DingusGaming.Party
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
         private const uint cooldownTime = 60;
-        private static readonly Dictionary<CSteamID, float> lastTP = new Dictionary<CSteamID, float>();
+        private static readonly Dictionary<CSteamID, float> nextTP = new Dictionary<CSteamID, float>();
 
         public static void playerDied(UnturnedPlayer player)
         {
-            //change their cooldown to half of the normal cooldown, unless their cooldown is already greater than half of the cooldown
-            if (!lastTP.ContainsKey(player.CSteamID) || Time.realtimeSinceStartup - lastTP[player.CSteamID] < cooldownTime/2)
-                lastTP[player.CSteamID] = Time.realtimeSinceStartup - cooldownTime/2;
+            if (nextTP.ContainsKey(player.CSteamID))
+                nextTP[player.CSteamID] = Math.Max(Time.realtimeSinceStartup + cooldownTime / 2, nextTP[player.CSteamID]);
+            else
+                nextTP[player.CSteamID] = Time.realtimeSinceStartup + cooldownTime / 2;
         }
 
         public bool RunFromConsole
@@ -84,21 +86,18 @@ namespace DingusGaming.Party
                     if (!player.Dead)
                     {
                         //add them to the CD list if they aren't in it
-                        if (!lastTP.ContainsKey(caller.CSteamID) || Time.realtimeSinceStartup - lastTP[caller.CSteamID] > cooldownTime)
+                        if (!nextTP.ContainsKey(caller.CSteamID) || Time.realtimeSinceStartup > nextTP[caller.CSteamID])
                         {
                             if(DGPlugin.teleportPlayer(caller, player))
                             {
-                                lastTP[caller.CSteamID] = Time.realtimeSinceStartup;
+                                nextTP[caller.CSteamID] = Time.realtimeSinceStartup + cooldownTime;
                                 DGPlugin.messagePlayer(player, caller.CharacterName + " has teleported to you!");
                             }
                             else
-                            {
-                                DGPlugin.messagePlayer(player, "Could not teleport to " + caller.CharacterName + " because their vehicle is full.");
-                            }
+                                DGPlugin.messagePlayer(caller, "Could not teleport to " + player.CharacterName + " because their vehicle is full.");
                         }
-                        //if the cooldown has not passed
                         else
-                            DGPlugin.messagePlayer(caller, "Teleport is on cooldown for "+(int)(cooldownTime-(Time.realtimeSinceStartup - lastTP[caller.CSteamID]))+" more seconds.");
+                            DGPlugin.messagePlayer(caller, "Teleport is on cooldown for "+(int)(nextTP[caller.CSteamID] - Time.realtimeSinceStartup)+" more seconds.");
                     }
                     else
                         DGPlugin.messagePlayer(caller, player.CharacterName + " is dead. You can't teleport to dead players.");

@@ -26,7 +26,7 @@ namespace DingusGaming.Arena
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
         private readonly Timer timer = null;
         private readonly Vector3 location;
-        private readonly float rotation, radius;
+        private readonly float radius;
 
         public ArenaEvent(Vector3 location, float rotation, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
             ushort dropItem = 0, bool adminsIncluded = true)
@@ -35,7 +35,6 @@ namespace DingusGaming.Arena
             this.startItem = startItem;
             this.dropItem = dropItem;
             this.location = location;
-            this.rotation = rotation;
             this.radius = radius;
 
             //create the timer to stop the event when the max time has been reached
@@ -283,13 +282,6 @@ namespace DingusGaming.Arena
 
         public void restorePlayer(UnturnedPlayer player, PlayerState state)
         {
-            if (state.vehicleID == null)
-                //teleport them back
-                DGPlugin.teleportPlayer(player, location, rotation);
-            else
-                //put them back in the car they were in, if any
-                DGPlugin.addToVehicle(player, VehicleManager.getVehicle(state.vehicleID.Value));
-
             //completely restore their state
             state.setCompleteState(player);
         }

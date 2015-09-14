@@ -27,7 +27,7 @@ namespace DingusGaming
     {
         //contains helper functions for persisting data and centralizing common functions
         private static VehicleManager vehicleManager;
-        private static System.Object fileLock = new System.Object();
+        private static object fileLock = new object();
 
         protected override void Load()
         {
@@ -222,13 +222,26 @@ namespace DingusGaming
             if (player == null || vehicle == null)
                 return false;
 
-            byte seat;
-            if (vehicle.tryAddPlayer(out seat))
+            byte seat = byte.MaxValue;
+            if (vehicle.isExploded != true)
+                for (byte index = 0; index < vehicle.passengers.Length; ++index)
+                    if (vehicle.passengers[index] != null && vehicle.passengers[index].player == null)
+                    {
+                        seat = index;
+                        break;
+                    }
+
+            if (seat != byte.MaxValue)
             {
                 vehicleManager.channel.send("tellEnterVehicle", (ESteamCall)1, (ESteamPacket)15, new object[]{vehicle.index, seat, player.CSteamID});
                 return true;
             }
-            return false;
+            else
+            {
+                Vector3 pos = new Vector3(vehicle.transform.position.x + 5, vehicle.transform.position.y, vehicle.transform.position.z + 5);
+                teleportPlayer(player, pos, 0);
+                return false;
+            }
         }
 
         public static void disableCommands()
