@@ -11,11 +11,12 @@ namespace DingusGaming.Party
         private readonly List<CSteamID> members;
         private CSteamID leader;
 
-        public Party(UnturnedPlayer leader)
+        public Party(UnturnedPlayer leader, UnturnedPlayer member)
         {
             this.leader = leader.CSteamID;
             members = new List<CSteamID>();
-            addMember(leader);
+            members.Add(leader.CSteamID);
+            members.Add(member.CSteamID);
         }
 
         public ReadOnlyCollection<CSteamID> getMembers()

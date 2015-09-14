@@ -18,9 +18,9 @@ namespace DingusGaming.Party
             var party = Parties.getParty(DGPlugin.getPlayer(requester));
 
             if (party == null)
-                party = Parties.createParty(DGPlugin.getPlayer(requester));
-
-            party.addMember(DGPlugin.getPlayer(playerRequested));
+                Parties.createParty(DGPlugin.getPlayer(requester), DGPlugin.getPlayer(playerRequested));
+            else
+                party.addMember(DGPlugin.getPlayer(playerRequested));
         }
     }
 }
