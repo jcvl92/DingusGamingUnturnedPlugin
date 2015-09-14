@@ -28,6 +28,7 @@ namespace DingusGaming
         //contains helper functions for persisting data and centralizing common functions
         private static VehicleManager vehicleManager;
         private static object fileLock = new object();
+        private static event PermissionRequested permissionHolder;
 
         protected override void Load()
         {
@@ -250,12 +251,20 @@ namespace DingusGaming
 
         public static void disableCommands()
         {
-            //TODO: implement this
+            if(UnturnedPermissions.OnPermissionRequested != null)
+            {
+                permissionHolder = UnturnedPermissions.OnPermissionRequested;
+                UnturnedPermissions.OnPermissionRequested = null;
+            }
         }
 
         public static void enableCommands()
         {
-            //TODO: implement this
+            if(permissionHolder != null)
+            {
+                UnturnedPermissions.OnPermissionRequested = permissionHolder;
+                permissionHolder = null;
+            }
         }
 
         public static void respawnPlayer(UnturnedPlayer player)
