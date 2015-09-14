@@ -238,8 +238,12 @@ namespace DingusGaming
             }
             else
             {
-                Vector3 pos = new Vector3(vehicle.transform.position.x + 5, vehicle.transform.position.y, vehicle.transform.position.z + 5);
-                teleportPlayer(player, pos, 0);
+                double angle = ((vehicle.transform.eulerAngles.y + 180) * Math.PI) / 180;
+                float sin = (float)Math.Sin(angle), cos = (float)Math.Cos(angle);
+                Vector3 pos = new Vector3(vehicle.transform.position.x + sin * 6, vehicle.transform.position.y, vehicle.transform.position.z + cos * 6);
+
+                teleportPlayer(player, pos, (float)((angle * 180) / Math.PI) - 180);
+
                 return false;
             }
         }

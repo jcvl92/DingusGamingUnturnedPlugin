@@ -54,7 +54,6 @@ namespace DingusGaming.Arena
             }
             else
             {
-                //TODO: add specification of drop item/start item
                 if (command[0].Equals("set"))
                 {
                     ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036, dropItem: 1021);

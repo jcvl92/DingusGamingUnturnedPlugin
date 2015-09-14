@@ -20,7 +20,6 @@ namespace DingusGaming.Store
 
         public static string listSubstores()
         {
-            // TODO: Refactor to a toString method
             var str = "";
             for (var i = 0; i < stores.Count; ++i)
                 str += "(" + (i + 1) + ")" + stores[i].name + ", ";

@@ -30,7 +30,6 @@ namespace DingusGaming.Store
 
         private static void loadBalances()
         {
-            // TODO: Refactor this to service
             var temp = DGPlugin.readFromFile<List<DictionaryEntry>>("balances.xml");
             if (temp != null)
                 balances = DGPlugin.convertToDictionary<string, int>(temp);
@@ -40,7 +39,6 @@ namespace DingusGaming.Store
 
         public static void saveBalances()
         {
-            // TODO: Refactor this to service
             DGPlugin.writeToFile(DGPlugin.convertFromDictionary(balances), "balances.xml");
         }
 

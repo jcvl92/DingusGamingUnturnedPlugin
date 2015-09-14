@@ -38,7 +38,7 @@ namespace DingusGaming.helper
         public static void clearInventory(UnturnedPlayer player)
         {
             //dequip anything they have equipped
-            player.Player.Equipment.dequip(); //TODO: fix this. it leaves pinned visual on character(holstered)
+            player.Player.Equipment.dequip();
 
             //remove items
             foreach (var items in player.Inventory.Items)
