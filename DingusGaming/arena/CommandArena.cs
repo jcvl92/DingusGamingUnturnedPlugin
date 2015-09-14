@@ -57,13 +57,18 @@ namespace DingusGaming.Arena
                 //TODO: add specification of drop item/start item
                 if (command[0].Equals("set"))
                 {
-                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036, dropItem: 1021);//519
+                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036, dropItem: 1021);
                     DGPlugin.messagePlayer(caller, "Arena set at your location.");
                 }
                 else if (ArenaEvent.currentEvent != null)
                 {
-                    ArenaEvent.currentEvent.beginArena();
-                    DGPlugin.broadcastMessage("The Arena has begun!");
+                    if (!ArenaEvent.isOccurring)
+                    {
+                        ArenaEvent.currentEvent.beginArena();
+                        DGPlugin.broadcastMessage("The Arena has begun!");
+                    }
+                    else
+                        DGPlugin.messagePlayer(caller, "An Arena is already occurring!");
                 }
                 else
                     DGPlugin.messagePlayer(caller, "No arena set!");
