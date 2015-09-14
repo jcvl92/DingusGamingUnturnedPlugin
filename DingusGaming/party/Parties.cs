@@ -167,9 +167,11 @@ namespace DingusGaming.Party
                 invites.Remove(invite);
         }
 
-        public static void createParty(UnturnedPlayer leader, UnturnedPlayer member)
+        public static Party createParty(UnturnedPlayer leader)
         {
-            parties.Add(new Party(leader, member));
+            Party party = new Party(leader);
+            parties.Add(party);
+            return party;
         }
 
         public static Party getParty(UnturnedPlayer player)

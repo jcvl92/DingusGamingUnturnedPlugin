@@ -11,12 +11,11 @@ namespace DingusGaming.Party
         private readonly List<CSteamID> members;
         private CSteamID leader;
 
-        public Party(UnturnedPlayer leader, UnturnedPlayer member)
+        public Party(UnturnedPlayer leader)
         {
             this.leader = leader.CSteamID;
             members = new List<CSteamID>();
             members.Add(leader.CSteamID);
-            members.Add(member.CSteamID);
         }
 
         public ReadOnlyCollection<CSteamID> getMembers()
@@ -79,11 +78,11 @@ namespace DingusGaming.Party
                 DGPlugin.messagePlayer(caller, "Error, you are not in this party.");
         }
 
-        //done through invites
         public void addMember(UnturnedPlayer player)
         {
             members.Add(player.CSteamID);
-            tellParty(player.CharacterName + " has joined the party!");
+            tellParty(player.CharacterName + " has joined the party!", player);
+            DGPlugin.messagePlayer(player, "You have joined the party!");
         }
 
         public void kickMember(UnturnedPlayer caller, UnturnedPlayer player)
