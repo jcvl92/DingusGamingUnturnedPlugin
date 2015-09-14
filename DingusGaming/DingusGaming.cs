@@ -121,9 +121,7 @@ namespace DingusGaming
                 }
             };
 
-            //Save every 5 minutes
             U.Settings.Instance.AutomaticSave.Interval = saveInterval;
-
             Timer saveTimer = new Timer(saveInterval*1000);
             saveTimer.Elapsed += delegate
             {
