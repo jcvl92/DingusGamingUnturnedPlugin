@@ -72,6 +72,7 @@ namespace DingusGaming.Store
                         {
                             InteractableVehicle vehicle = VehicleManager.vehicles[VehicleManager.vehicles.Count - 1];
                             vehicle.askFill(ushort.MaxValue);
+                            vehicle.askRepair(ushort.MaxValue);
                             Currency.changeBalance(caller, -cost);
                             DGPlugin.messagePlayer(caller,
                                 "Purchased vehicle #" + vehicle.name + " for " + cost +
