@@ -22,7 +22,7 @@ namespace DingusGaming.Arena
         public readonly Dictionary<CSteamID, int> credits = new Dictionary<CSteamID, int>();
         private readonly Dictionary<CSteamID, int> deaths = new Dictionary<CSteamID, int>();
         private List<int> sortedScores = new List<int>();
-        private readonly ushort startItem, dropItem;
+        private readonly ushort startItem, dropItem, eventLength;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
         private readonly Timer timer = null;
         private readonly Vector3 location;
@@ -36,21 +36,20 @@ namespace DingusGaming.Arena
             this.dropItem = dropItem;
             this.location = location;
             this.radius = radius;
+            this.eventLength = eventLength;
 
             //create the timer to stop the event when the max time has been reached
             timer = new Timer((double) eventLength*1000);
             timer.AutoReset = false;
-            timer.Elapsed += delegate { stopArena(); };
+            timer.Elapsed += delegate {
+                stopArena();
+                timer.Close();
+            };
         }
 
         public static bool isOccurring
         {
             get { return occurring; }
-        }
-
-        ~ArenaEvent()
-        {
-            timer.Close();
         }
 
         private void suppressMessages()
@@ -119,6 +118,15 @@ namespace DingusGaming.Arena
             if (!occurring)
             {
                 occurring = true;
+
+                //disable server state saving during the event and 2.5 minutes after it
+                DGPlugin.delaySaving(eventLength+(2.5*60));
+                Timer saveTimer = new Timer(2.5*60*1000);
+                saveTimer.AutoReset = false;
+                saveTimer.Elapsed += delegate {
+                    DGPlugin.clearSaveDelay();
+                    saveTimer.Close();
+                };
 
                 suppressMessages();
 

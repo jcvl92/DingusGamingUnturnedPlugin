@@ -29,6 +29,7 @@ namespace DingusGaming
         private static VehicleManager vehicleManager;
         private static object fileLock = new object();
         private static event PermissionRequested permissionHolder;
+        private const int saveInterval = 5*60;
 
         protected override void Load()
         {
@@ -40,8 +41,6 @@ namespace DingusGaming
             Logger.LogWarning("DingusGaming Plugin Loaded!");
 
             vehicleManager = ((VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null));
-
-            U.Settings.Instance.AutomaticSave.Interval = 5*60;
 
             UnturnedPlayerEvents.OnPlayerChatted += delegate (UnturnedPlayer player, ref Color color, string message, EChatMode chatMode)
             {
@@ -70,7 +69,6 @@ namespace DingusGaming
                         for (int i=items.getItemCount()-1; i >= 0; --i)
                             try
                             {
-                                //if(!player.Inventory.getItem(items.page, (byte)i).item.Equals(default(SDG.Unturned.Item)))//make sure this is a valid item to prevent game freezing
                                 player.Inventory.askDropItem(player.CSteamID, items.page, items.getItem(0).PositionX,items.getItem(0).PositionY);
                             }
                             catch (Exception){}
@@ -124,13 +122,25 @@ namespace DingusGaming
             };
 
             //Save every 5 minutes
-            Timer saveTimer = new Timer(5*60*1000);
+            U.Settings.Instance.AutomaticSave.Interval = saveInterval;
+
+            Timer saveTimer = new Timer(saveInterval*1000);
             saveTimer.Elapsed += delegate
             {
                 Currency.saveBalances();
                 Logger.LogWarning("DGPlugin state saved.");
             };
             saveTimer.Start();
+        }
+
+        public void delaySaving(int seconds)
+        {
+            U.Settings.Instance.AutomaticSave.Interval += seconds;
+        }
+
+        public void clearSaveDelay()
+        {
+            U.Settings.Instance.AutomaticSave.Interval = saveInterval;
         }
 
         private bool isItemInLoadout(ushort itemID)
@@ -144,8 +154,6 @@ namespace DingusGaming
 
         protected override void Unload()
         {
-            //is called by Rocket before shutting down
-            //Steam.OnServerShutdown.Invoke();
             Currency.saveBalances();
         }
 
