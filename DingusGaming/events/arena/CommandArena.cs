@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
 
-namespace DingusGaming.Arena
+namespace DingusGaming.Events.Arena
 {
     public class CommandArena : IRocketCommand
     {

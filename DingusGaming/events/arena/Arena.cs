@@ -11,9 +11,9 @@ using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
 
-namespace DingusGaming.Arena
+namespace DingusGaming.Events.Arena
 {
-    public class ArenaEvent
+    public class ArenaEvent : Event
     {
         public static ArenaEvent currentEvent;
         private readonly bool adminsIncluded;
@@ -288,7 +288,7 @@ namespace DingusGaming.Arena
             occurring = false;
         }
 
-        public void restorePlayer(UnturnedPlayer player, PlayerState state)
+        private void restorePlayer(UnturnedPlayer player, PlayerState state)
         {
             //completely restore their state
             state.setCompleteState(player);
