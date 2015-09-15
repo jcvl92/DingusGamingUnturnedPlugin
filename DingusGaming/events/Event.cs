@@ -1,10 +1,9 @@
 namespace DingusGaming.Events
 {
-    public interface Event
-    {
-    	public void beginEvent();
-    	public void endEvent();
-    	public void fireEvent();
-    	public void toString();
-    }
+	public interface Event
+	{
+		public void startEvent();
+		public void stopEvent();
+		public string toString();
+	}
 }

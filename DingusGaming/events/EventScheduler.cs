@@ -1,31 +1,53 @@
 namespace DingusGaming.Events
 {
-    //TODO: move time handling from arena to here
     public class EventScheduler
     {
-        private List<Event> events = new List<Event>();
-        private list<Timer> timers - new List<Timer>();
+        private List<ScheduledEvent> scheduledEvents = new List<ScheduledEvent>();
 
-    	public static int addEvent(Event newEvent, int frequency, int duration=0)
+    	public static int scheduleEvent(Event newEvent, int intervalMinutes, int lockToMinute=-1, int durationSeconds=0)
     	{
-            if(frequency<duration)
-                return -1;
+            ScheduledEvent scheduledEvent = (durationSeconds <= 0 ? new ScheduledEvent(newEvent, intervalMinutes) : new ScheduledEvent(newEvent, intervalMinutes, durationSeconds));
 
-            //Add the event to the list
-            events.Add(newEvent);
+            if(lockToMinute != -1)
+            {
+                if(lockToMinute >= 0 && lockToMinute < 60)
+                {
+                    Timer waitTimer = new Timer(lockToMinute*60000 - (DateTime.Now.Minute*60000 + DateTime.Now.Second*1000 + DateTime.Now.Millisecond));
+                    waitTimer.AutoReset = false;
+                    waitTimer.Elapsed += delegate
+                    {
+                        scheduledEvent.beginRecurrence();
 
-            //spawn a new timer for the event
+                        waitTimer.Close();
+                    };
+                    waitTimer.Start();
+                }
+                else
+                    return -1;
+            }
+            else
+                scheduledEvent.beginRecurrence();
 
+            scheduledEvents.Add(scheduledEvent);
+
+            return scheduledEvents.IndexOf(scheduledEvent);
     	}
 
         public static string listEvents()
         {
-
+            StringBuilder sb = new StringBuilder("Events:");
+            for(int i=0; i<scheduledEvents.Length; ++i)
+            {
+                sb.Append(" "+(i+1)+":("+e.toString+")");
+            }
+            return sb.toString();
         }
 
+        //TODO: make sure calls referencing listEvents do index-1 before calling this
         public static void removeEvent(int index)
         {
-            
+            scheduledEvents[index].stopRecurrence();
+            scheduledEvents.removeAt(index);
         }
     }
 }
