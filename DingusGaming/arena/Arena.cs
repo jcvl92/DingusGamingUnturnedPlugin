@@ -28,7 +28,7 @@ namespace DingusGaming.Arena
         private readonly Vector3 location;
         private readonly float radius;
 
-        public ArenaEvent(Vector3 location, float rotation, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
+        public ArenaEvent(Vector3 location, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
             ushort dropItem = 0, bool adminsIncluded = true)
         {
             this.adminsIncluded = adminsIncluded;
