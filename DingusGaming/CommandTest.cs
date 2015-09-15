@@ -12,7 +12,7 @@ namespace DingusGaming
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private InteractableVehicle vehicle = null;
+        private bool toggle = true;
 
         public bool RunFromConsole
         {
@@ -50,18 +50,16 @@ namespace DingusGaming
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (vehicle == null)
+            if (toggle)
             {
-                vehicle = caller.Player.Movement.getVehicle();
-                DGPlugin.removeFromVehicle(caller);
+                DGPlugin.disableCommands();
+                toggle = false;
             }
             else
             {
-                DGPlugin.addToVehicle(caller, vehicle);
-                vehicle = null;
+                DGPlugin.enableCommands();
+                toggle = true;
             }
-
-            DGPlugin.broadcastMessage("isinvehicle=" + (caller.Player.Movement.getVehicle() != null));
         }
     }
 }

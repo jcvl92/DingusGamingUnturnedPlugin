@@ -16,6 +16,7 @@ using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Events;
+using Rocket.Unturned.Permissions;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
@@ -28,7 +29,7 @@ namespace DingusGaming
         //contains helper functions for persisting data and centralizing common functions
         private static VehicleManager vehicleManager;
         private static object fileLock = new object();
-        private static event PermissionRequested permissionHolder;
+        private static event UnturnedPermissions.PermissionRequested permissionHolder;
         private const int saveInterval = 5*60;
 
         protected override void Load()
@@ -131,25 +132,6 @@ namespace DingusGaming
             saveTimer.Start();
         }
 
-        public void delaySaving(int seconds)
-        {
-            U.Settings.Instance.AutomaticSave.Interval += seconds;
-        }
-
-        public void clearSaveDelay()
-        {
-            U.Settings.Instance.AutomaticSave.Interval = saveInterval;
-        }
-
-        private bool isItemInLoadout(ushort itemID)
-        {
-            ushort[] loadout = PlayerInventory.loadout;
-            for (int i = 0; i < loadout.Length; ++i)
-                if (loadout[i] == itemID)
-                    return true;
-            return false;
-        }
-
         protected override void Unload()
         {
             Currency.saveBalances();
@@ -161,6 +143,25 @@ namespace DingusGaming
         }
 
         /********** HELPER FUNCTIONS **********/
+
+        public static void delaySaving(int seconds)
+        {
+            U.Settings.Instance.AutomaticSave.Interval += seconds;
+        }
+
+        public static void clearSaveDelay()
+        {
+            U.Settings.Instance.AutomaticSave.Interval = saveInterval;
+        }
+
+        private static bool isItemInLoadout(ushort itemID)
+        {
+            ushort[] loadout = PlayerInventory.loadout;
+            for (int i = 0; i < loadout.Length; ++i)
+                if (loadout[i] == itemID)
+                    return true;
+            return false;
+        }
 
         public static UnturnedPlayer getKiller(UnturnedPlayer player, EDeathCause cause, CSteamID murderer)
         {
@@ -257,10 +258,11 @@ namespace DingusGaming
 
         public static void disableCommands()
         {
-            if(UnturnedPermissions.OnPermissionRequested != null)
+            UnturnedPermissions.PermissionRequested permissions = ((UnturnedPermissions.PermissionRequested) typeof (UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null));
+            if (permissions != null)
             {
-                permissionHolder = UnturnedPermissions.OnPermissionRequested;
-                UnturnedPermissions.OnPermissionRequested = null;
+                permissionHolder = permissions;
+                typeof(UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, null);
             }
         }
 
@@ -268,7 +270,7 @@ namespace DingusGaming
         {
             if(permissionHolder != null)
             {
-                UnturnedPermissions.OnPermissionRequested = permissionHolder;
+                typeof(UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, permissionHolder);
                 permissionHolder = null;
             }
         }

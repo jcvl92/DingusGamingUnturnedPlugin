@@ -120,7 +120,7 @@ namespace DingusGaming.Arena
                 occurring = true;
 
                 //disable server state saving during the event and 2.5 minutes after it
-                DGPlugin.delaySaving(eventLength+(2.5*60));
+                DGPlugin.delaySaving((int)(eventLength+(2.5*60)));
                 Timer saveTimer = new Timer(2.5*60*1000);
                 saveTimer.AutoReset = false;
                 saveTimer.Elapsed += delegate {
