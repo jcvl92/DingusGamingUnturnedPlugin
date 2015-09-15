@@ -7,10 +7,11 @@ namespace DingusGaming.Events.Arena
     public class CommandArena : IRocketCommand
     {
         private const string NAME = "arena";
-        private const string HELP = "Start/set the location for an arena event.";
-        private const string SYNTAX = "<start|set>";
+        private const string HELP = "Schedule arena at your location or update arena location.";
+        private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
+        private static ArenaEvent arenaEvent = null;
 
         public bool RunFromConsole
         {
@@ -48,30 +49,18 @@ namespace DingusGaming.Events.Arena
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length != 1 || !(command[0].Equals("set") || command[0].Equals("start")))
+            if (command.Length > 0)
             {
-                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"arena set\" or \"arena start\".");
+                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"arena\".");
+            }
+            else if(arenaEvent == null)
+            {
+                arenaEvent = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
+                EventScheduler.scheduleEvent(arenaEvent, 30, true, 60);
+                DGPlugin.messagePlayer(caller, "Arena set at your location.");
             }
             else
-            {
-                if (command[0].Equals("set"))
-                {
-                    ArenaEvent.currentEvent = new ArenaEvent(caller.Position, caller.Rotation, startItem: 1036, dropItem: 1021);
-                    DGPlugin.messagePlayer(caller, "Arena set at your location.");
-                }
-                else if (ArenaEvent.currentEvent != null)
-                {
-                    if (!ArenaEvent.isOccurring)
-                    {
-                        ArenaEvent.currentEvent.beginArena();
-                        DGPlugin.broadcastMessage("The Arena has begun!");
-                    }
-                    else
-                        DGPlugin.messagePlayer(caller, "An Arena is already occurring!");
-                }
-                else
-                    DGPlugin.messagePlayer(caller, "No arena set!");
-            }
+                arenaEvent.location = caller.Position;
         }
     }
 }

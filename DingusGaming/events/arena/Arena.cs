@@ -18,33 +18,26 @@ namespace DingusGaming.Events.Arena
         public static ArenaEvent currentEvent;
         private readonly bool adminsIncluded;
         private static bool occurring = false;
-        private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>();
-        public readonly Dictionary<CSteamID, int> credits = new Dictionary<CSteamID, int>();
-        private readonly Dictionary<CSteamID, int> deaths = new Dictionary<CSteamID, int>();
+        private readonly Dictionary<CSteamID, int> scores = new Dictionary<CSteamID, int>(),
+            credits = new Dictionary<CSteamID, int>(), deaths = new Dictionary<CSteamID, int>();
         private List<int> sortedScores = new List<int>();
-        private readonly ushort startItem, dropItem, eventLength;
+        private readonly ushort startItem, dropItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
-        private readonly Timer timer = null;
-        private readonly Vector3 location;
+        public Vector3 location;
         private readonly float radius;
 
-        public ArenaEvent(Vector3 location, float radius = 10, ushort eventLength = 60, ushort startItem = 0,
-            ushort dropItem = 0, bool adminsIncluded = true)
+        public ArenaEvent(Vector3 location, float radius = 10, ushort startItem = 0, ushort dropItem = 0, bool adminsIncluded = true)
         {
-            this.adminsIncluded = adminsIncluded;
-            this.startItem = startItem;
-            this.dropItem = dropItem;
             this.location = location;
             this.radius = radius;
-            this.eventLength = eventLength;
+            this.startItem = startItem;
+            this.dropItem = dropItem;
+            this.adminsIncluded = adminsIncluded;
+        }
 
-            //create the timer to stop the event when the max time has been reached
-            timer = new Timer((double) eventLength*1000);
-            timer.AutoReset = false;
-            timer.Elapsed += delegate {
-                stopArena();
-                timer.Close();
-            };
+        public string toString()
+        {
+            return "Arena-at:"+location+",radius:"+radius+",startItem:"+startItem+",dropItem:"+dropItem+",admins:"+adminsIncluded;
         }
 
         public static bool isOccurring
@@ -113,24 +106,15 @@ namespace DingusGaming.Events.Arena
             player.Player.PlayerLife.OnUpdateLife += playerRevived;
         }
 
-        public void beginArena()
+        public void startEvent()
         {
             if (!occurring)
             {
                 occurring = true;
 
-                //disable server state saving during the event and 2.5 minutes after it
-                DGPlugin.delaySaving((int)(eventLength+(2.5*60)));
-                Timer saveTimer = new Timer(2.5*60*1000);
-                saveTimer.AutoReset = false;
-                saveTimer.Elapsed += delegate {
-                    DGPlugin.clearSaveDelay();
-                    saveTimer.Close();
-                };
-
                 suppressMessages();
 
-                //disable all user commands during event
+                //disable all user commands during arena
                 DGPlugin.disableCommands();
 
                 states.Clear();
@@ -196,9 +180,6 @@ namespace DingusGaming.Events.Arena
                     }
                 };
                 vanishTimer.Start();
-
-                //start event timer
-                timer.Start();
             }
         }
 
@@ -206,6 +187,7 @@ namespace DingusGaming.Events.Arena
         {
             //save player state
             states.Add(player.CSteamID, PlayerState.getState(DGPlugin.getPlayer(player.CSteamID)));
+            credits.Add(player.CSteamID, Currency.getBalance(player));
 
             //add player to scores and deaths lists
             scores.Add(player.CSteamID, 0);
@@ -233,7 +215,7 @@ namespace DingusGaming.Events.Arena
             }
         }
 
-        private void stopArena()
+        private void stopEvent()
         {
             //unhook player death/revive events
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
@@ -259,7 +241,7 @@ namespace DingusGaming.Events.Arena
                         {
                             if (!isDead)
                             {
-                                restorePlayer(player, state.Value);
+                                state.Value.setCompleteState(player);
 
                                 player.Player.PlayerLife.OnUpdateLife -= playerRevived;
                             }
@@ -269,11 +251,11 @@ namespace DingusGaming.Events.Arena
                         player.Player.PlayerLife.OnUpdateLife += playerRevived;
                     }
                     else
-                        restorePlayer(player, state.Value);
+                        state.Value.setCompleteState(player);
 
                     //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
                     DGPlugin.messagePlayer(player,
-                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + credits[state.Key] + ") and died " +
+                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + (Currency.getBalance(state.Key)-credits[state.Key]) + ") and died " +
                         deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) + "/" + scores.Count + "!");
                 }
                 catch (Exception)
@@ -286,12 +268,6 @@ namespace DingusGaming.Events.Arena
             DGPlugin.enableCommands();
             unSuppressMessages();
             occurring = false;
-        }
-
-        private void restorePlayer(UnturnedPlayer player, PlayerState state)
-        {
-            //completely restore their state
-            state.setCompleteState(player);
         }
 
         private int getPlace(int score)

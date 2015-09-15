@@ -122,6 +122,8 @@ namespace DingusGaming
                 }
             };
 
+            EventScheduler.scheduleEvent(new TipsEvent(), 10, true);
+
             U.Settings.Instance.AutomaticSave.Interval = saveInterval;
             Timer saveTimer = new Timer(saveInterval*1000);
             saveTimer.Elapsed += delegate

@@ -53,8 +53,6 @@ namespace DingusGaming.Store
                         (Parties.getParty(player) == null || !Parties.getParty(player).isMember(killer)))
                     {
                         var amount = valueOfPlayer(player);
-                        if (ArenaEvent.isOccurring)
-                            ArenaEvent.currentEvent.credits[killer.CSteamID] += amount;
 
                         //clear the victim's kills since spawn
                         killsSinceSpawn.Remove(player.CSteamID);
