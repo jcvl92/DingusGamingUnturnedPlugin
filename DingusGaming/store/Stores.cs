@@ -77,7 +77,7 @@ namespace DingusGaming.Store
 
         private static Item findItemById(ushort itemId)
         {
-            Item item = null;
+            Item item;
             foreach (var store in stores)
                 if ((item = store.getItemById(itemId)) != null)
                     return item;

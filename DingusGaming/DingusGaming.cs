@@ -7,8 +7,8 @@ using System.Text;
 using System.Timers;
 using System.Xml;
 using System.Xml.Serialization;
-using DingusGaming.Arena;
-using DingusGaming.helper;
+using DingusGaming.Events;
+using DingusGaming.Events.Arena;
 using DingusGaming.Party;
 using DingusGaming.Store;
 using Rocket.Core.Logging;
@@ -28,7 +28,7 @@ namespace DingusGaming
     {
         //contains helper functions for persisting data and centralizing common functions
         private static VehicleManager vehicleManager;
-        private static object fileLock = new object();
+        private static readonly object fileLock = new object();
         private static event UnturnedPermissions.PermissionRequested permissionHolder;
         private const int saveInterval = 5*60;
 
@@ -75,43 +75,42 @@ namespace DingusGaming
                             catch (Exception){}
 
                     //remove clothing in the loadout
-                    ushort[] loadout = PlayerInventory.loadout;
                     var p = player.Player;
-                    for (int i=0; i < loadout.Length; ++i)
+                    foreach (ushort item in PlayerInventory.loadout)
                     {
                         try
                         {
-                            if (p.Clothing.backpack == loadout[i])
+                            if (p.Clothing.backpack == item)
                             {
                                 p.Clothing.askWearBackpack(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.glasses == loadout[i])
+                            else if (p.Clothing.glasses == item)
                             {
                                 p.Clothing.askWearGlasses(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.hat == loadout[i])
+                            else if (p.Clothing.hat == item)
                             {
                                 p.Clothing.askWearHat(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.mask == loadout[i])
+                            else if (p.Clothing.mask == item)
                             {
                                 p.Clothing.askWearMask(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.pants == loadout[i])
+                            else if (p.Clothing.pants == item)
                             {
                                 p.Clothing.askWearPants(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.shirt == loadout[i])
+                            else if (p.Clothing.shirt == item)
                             {
                                 p.Clothing.askWearShirt(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);
                             }
-                            else if (p.Clothing.vest == loadout[i])
+                            else if (p.Clothing.vest == item)
                             {
                                 p.Clothing.askWearVest(0, 0, new byte[0]);
                                 p.Inventory.removeItem(2, 0);

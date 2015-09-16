@@ -1,8 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Timers;
+
 namespace DingusGaming.Events
 {
     public class EventScheduler
     {
-        private static List<ScheduledEvent> scheduledEvents = new List<ScheduledEvent>();
+        private static readonly List<ScheduledEvent> scheduledEvents = new List<ScheduledEvent>();
 
     	public static int scheduleEvent(Event newEvent, int intervalMinutes, bool snapToHour=false, int durationSeconds=0)
     	{
@@ -34,18 +39,18 @@ namespace DingusGaming.Events
         public static string listEvents()
         {
             StringBuilder sb = new StringBuilder("Events:");
-            for(int i=0; i<scheduledEvents.Length; ++i)
+            for(int i=0; i<scheduledEvents.Count; ++i)
             {
-                sb.Append(" "+(i+1)+":("+e.toString+")");
+                sb.Append(" "+(i+1)+":("+scheduledEvents[i]+")");
             }
-            return sb.toString();
+            return sb.ToString();
         }
 
         //TODO: make sure calls referencing listEvents do index-1 before calling this
         public static void removeEvent(int index)
         {
             scheduledEvents[index].stopRecurrence();
-            scheduledEvents.removeAt(index);
+            scheduledEvents.RemoveAt(index);
         }
     }
 }

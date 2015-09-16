@@ -215,7 +215,7 @@ namespace DingusGaming.Events.Arena
             }
         }
 
-        private void stopEvent()
+        public void stopEvent()
         {
             //unhook player death/revive events
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
@@ -255,7 +255,7 @@ namespace DingusGaming.Events.Arena
 
                     //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
                     DGPlugin.messagePlayer(player,
-                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + (Currency.getBalance(state.Key)-credits[state.Key]) + ") and died " +
+                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + (Currency.getBalance(DGPlugin.getPlayer(state.Key))-credits[state.Key]) + ") and died " +
                         deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) + "/" + scores.Count + "!");
                 }
                 catch (Exception)

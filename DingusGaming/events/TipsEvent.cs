@@ -1,8 +1,10 @@
+using System;
+
 namespace DingusGaming.Events
 {
 	public class TipsEvent : Event
 	{
-		private String[] const tips = {
+		private static readonly string[] tips = {
 			"Visit DingusGaming.com for a list of available commands.",
 			"Want to see new features? Donate at DingusGaming.com.",
 			"Credits can be spent on items, vehicles, or experience.",

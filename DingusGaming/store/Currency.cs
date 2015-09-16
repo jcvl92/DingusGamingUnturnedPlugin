@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using DingusGaming.Arena;
+using DingusGaming.Events.Arena;
 using DingusGaming.Party;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
@@ -96,7 +95,7 @@ namespace DingusGaming.Store
 
         private static void registerPlayerOnConnected()
         {
-            U.Events.OnPlayerConnected += delegate(UnturnedPlayer player) { addPlayer(player); };
+            U.Events.OnPlayerConnected += addPlayer;
         }
 
         public static void addPlayer(UnturnedPlayer player)
