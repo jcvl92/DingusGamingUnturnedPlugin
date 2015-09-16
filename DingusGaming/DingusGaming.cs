@@ -185,6 +185,11 @@ namespace DingusGaming
 
         /********** HELPER FUNCTIONS **********/
 
+        public static void getPlayersCount()
+        {
+            return UnturnedPlayer.players();
+        }
+
         public static void delaySaving(int seconds)
         {
             U.Settings.Instance.AutomaticSave.Interval += seconds;

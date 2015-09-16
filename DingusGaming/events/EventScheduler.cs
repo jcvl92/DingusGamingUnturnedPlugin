@@ -9,9 +9,9 @@ namespace DingusGaming.Events
     {
         private static readonly List<ScheduledEvent> scheduledEvents = new List<ScheduledEvent>();
 
-    	public static int scheduleEvent(Event newEvent, int intervalMinutes, bool snapToHour=false, int durationSeconds=0)
+    	public static int scheduleEvent(Event newEvent, uint intervalMinutes, bool snapToHour=false, ushort minimumPlayers=0, uint durationSeconds=0)
     	{
-            ScheduledEvent scheduledEvent = (durationSeconds <= 0 ? new ScheduledEvent(newEvent, intervalMinutes) : new ScheduledEvent(newEvent, intervalMinutes, durationSeconds));
+            ScheduledEvent scheduledEvent = (durationSeconds == 0 ? new ScheduledEvent(newEvent, intervalMinutes, minimumPlayers) : new ScheduledEvent(newEvent, intervalMinutes, minimumPlayers, durationSeconds));
 
             if(snapToHour)
             {

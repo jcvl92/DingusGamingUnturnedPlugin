@@ -6,26 +6,31 @@ namespace DingusGaming.Events
     {
         private readonly Timer startTimer = new Timer(), endTimer = new Timer();
         private readonly Event e;
+        private readonly ushort minimumPlayers;
 
-    	public ScheduledEvent(Event e, int intervalMinutes, int durationSeconds)
+    	public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers, uint durationSeconds)
         {
             this.e = e;
+            this.minimumPlayers = minimumPlayers;
 
             startTimer.Interval = intervalMinutes * 60000;
             startTimer.Elapsed += delegate
             {
-                //disable server state saving during events and 2 minutes after them
-                DGPlugin.delaySaving(durationSeconds+(2*60));
-                Timer saveTimer = new Timer(2.5*60*1000);
-                saveTimer.AutoReset = false;
-                saveTimer.Elapsed += delegate
+                if(DGPlugin.getPlayersCount() >= minimumPlayers)
                 {
-                    DGPlugin.clearSaveDelay();
-                    saveTimer.Close();
-                };
+                    //disable server state saving during events and 2 minutes after them
+                    DGPlugin.delaySaving(durationSeconds+(2*60));
+                    Timer saveTimer = new Timer(2.5*60*1000);
+                    saveTimer.AutoReset = false;
+                    saveTimer.Elapsed += delegate
+                    {
+                        DGPlugin.clearSaveDelay();
+                        saveTimer.Close();
+                    };
 
-                e.startEvent();
-                endTimer.Start();
+                    e.startEvent();
+                    endTimer.Start();
+                }
             };
 
             endTimer.Interval = durationSeconds * 1000;
@@ -36,14 +41,17 @@ namespace DingusGaming.Events
             };
         }
 
-        public ScheduledEvent(Event e, int intervalMinutes)
+        public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers)
         {
             this.e = e;
 
             startTimer.Interval = intervalMinutes * 60000;
             startTimer.Elapsed += delegate
             {
-                e.startEvent();
+                if(DGPlugin.getPlayersCount() >= minimumPlayers)
+                {
+                    e.startEvent();
+                }
             };
         }
 
@@ -66,7 +74,8 @@ namespace DingusGaming.Events
     	public new string ToString()
         {
             return "["+e+"] every "+(startTimer.Interval/60000)+"m"+
-                (!endTimer.AutoReset ? " for "+(endTimer.Interval/1000)+"s" : "");
+                (!endTimer.AutoReset ? " for "+(endTimer.Interval/1000)+"s" : "")+
+                (minimumPlayers!=0 ? " if "+minimumPlayers" players" : "");
         }
     }
 }
