@@ -21,6 +21,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
+using Rocket = SDG.Unturned.Rocket;
 
 namespace DingusGaming
 {
@@ -121,7 +122,46 @@ namespace DingusGaming
                 }
             };
 
+            //schedule the Tips event to happen every 10 minutes
             EventScheduler.scheduleEvent(new TipsEvent(), 10, true);
+
+            //replace the skills reduction on death delegate
+            //TODO: replace this with some sort of onAfterLoad logic
+            Steam.OnServerConnected += delegate (CSteamID id)
+            {
+                Timer timer = new Timer(1000);
+                timer.AutoReset = false;
+                timer.Elapsed += delegate
+                {
+                    UnturnedPlayer player = getPlayer(id);
+                    foreach (var inv in player.Player.life.OnUpdateLife.GetInvocationList())
+                        if (inv.Method.DeclaringType == typeof (PlayerSkills))
+                        {
+                            player.Player.life.OnUpdateLife -= (LifeUpdated)inv;
+                            break;
+                        }
+
+                    player.Player.life.OnUpdateLife += delegate(bool dead)
+                    {
+                        if (!dead || !Steam.isServer)
+                            return;
+                        for (byte index1 = (byte)0; (int)index1 < player.Player.skills.skills.Length; ++index1)
+                        {
+                            byte[] numArray1 = new byte[player.Player.skills.skills[(int)index1].Length];
+                            for (byte index2 = (byte)0; (int)index2 < numArray1.Length; ++index2)
+                                numArray1[(int)index2] = (byte)((double)player.Player.skills.skills[(int)index1][(int)index2].level * 0.9);// * 0.75);
+                            player.Player.skills.channel.send("tellSkills", (ESteamCall)1, (ESteamPacket)15, new object[] {index1, numArray1});
+                        }
+                        player.Player.skills.Experience = (uint)((double)player.Player.skills.experience * 0.9);
+                        typeof(PlayerSkills).GetField("_boost", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(player.Player.skills, EPlayerBoost.NONE);//player.Player.skills._boost = EPlayerBoost.NONE;
+                        player.Player.skills.channel.send("tellExperience", (ESteamCall)1, (ESteamPacket)15, new object[] {player.Player.skills.experience});
+                        player.Player.skills.channel.send("tellBoost", (ESteamCall)1, (ESteamPacket)15, new object[] {player.Player.skills.boost});
+                    };
+
+                    timer.Close();
+                };
+                timer.Start();
+            };
 
             U.Settings.Instance.AutomaticSave.Interval = saveInterval;
             Timer saveTimer = new Timer(saveInterval*1000);
