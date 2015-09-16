@@ -4,14 +4,13 @@ using Rocket.Unturned.Player;
 
 namespace DingusGaming.Events.Arena
 {
-    public class CommandArena : IRocketCommand
+    public class CommandListEvents : IRocketCommand
     {
-        private const string NAME = "arena";
-        private const string HELP = "Schedule arena at your location or update arena location.";
+        private const string NAME = "listevents";
+        private const string HELP = "List currently scheduled events.";
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private static ArenaEvent arenaEvent = null;
 
         public bool RunFromConsole
         {
@@ -33,7 +32,7 @@ namespace DingusGaming.Events.Arena
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases { get; } = new List<string>();
+        public List<string> Aliases { get; } = new List<string> {"eventlist", "events"};
 
         public bool AllowFromConsole
         {
@@ -49,20 +48,13 @@ namespace DingusGaming.Events.Arena
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length > 0)
+            if (command.Length != 0)
             {
-                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"/arena\".");
-            }
-            else if(arenaEvent == null)
-            {
-                arenaEvent = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
-                EventScheduler.scheduleEvent(arenaEvent, 30, true, 5, 60);
-                DGPlugin.messagePlayer(caller, "Arena scheduled and set at your location.");
+                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"/listevents\".");
             }
             else
             {
-                arenaEvent.location = caller.Position;
-                DGPlugin.messagePlayer(caller, "Arena re-set at your location.");
+                DGPlugin.messagePlayer(caller, EventScheduler.listEvents());
             }
         }
     }
