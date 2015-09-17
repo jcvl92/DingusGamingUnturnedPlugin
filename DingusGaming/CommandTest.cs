@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DingusGaming.Events.Arena;
 using Rocket.API;
 using Rocket.Unturned.Player;
 using UnityEngine;
@@ -49,9 +50,7 @@ namespace DingusGaming
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            DGPlugin.messagePlayer(caller, "blue", Color.blue);
-            DGPlugin.messagePlayer(caller, "cyan", Color.cyan);
-            DGPlugin.messagePlayer(caller, "clear", Color.clear);
+            
         }
     }
 }

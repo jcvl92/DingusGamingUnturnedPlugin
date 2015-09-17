@@ -21,19 +21,12 @@ namespace DingusGaming.Events
             {
                 if(startTimer.Interval == 1)
                     startTimer.Interval = intervalMinutes * 60000;
-
+                
                 if (DGPlugin.getPlayersCount() >= minimumPlayers)
                 {
-                    //disable server state saving during events and 2 minutes after them
-                    DGPlugin.delaySaving(durationSeconds+(2*60));
-                    Timer saveTimer = new Timer(2.5*60*1000);
-                    saveTimer.AutoReset = false;
-                    saveTimer.Elapsed += delegate
-                    {
-                        DGPlugin.clearSaveDelay();
-                        saveTimer.Close();
-                    };
-
+                    //disable server state saving during events and 1 minute after them
+                    DGPlugin.delaySaving(durationSeconds + 60);
+                    
                     e.startEvent();
                     endTimer.Start();
                 }
@@ -44,6 +37,16 @@ namespace DingusGaming.Events
             endTimer.Elapsed += delegate
             {
                 e.stopEvent();
+
+                //clear delay 1 minute after event
+                Timer saveTimer = new Timer(60000);
+                saveTimer.AutoReset = false;
+                saveTimer.Elapsed += delegate
+                {
+                    DGPlugin.clearSaveDelay();
+                    saveTimer.Close();
+                };
+                saveTimer.Start();
             };
         }
 

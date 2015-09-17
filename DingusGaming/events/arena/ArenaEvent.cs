@@ -191,7 +191,6 @@ namespace DingusGaming.Events.Arena
 
             //add player to scores and deaths lists
             scores.Add(player.CSteamID, 0);
-            credits.Add(player.CSteamID, 0);
             deaths.Add(player.CSteamID, 0);
 
             //clear player inventory
