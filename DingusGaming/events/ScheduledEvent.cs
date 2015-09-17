@@ -9,28 +9,9 @@ namespace DingusGaming.Events
         private readonly ushort minimumPlayers;
         private readonly uint intervalMinutes, durationSeconds = 0;
 
-    	public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers, uint durationSeconds)
-        {
-            this.e = e;
-    	    this.intervalMinutes = intervalMinutes;
-            this.minimumPlayers = minimumPlayers;
+    	public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers, uint durationSeconds) : this(e, intervalMinutes, minimumPlayers)
+    	{
     	    this.durationSeconds = durationSeconds;
-
-            startTimer.Interval = 1;
-            startTimer.Elapsed += delegate
-            {
-                if(startTimer.Interval == 1)
-                    startTimer.Interval = intervalMinutes * 60000;
-                
-                if (DGPlugin.getPlayersCount() >= minimumPlayers)
-                {
-                    //disable server state saving during events and 1 minute after them
-                    DGPlugin.delaySaving(durationSeconds + 60);
-                    
-                    e.startEvent();
-                    endTimer.Start();
-                }
-            };
 
             endTimer.Interval = durationSeconds * 1000;
             endTimer.AutoReset = false;
@@ -56,17 +37,27 @@ namespace DingusGaming.Events
             this.intervalMinutes = intervalMinutes;
             this.minimumPlayers = minimumPlayers;
 
-            startTimer.Interval = 1;
+            startTimer.Interval = intervalMinutes * 60000;
             startTimer.Elapsed += delegate
             {
-                if (startTimer.Interval == 1)
-                    startTimer.Interval = intervalMinutes * 60000;
-
-                if (DGPlugin.getPlayersCount() >= minimumPlayers)
-                {
-                    e.startEvent();
-                }
+                fireEvent();
             };
+        }
+
+        private void fireEvent()
+        {
+            if (DGPlugin.getPlayersCount() >= minimumPlayers)
+            {
+                if (durationSeconds != 0)
+                {
+                    //disable server state saving during events and 1 minute after them
+                    DGPlugin.delaySaving(durationSeconds + 60);
+
+                    endTimer.Start();
+                }
+
+                e.startEvent();
+            }
         }
 
         ~ScheduledEvent()
@@ -77,6 +68,7 @@ namespace DingusGaming.Events
 
     	public void beginRecurrence()
         {
+            fireEvent();
             startTimer.Start();
         }
 
