@@ -7,16 +7,22 @@ namespace DingusGaming.Events
         private readonly Timer startTimer = new Timer(), endTimer = new Timer();
         private readonly Event e;
         private readonly ushort minimumPlayers;
+        private readonly uint intervalMinutes, durationSeconds = 0;
 
     	public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers, uint durationSeconds)
         {
             this.e = e;
+    	    this.intervalMinutes = intervalMinutes;
             this.minimumPlayers = minimumPlayers;
+    	    this.durationSeconds = durationSeconds;
 
-            startTimer.Interval = intervalMinutes * 60000;
+            startTimer.Interval = 1;
             startTimer.Elapsed += delegate
             {
-                if(DGPlugin.getPlayersCount() >= minimumPlayers)
+                if(startTimer.Interval == 1)
+                    startTimer.Interval = intervalMinutes * 60000;
+
+                if (DGPlugin.getPlayersCount() >= minimumPlayers)
                 {
                     //disable server state saving during events and 2 minutes after them
                     DGPlugin.delaySaving(durationSeconds+(2*60));
@@ -44,11 +50,16 @@ namespace DingusGaming.Events
         public ScheduledEvent(Event e, uint intervalMinutes, ushort minimumPlayers)
         {
             this.e = e;
+            this.intervalMinutes = intervalMinutes;
+            this.minimumPlayers = minimumPlayers;
 
-            startTimer.Interval = intervalMinutes * 60000;
+            startTimer.Interval = 1;
             startTimer.Elapsed += delegate
             {
-                if(DGPlugin.getPlayersCount() >= minimumPlayers)
+                if (startTimer.Interval == 1)
+                    startTimer.Interval = intervalMinutes * 60000;
+
+                if (DGPlugin.getPlayersCount() >= minimumPlayers)
                 {
                     e.startEvent();
                 }
@@ -73,9 +84,9 @@ namespace DingusGaming.Events
 
     	public new string ToString()
         {
-            return "["+e+"] every "+(startTimer.Interval/60000)+"m"+
-                (!endTimer.AutoReset ? " for "+(endTimer.Interval/1000)+"s" : "")+
-                (minimumPlayers!=0 ? " if "+minimumPlayers" players" : "");
+            return "["+e.ToString()+"] every "+intervalMinutes+"m"+
+                (durationSeconds!=0 ? " for "+durationSeconds+"s" : "")+
+                (minimumPlayers!=0 ? " if "+minimumPlayers+"+ players on" : "");
         }
     }
 }

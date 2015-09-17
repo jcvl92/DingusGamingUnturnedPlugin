@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
+using UnityEngine;
 
 namespace DingusGaming
 {
@@ -11,7 +12,6 @@ namespace DingusGaming
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private bool toggle = true;
 
         public bool RunFromConsole
         {
@@ -49,16 +49,9 @@ namespace DingusGaming
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (toggle)
-            {
-                DGPlugin.disableCommands();
-                toggle = false;
-            }
-            else
-            {
-                DGPlugin.enableCommands();
-                toggle = true;
-            }
+            DGPlugin.messagePlayer(caller, "blue", Color.blue);
+            DGPlugin.messagePlayer(caller, "cyan", Color.cyan);
+            DGPlugin.messagePlayer(caller, "clear", Color.clear);
         }
     }
 }

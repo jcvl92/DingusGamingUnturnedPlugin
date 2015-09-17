@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
+using Rocket.Core.Logging;
+using Rocket.Unturned.Player;
 
 namespace DingusGaming.Events
 {
@@ -15,7 +17,7 @@ namespace DingusGaming.Events
 
             if(snapToHour)
             {
-                int minuteToStart = (intervalMinutes * (DateTime.Now.Minute/intervalMinutes + 1))%60;
+                int minuteToStart = (int)(intervalMinutes * (DateTime.Now.Minute/intervalMinutes) + intervalMinutes);
                 int timeToWait = (minuteToStart * 60000) - (DateTime.Now.Minute*60000 + DateTime.Now.Second*1000 + DateTime.Now.Millisecond);
 
                 Timer waitTimer = new Timer(timeToWait);
@@ -36,14 +38,11 @@ namespace DingusGaming.Events
             return scheduledEvents.IndexOf(scheduledEvent);
     	}
 
-        public static string listEvents()
+        public static void listEvents(UnturnedPlayer player)
         {
-            StringBuilder sb = new StringBuilder("Events:");
+            DGPlugin.messagePlayer(player, "Events:");
             for(int i=0; i<scheduledEvents.Count; ++i)
-            {
-                sb.Append(" "+(i+1)+":("+scheduledEvents[i]+")");
-            }
-            return sb.ToString();
+                DGPlugin.messagePlayer(player, (i+1)+":("+scheduledEvents[i].ToString()+")");
         }
 
         //TODO: make sure calls referencing listEvents do index-1 before calling this

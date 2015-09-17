@@ -35,9 +35,9 @@ namespace DingusGaming.Events.Arena
             this.adminsIncluded = adminsIncluded;
         }
 
-        public string toString()
+        public override string ToString()
         {
-            return "Arena-at:"+location+",radius:"+radius+",startItem:"+startItem+",dropItem:"+dropItem+",admins:"+adminsIncluded;
+            return "Arena-startItem:"+startItem;
         }
 
         public static bool isOccurring

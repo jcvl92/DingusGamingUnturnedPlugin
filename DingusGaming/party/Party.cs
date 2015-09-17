@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Rocket.Unturned.Player;
 using Steamworks;
+using UnityEngine;
 
 namespace DingusGaming.Party
 {
@@ -10,6 +11,7 @@ namespace DingusGaming.Party
     {
         private readonly List<CSteamID> members;
         private CSteamID leader;
+        private static readonly Color chatColor = Color.cyan;
 
         public Party(UnturnedPlayer leader)
         {
@@ -60,14 +62,14 @@ namespace DingusGaming.Party
         public void tellParty(string text)
         {
             foreach (var member in members)
-                DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
+                DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text, chatColor);
         }
 
         public void tellParty(string text, UnturnedPlayer skipPlayer)
         {
             foreach (var member in members)
                 if(!member.Equals(skipPlayer.CSteamID))
-                    DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text);
+                    DGPlugin.messagePlayer(DGPlugin.getPlayer(member), text, chatColor);
         }
 
         public void chat(UnturnedPlayer caller, string text)
@@ -82,7 +84,7 @@ namespace DingusGaming.Party
         {
             members.Add(player.CSteamID);
             tellParty(player.CharacterName + " has joined the party!", player);
-            DGPlugin.messagePlayer(player, "You have joined the party!");
+            DGPlugin.messagePlayer(player, "You have joined the party!", chatColor);
         }
 
         public void kickMember(UnturnedPlayer caller, UnturnedPlayer player)

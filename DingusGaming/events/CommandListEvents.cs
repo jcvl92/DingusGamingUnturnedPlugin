@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
 
-namespace DingusGaming.Party
+namespace DingusGaming.Events.Arena
 {
-    public class CommandChat : IRocketCommand
+    public class CommandListEvents : IRocketCommand
     {
-        private const string NAME = "w";
-        private const string HELP = "Send a private message to a player.";
-        private const string SYNTAX = "<message>";
+        private const string NAME = "listevents";
+        private const string HELP = "List currently scheduled events.";
+        private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
 
@@ -32,7 +32,7 @@ namespace DingusGaming.Party
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases { get; } = new List<string> {"whisper", "tell", "t"};
+        public List<string> Aliases { get; } = new List<string> {"eventlist", "events"};
 
         public bool AllowFromConsole
         {
@@ -48,21 +48,14 @@ namespace DingusGaming.Party
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length >= 2)
+            if (command.Length != 0)
             {
-                UnturnedPlayer player = DGPlugin.getPlayer(command[0]);
-                string message = string.Join(" ", command.Skip(1).ToArray());
-
-                if(player != null)
-                {
-                    DGPlugin.messagePlayer(caller, player, message);
-                    DGPlugin.messagePlayer(player, caller, "TO: "message);
-                }
-                else
-                    DGPlugin.messagePlayer(caller, "No such player \""+command[0]+"\".");
+                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"/listevents\".");
             }
             else
-                DGPlugin.messagePlayer(caller, "Invalid amount of parameters. Format is \"/w playerName message\".");
+            {
+                EventScheduler.listEvents(caller);
+            }
         }
     }
 }

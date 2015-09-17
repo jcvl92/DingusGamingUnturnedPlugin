@@ -32,6 +32,7 @@ namespace DingusGaming
         private static readonly object fileLock = new object();
         private static event UnturnedPermissions.PermissionRequested permissionHolder;
         private const int saveInterval = 5*60;
+        private static readonly Color chatColor = Color.gray;
 
         protected override void Load()
         {
@@ -122,8 +123,8 @@ namespace DingusGaming
                 }
             };
 
-            //schedule the Tips event to happen every 10 minutes
-            EventScheduler.scheduleEvent(new TipsEvent(), 10, true);
+            //schedule the Tips event to happen every 5 minutes
+            EventScheduler.scheduleEvent(new TipsEvent(), 5, true);
 
             //replace the skills reduction on death delegate
             //TODO: replace this with some sort of onAfterLoad logic
@@ -185,14 +186,14 @@ namespace DingusGaming
 
         /********** HELPER FUNCTIONS **********/
 
-        public static void getPlayersCount()
+        public static int getPlayersCount()
         {
-            return UnturnedPlayer.players();
+            return Steam.Players.Count;
         }
 
-        public static void delaySaving(int seconds)
+        public static void delaySaving(uint seconds)
         {
-            U.Settings.Instance.AutomaticSave.Interval += seconds;
+            U.Settings.Instance.AutomaticSave.Interval += (int)seconds;
         }
 
         public static void clearSaveDelay()
@@ -335,14 +336,21 @@ namespace DingusGaming
         {
             var strs = UnturnedChat.wrapMessage(message);
             foreach (var str in strs)
-                UnturnedChat.Say(player, str);
+                UnturnedChat.Say(player, str, chatColor);
+        }
+
+        public static void messagePlayer(UnturnedPlayer player, string message, Color color)
+        {
+            var strs = UnturnedChat.wrapMessage(message);
+            foreach (var str in strs)
+                UnturnedChat.Say(player, str, color);
         }
 
         public static void broadcastMessage(string text)
         {
             var strs = UnturnedChat.wrapMessage(text);
             foreach (var str in strs)
-                UnturnedChat.Say(str);
+                UnturnedChat.Say(str, chatColor);
         }
 
         public static List<DictionaryEntry> convertFromDictionary(IDictionary dictionary)

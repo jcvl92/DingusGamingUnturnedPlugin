@@ -11,7 +11,7 @@ namespace DingusGaming.Events
 			"Donating and/or voting grants exclusive rewards.",
 			"Report bugs on DingusGaming.com for bonus credits.",
 			"/tp will put you in your partymember's vehicle, if they are in one.",
-			"Arena happens every 30 minutes. Kill as many people as you can.",
+			"Arena happens every 30 minutes. Kill people to get credits during it.",
 			"Your skills and inventory are restored after Arena events.",
 			"/tp has a cooldown of 60 seconds, and 30 seconds after death.",
 			"/buyvehicle has a cooldown of 10 minutes. Choose wisely."
@@ -28,7 +28,7 @@ namespace DingusGaming.Events
 			//Unused
 		}
 
-		public string toString()
+		public override string ToString()
 		{
 			return "Server Tips";
 		}
