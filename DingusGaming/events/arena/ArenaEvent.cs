@@ -57,6 +57,22 @@ namespace DingusGaming.Events.Arena
             Parties.showDeathMessages = true;
         }
 
+        private void onPlayerDisconnected(CSteamID playerID)
+        {
+            //restore their state
+            try
+            {
+                states[playerID].setCompleteState(DGPlugin.getPlayer(playerID));
+            }
+            catch (Exception) {}
+
+            //remove them from the arena lists
+            states.Remove(playerID);
+            scores.Remove(playerID);
+            credits.Remove(playerID);
+            deaths.Remove(playerID);
+        }
+
         private void onPlayerDeath(UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
         {
             UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
@@ -162,6 +178,7 @@ namespace DingusGaming.Events.Arena
                 //hook in player death/revive events
                 UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
                 UnturnedPlayerEvents.OnPlayerRevive += onPlayerRevive;
+                Steam.OnServerConnected += onPlayerDisconnected;
 
                 //start 3 second timer that will remove vanish-mode
                 var vanishTimer = new Timer(3000);
@@ -219,6 +236,7 @@ namespace DingusGaming.Events.Arena
             //unhook player death/revive events
             UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
             UnturnedPlayerEvents.OnPlayerRevive -= onPlayerRevive;
+            Steam.OnServerConnected -= onPlayerDisconnected;
 
             //sort the scores for placements
             sortedScores = scores.Values.ToList();

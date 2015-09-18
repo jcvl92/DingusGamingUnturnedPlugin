@@ -97,10 +97,10 @@ namespace DingusGaming.helper
 
         public void setCompleteState(UnturnedPlayer player)
         {
-            setLocation(player);
             setInventory(player);
             setSkills(player);
             setStats(player);
+            setLocation(player);
         }
 
         public void setLocation(UnturnedPlayer player)
