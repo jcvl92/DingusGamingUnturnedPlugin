@@ -77,9 +77,19 @@ namespace DingusGaming.Events.Arena
         {
             UnturnedPlayer killer = DGPlugin.getKiller(player, cause, murderer);
 
-            //update score of killing player
             if (killer != null)
-                scores[killer.CSteamID]++;
+            {
+                if(scores.ContainsKey(killer.CSteamID))
+                    //update score of killing player
+                    scores[killer.CSteamID]++;
+                else if(!killer.IsAdmin)
+                {
+                    //kill the player and remove 10 of their credits
+                    killer.Damage(100, killer.Position, EDeathCause.KILL, ELimb.SPINE, player.CSteamID);
+                    Currency.changeBalance(killer, -10);
+                    DGPlugin.messagePlayer(killer, "Don't interfere with Arena. You have lost 10 credits.");
+                }
+            }
 
             //update the deaths of the victim
             deaths[player.CSteamID]++;
