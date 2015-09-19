@@ -21,7 +21,6 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
-using Rocket = SDG.Unturned.Rocket;
 
 namespace DingusGaming
 {
@@ -43,7 +42,17 @@ namespace DingusGaming
 
             Logger.LogWarning("DingusGaming Plugin Loaded!");
 
-            vehicleManager = ((VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null));
+            //change structure health to be 10x
+            foreach (var asset in ((Dictionary<EAssetType, Dictionary<ushort, Asset>>)typeof(Assets).GetField("assets", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null))[EAssetType.ITEM].Values)
+            {
+                if (asset.GetType() == typeof (ItemStructureAsset))
+                {
+                    ushort health = (ushort) typeof (ItemStructureAsset).GetField("_health", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(asset);
+                    typeof (ItemStructureAsset).GetField("_health", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(asset, (ushort)(health*10));
+                }
+            }
+
+            vehicleManager = (VehicleManager) typeof (VehicleManager).GetField("manager", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null);
 
             UnturnedPlayerEvents.OnPlayerChatted += delegate (UnturnedPlayer player, ref Color color, string message, EChatMode chatMode)
             {
@@ -305,7 +314,7 @@ namespace DingusGaming
 
         public static void disableCommands()
         {
-            UnturnedPermissions.PermissionRequested permissions = ((UnturnedPermissions.PermissionRequested) typeof (UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null));
+            UnturnedPermissions.PermissionRequested permissions = (UnturnedPermissions.PermissionRequested) typeof (UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null);
             if (permissions != null)
             {
                 permissionHolder = permissions;
