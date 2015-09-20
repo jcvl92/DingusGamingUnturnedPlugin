@@ -8,7 +8,7 @@ namespace DingusGaming.Store
     public class CommandTransfer : IRocketCommand
     {
         private const string NAME = "transfer";
-        private const string HELP = "Transfer credits to another player";
+        private const string HELP = "Transfer credits to another player.";
         private const string SYNTAX = "<amount> <player name>";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;

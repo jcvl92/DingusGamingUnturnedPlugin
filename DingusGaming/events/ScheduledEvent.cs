@@ -91,7 +91,7 @@ namespace DingusGaming.Events
                     endTimer.Start();
                 }
 
-                new Thread(() => e.startEvent()).Start();
+                e.startEvent();
             }
 
             if (countDownTimes != null && waitTimes != null)

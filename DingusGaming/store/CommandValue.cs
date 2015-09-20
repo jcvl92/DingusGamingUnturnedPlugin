@@ -1,20 +1,17 @@
 using System.Collections.Generic;
-using System.Threading;
-using DingusGaming.Events.Arena;
+using System.Linq;
 using Rocket.API;
 using Rocket.Unturned.Player;
-using UnityEngine;
 
-namespace DingusGaming
+namespace DingusGaming.Store
 {
-    public class CommandTest : IRocketCommand
+    public class CommandValue : IRocketCommand
     {
-        private const string NAME = "test";
-        private const string HELP = "";
+        private const string NAME = "value";
+        private const string HELP = "View your current value.";
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private static ArenaEvent arena = null;
 
         public bool RunFromConsole
         {
@@ -36,7 +33,12 @@ namespace DingusGaming
             get { return SYNTAX; }
         }
 
-        public List<string> Aliases { get; } = new List<string>();
+        public List<string> Aliases { get; } = new List<string>
+        {
+            "myvalue",
+            "showvalue",
+            "getvalue"
+        };
 
         public bool AllowFromConsole
         {
@@ -52,16 +54,7 @@ namespace DingusGaming
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (arena == null)
-            {
-                arena = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
-                arena.startEvent();
-            }
-            else
-            {
-                arena.stopEvent();
-                arena = null;
-            }
+            DGPlugin.messagePlayer(caller, "Your current value is $"+Currency.valueOfPlayer(caller)+".");
         }
     }
 }

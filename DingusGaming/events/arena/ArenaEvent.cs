@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
+using System.Threading;
 using DingusGaming.helper;
 using DingusGaming.Party;
 using DingusGaming.Store;
@@ -10,6 +10,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
+using Timer = System.Timers.Timer;
 
 namespace DingusGaming.Events.Arena
 {
@@ -144,79 +145,82 @@ namespace DingusGaming.Events.Arena
         {
             if (!occurring)
             {
-                occurring = true;
-
-                DGPlugin.broadcastMessage("Arena has begun!");
-
-                suppressMessages();
-
-                //disable all user commands during arena
-                DGPlugin.disableCommands();
-
-                states.Clear();
-                scores.Clear();
-                credits.Clear();
-                deaths.Clear();
-
-                //remember to check the adminsIncluded flag
-                foreach (var plr in Steam.Players)
+                new Thread(() =>
                 {
-                    var player = DGPlugin.getPlayer(plr.playerID.CSteamID);
+                    occurring = true;
 
-                    //skip admins
-                    if (player.IsAdmin && !adminsIncluded)
-                        continue;
+                    DGPlugin.broadcastMessage("Arena has begun!");
 
-                    //revive player if dead
-                    if (player.Player.life.isDead)
+                    suppressMessages();
+
+                    //disable all user commands during arena
+                    DGPlugin.disableCommands();
+
+                    states.Clear();
+                    scores.Clear();
+                    credits.Clear();
+                    deaths.Clear();
+
+                    //remember to check the adminsIncluded flag
+                    foreach (var plr in Steam.Players)
                     {
-                        LifeUpdated playerDied = null;
-                        playerDied = delegate (bool isDead)
+                        var player = DGPlugin.getPlayer(plr.playerID.CSteamID);
+
+                        //skip admins
+                        if (player.IsAdmin && !adminsIncluded)
+                            continue;
+
+                        //revive player if dead
+                        if (player.Player.life.isDead)
                         {
-                            if (!isDead)
+                            LifeUpdated playerDied = null;
+                            playerDied = delegate(bool isDead)
                             {
-                                preparePlayer(player);
+                                if (!isDead)
+                                {
+                                    preparePlayer(player);
 
-                                player.Player.PlayerLife.OnUpdateLife -= playerDied;
-                            }
-                            else
-                                DGPlugin.respawnPlayer(player);
-                        };
-                        player.Player.PlayerLife.OnUpdateLife += playerDied;
+                                    player.Player.PlayerLife.OnUpdateLife -= playerDied;
+                                }
+                                else
+                                    DGPlugin.respawnPlayer(player);
+                            };
+                            player.Player.PlayerLife.OnUpdateLife += playerDied;
 
-                        DGPlugin.respawnPlayer(player);
+                            DGPlugin.respawnPlayer(player);
+                        }
+                        else
+                            preparePlayer(player);
                     }
-                    else
-                        preparePlayer(player);
-                }
 
-                //drop starting items on location
-                if(dropItem != 0)
-                    for(int i=0; i<scores.Count; ++i)
-                        ItemManager.dropItem(new SDG.Unturned.Item(dropItem, 1, 100), location, true, false, true);
+                    //drop starting items on location
+                    if (dropItem != 0)
+                        for (int i = 0; i < scores.Count; ++i)
+                            ItemManager.dropItem(new SDG.Unturned.Item(dropItem, 1, 100), location, true, false, true);
 
-                //hook in player death/revive events
-                UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
-                UnturnedPlayerEvents.OnPlayerRevive += onPlayerRevive;
-                Steam.OnServerConnected += onPlayerDisconnected;
+                    //hook in player death/revive events
+                    UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
+                    UnturnedPlayerEvents.OnPlayerRevive += onPlayerRevive;
+                    Steam.OnServerConnected += onPlayerDisconnected;
 
-                //start 3 second timer that will remove vanish-mode
-                var vanishTimer = new Timer(3000);
-                vanishTimer.AutoReset = false;
-                vanishTimer.Elapsed += delegate
-                {
-                    foreach (var score in scores)
+                    //start 3 second timer that will remove vanish-mode
+                    var vanishTimer = new Timer(3000);
+                    vanishTimer.AutoReset = false;
+                    vanishTimer.Elapsed += delegate
                     {
-                        UnturnedPlayer player = DGPlugin.getPlayer(score.Key);
-                        player.Features.GodMode = false;
-                        player.Features.VanishMode = false;
+                        foreach (var score in scores)
+                        {
+                            UnturnedPlayer player = DGPlugin.getPlayer(score.Key);
+                            player.Features.GodMode = false;
+                            player.Features.VanishMode = false;
 
-                        //update player position so you can't hide vanished in the beginning
-                        /*typeof (UnturnedPlayerFeatures).GetMethod("FixedUpdate",
-                            BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] {});*/
-                    }
-                };
-                vanishTimer.Start();
+                            //update player position so you can't hide vanished in the beginning
+                            /*typeof (UnturnedPlayerFeatures).GetMethod("FixedUpdate",
+                                BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] {});*/
+                        }
+                    };
+                    vanishTimer.Start();
+                }).Start();
             }
         }
 
@@ -253,58 +257,67 @@ namespace DingusGaming.Events.Arena
 
         public void stopEvent()
         {
-            //unhook player death/revive events
-            UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
-            UnturnedPlayerEvents.OnPlayerRevive -= onPlayerRevive;
-            Steam.OnServerConnected -= onPlayerDisconnected;
-
-            //sort the scores for placements
-            sortedScores = scores.Values.ToList();
-            sortedScores.Sort();
-
-            //restore the player states
-            foreach (var state in states)
+            if (occurring)
             {
-                try
+                new Thread(() =>
                 {
-                    UnturnedPlayer player = DGPlugin.getPlayer(state.Key);
-                    if (player.Player.life.isDead)
+                    //unhook player death/revive events
+                    UnturnedPlayerEvents.OnPlayerDeath -= onPlayerDeath;
+                    UnturnedPlayerEvents.OnPlayerRevive -= onPlayerRevive;
+                    Steam.OnServerConnected -= onPlayerDisconnected;
+
+                    //sort the scores for placements
+                    sortedScores = scores.Values.ToList();
+                    sortedScores.Sort();
+
+                    //restore the player states
+                    foreach (var state in states)
                     {
-                        DGPlugin.respawnPlayer(player);
-
-                        //set their state when they respawn
-                        LifeUpdated playerRevived = null;
-                        playerRevived = delegate(bool isDead)
+                        try
                         {
-                            if (!isDead)
+                            UnturnedPlayer player = DGPlugin.getPlayer(state.Key);
+                            if (player.Player.life.isDead)
                             {
-                                state.Value.setCompleteState(player);
+                                DGPlugin.respawnPlayer(player);
 
-                                player.Player.PlayerLife.OnUpdateLife -= playerRevived;
+                                //set their state when they respawn
+                                LifeUpdated playerRevived = null;
+                                playerRevived = delegate(bool isDead)
+                                {
+                                    if (!isDead)
+                                    {
+                                        state.Value.setCompleteState(player);
+
+                                        player.Player.PlayerLife.OnUpdateLife -= playerRevived;
+                                    }
+                                    else
+                                        DGPlugin.respawnPlayer(player);
+                                };
+                                player.Player.PlayerLife.OnUpdateLife += playerRevived;
                             }
                             else
-                                DGPlugin.respawnPlayer(player);
-                        };
-                        player.Player.PlayerLife.OnUpdateLife += playerRevived;
+                                state.Value.setCompleteState(player);
+
+                            //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
+                            DGPlugin.messagePlayer(player,
+                                "Arena has finished. You killed " + scores[state.Key] + " people(+$" +
+                                (Currency.getBalance(DGPlugin.getPlayer(state.Key)) - credits[state.Key]) +
+                                ") and died " +
+                                deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) +
+                                "/" + scores.Count + "!");
+                        }
+                        catch (Exception)
+                        {
+                            //catch exceptions here so that if one restore fails, the rest of function doesn't die
+                        }
                     }
-                    else
-                        state.Value.setCompleteState(player);
 
-                    //notify everyone of how many people they killed/what place they earned out of everyone(e.g. 4/10, 4th highest score)
-                    DGPlugin.messagePlayer(player,
-                        "Arena has finished. You killed " + scores[state.Key] + " people(+$" + (Currency.getBalance(DGPlugin.getPlayer(state.Key))-credits[state.Key]) + ") and died " +
-                        deaths[player.CSteamID] + " times! You earned place " + getPlace(scores[state.Key]) + "/" + scores.Count + "!");
-                }
-                catch (Exception)
-                {
-                    //catch exceptions here so that if one restore fails, the rest of function doesn't die
-                }
+                    //unset toggles
+                    DGPlugin.enableCommands();
+                    unSuppressMessages();
+                    occurring = false;
+                }).Start();
             }
-
-            //unset toggles
-            DGPlugin.enableCommands();
-            unSuppressMessages();
-            occurring = false;
         }
 
         private int getPlace(int score)
