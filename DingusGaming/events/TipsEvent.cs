@@ -28,6 +28,11 @@ namespace DingusGaming.Events
 			//Unused
 		}
 
+	    public string countDown(uint secondsLeft)
+	    {
+	        return "New tip in " + secondsLeft + " seconds!";
+	    }
+
 		public override string ToString()
 		{
 			return "Server Tips";

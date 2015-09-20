@@ -35,6 +35,11 @@ namespace DingusGaming.Events.Arena
             this.adminsIncluded = adminsIncluded;
         }
 
+        public string countDown(uint secondsLeft)
+        {
+            return "Arena starting in " + (secondsLeft / 60 != 0 ? secondsLeft / 60 + " minutes" : "") + (secondsLeft / 60 != 0 && secondsLeft % 60 != 0 ? " and " : "") + (secondsLeft%60 != 0 ? secondsLeft%60+" seconds" : "") + "!";
+        }
+
         public override string ToString()
         {
             return "Arena-startItem:"+startItem;
@@ -91,22 +96,25 @@ namespace DingusGaming.Events.Arena
                 }
             }
 
-            //update the deaths of the victim
-            deaths[player.CSteamID]++;
-
-            //clear their inventory so that they don't drop anything
-            PlayerState.clearInventory(player);
-
-            //respawn player
-            LifeUpdated playerDied = null;
-            playerDied = delegate (bool isDead)
+            if (deaths.ContainsKey(player.CSteamID))
             {
-                if(isDead)
-                    DGPlugin.respawnPlayer(player);
-                
-                player.Player.PlayerLife.OnUpdateLife -= playerDied;
-            };
-            player.Player.PlayerLife.OnUpdateLife += playerDied;
+                //update the deaths of the victim
+                deaths[player.CSteamID]++;
+
+                //clear their inventory so that they don't drop anything
+                PlayerState.clearInventory(player);
+
+                //respawn player
+                LifeUpdated playerDied = null;
+                playerDied = delegate(bool isDead)
+                {
+                    if (isDead)
+                        DGPlugin.respawnPlayer(player);
+
+                    player.Player.PlayerLife.OnUpdateLife -= playerDied;
+                };
+                player.Player.PlayerLife.OnUpdateLife += playerDied;
+            }
         }
 
         private void onPlayerRevive(UnturnedPlayer player, Vector3 position, byte angle)
@@ -137,6 +145,8 @@ namespace DingusGaming.Events.Arena
             if (!occurring)
             {
                 occurring = true;
+
+                DGPlugin.broadcastMessage("Arena has begun!");
 
                 suppressMessages();
 

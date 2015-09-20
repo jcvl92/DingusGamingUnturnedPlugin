@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DingusGaming.Store;
+using Rocket.Core.Logging;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
@@ -180,12 +181,16 @@ namespace DingusGaming.Party
             return null;
         }
 
+        public static void removeParty(Party party)
+        {
+            parties.Remove(party);
+        }
+
         public static void disbandParty(Party party)
         {
             var members = party.getMembers();
             party.tellParty("Party has been disbanded!");
             party.disband();
-            parties.Remove(party);
 
             //remove all related invites
             var toRemove = new List<Invite>();

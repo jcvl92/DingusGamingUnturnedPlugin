@@ -5,5 +5,6 @@ namespace DingusGaming.Events
 		void startEvent();
 		void stopEvent();
 		string ToString();
+	    string countDown(uint secondsLeft);
 	}
 }

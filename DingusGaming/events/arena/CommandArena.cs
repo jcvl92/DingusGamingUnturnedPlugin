@@ -56,7 +56,7 @@ namespace DingusGaming.Events.Arena
             else if(arenaEvent == null)
             {
                 arenaEvent = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
-                EventScheduler.scheduleEvent(arenaEvent, 30, true, 5, 60);
+                EventScheduler.scheduleEvent(arenaEvent, 30, snapToHour:true, minimumPlayers:5, durationSeconds:60, countDownTimes:new uint[]{600, 300, 60, 10, 5, 4, 3, 2, 1});
                 DGPlugin.messagePlayer(caller, "Arena scheduled and set at your location.");
             }
             else

@@ -133,9 +133,8 @@ namespace DingusGaming
             };
 
             //schedule the Tips event to happen every 5 minutes
-            EventScheduler.scheduleEvent(new TipsEvent(), 5, true);
-
-            //replace the skills reduction on death delegate
+            EventScheduler.scheduleEvent(new TipsEvent(), 5, snapToHour:true);
+            
             //TODO: replace this with some sort of onAfterLoad logic
             Steam.OnServerConnected += delegate (CSteamID id)
             {
@@ -144,6 +143,11 @@ namespace DingusGaming
                 timer.Elapsed += delegate
                 {
                     UnturnedPlayer player = getPlayer(id);
+
+                    //override steam group
+                    player.Player.SteamChannel.SteamPlayer.playerID.SteamGroupID = CSteamID.Nil;
+
+                    //replace the skills reduction on death delegate
                     foreach (var inv in player.Player.life.OnUpdateLife.GetInvocationList())
                         if (inv.Method.DeclaringType == typeof (PlayerSkills))
                         {
@@ -162,7 +166,7 @@ namespace DingusGaming
                                 numArray1[(int)index2] = (byte)((double)player.Player.skills.skills[(int)index1][(int)index2].level * 0.9);// * 0.75);
                             player.Player.skills.channel.send("tellSkills", (ESteamCall)1, (ESteamPacket)15, new object[] {index1, numArray1});
                         }
-                        player.Player.skills.Experience = (uint)((double)player.Player.skills.experience * 0.9);
+                        //player.Player.skills.Experience = (uint)((double)player.Player.skills.experience * 0.75);
                         typeof(PlayerSkills).GetField("_boost", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(player.Player.skills, EPlayerBoost.NONE);//player.Player.skills._boost = EPlayerBoost.NONE;
                         player.Player.skills.channel.send("tellExperience", (ESteamCall)1, (ESteamPacket)15, new object[] {player.Player.skills.experience});
                         player.Player.skills.channel.send("tellBoost", (ESteamCall)1, (ESteamPacket)15, new object[] {player.Player.skills.boost});
@@ -260,6 +264,8 @@ namespace DingusGaming
 
         public static void teleportPlayerInRadius(UnturnedPlayer player, Vector3 position, float radius)
         {
+            removeFromVehicle(player);
+
             System.Random random = new System.Random();
 
             //change the x and z values to be within the radius
