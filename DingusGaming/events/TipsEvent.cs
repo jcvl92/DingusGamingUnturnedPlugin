@@ -14,7 +14,11 @@ namespace DingusGaming.Events
 			"Arena happens every 30 minutes. Kill people to get credits during it.",
 			"Your skills and inventory are restored after Arena events.",
 			"/tp has a cooldown of 60 seconds, and 30 seconds after death.",
-			"/buyvehicle has a cooldown of 10 minutes. Choose wisely."
+			"/buyvehicle has a cooldown of 5 minutes. Choose wisely.",
+            "You only lose 10% of your experience/skills on this server instead of 25%.",
+            "Experience can be sold for credits using /sellexp.",
+            "You cannot hurt members of your party(replaces Steam groups).",
+            "All structures on this server have 10x health."
 		};
 		private readonly Random rand = new Random();
 

@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
-using System.Timers;
+using System.Threading;
 using Rocket.Core.Logging;
+using Timer = System.Timers.Timer;
 
 namespace DingusGaming.Events
 {
@@ -90,7 +91,7 @@ namespace DingusGaming.Events
                     endTimer.Start();
                 }
 
-                e.startEvent();
+                new Thread(() => e.startEvent()).Start();
             }
 
             if (countDownTimes != null && waitTimes != null)

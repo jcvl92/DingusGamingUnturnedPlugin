@@ -10,7 +10,7 @@ namespace DingusGaming.Store
     public class CommandBuyVehicle : IRocketCommand
     {
         private const int cost = 10;
-        private const int cooldown = 10 * 60;
+        private const int cooldown = 5 * 60;
         private const string NAME = "buycar";
         private const string HELP = "Purchase a vehicle.";
         private const string SYNTAX = "<vehicleID>";

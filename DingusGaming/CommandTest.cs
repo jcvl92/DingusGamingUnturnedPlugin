@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using DingusGaming.Events.Arena;
 using Rocket.API;
 using Rocket.Unturned.Player;
@@ -54,7 +55,7 @@ namespace DingusGaming
             if (arena == null)
             {
                 arena = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
-                arena.startEvent();
+                new Thread(() => arena.startEvent()).Start();
             }
             else
             {
