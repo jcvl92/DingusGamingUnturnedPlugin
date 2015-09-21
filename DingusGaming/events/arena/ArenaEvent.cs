@@ -155,6 +155,7 @@ namespace DingusGaming.Events.Arena
 
                     //disable all user commands during arena
                     DGPlugin.disableCommands();
+                    DGPlugin.disableFriendlyFire();
 
                     states.Clear();
                     scores.Clear();
@@ -314,6 +315,7 @@ namespace DingusGaming.Events.Arena
 
                     //unset toggles
                     DGPlugin.enableCommands();
+                    DGPlugin.enableFriendlyFire();
                     unSuppressMessages();
                     occurring = false;
                 }).Start();

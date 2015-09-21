@@ -181,6 +181,11 @@ namespace DingusGaming.Party
             return null;
         }
 
+        public static List<Party> getParties()
+        {
+            return parties;
+        }
+
         public static void removeParty(Party party)
         {
             parties.Remove(party);

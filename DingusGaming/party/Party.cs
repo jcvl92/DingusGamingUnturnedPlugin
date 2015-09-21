@@ -15,7 +15,7 @@ namespace DingusGaming.Party
         private readonly List<UnturnedPlayer> members = new List<UnturnedPlayer>();
         private UnturnedPlayer leader;
         private static readonly Color chatColor = Color.cyan;
-        private readonly CSteamID steamGroup;
+        private CSteamID steamGroup;
         private static List<ulong> claimedIDs = new List<ulong>();
         private static readonly Random random = new Random();
 
@@ -53,6 +53,18 @@ namespace DingusGaming.Party
             
             //remove this party from the party list
             Parties.removeParty(this);
+        }
+
+        public CSteamID getSteamGroup()
+        {
+            return steamGroup;
+        }
+
+        public void setSteamGroup(CSteamID group)
+        {
+            steamGroup = group;
+            foreach (var member in members)
+                member.Player.SteamChannel.SteamPlayer.playerID.SteamGroupID = group;
         }
 
         public bool isMember(UnturnedPlayer player)

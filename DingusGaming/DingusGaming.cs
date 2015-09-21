@@ -32,6 +32,7 @@ namespace DingusGaming
         private static event UnturnedPermissions.PermissionRequested permissionHolder;
         private const int saveInterval = 5*60;
         private static readonly Color chatColor = Color.gray;
+        private static Dictionary<Party.Party, CSteamID> steamGroups = null;
 
         protected override void Load()
         {
@@ -334,6 +335,33 @@ namespace DingusGaming
             {
                 typeof(UnturnedPermissions).GetField("OnPermissionRequested", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, permissionHolder);
                 permissionHolder = null;
+            }
+        }
+
+        public static void disableFriendlyFire()
+        {
+            if (steamGroups == null)
+            {
+                //save and clear all party groups
+                steamGroups = new Dictionary<Party.Party, CSteamID>();
+                foreach(var party in Parties.getParties())
+                {
+                    steamGroups.Add(party, party.getSteamGroup());
+                    party.setSteamGroup(CSteamID.Nil);
+                }
+            }
+        }
+
+        public static void enableFriendlyFire()
+        {
+            if (steamGroups != null)
+            {
+                //restore all party groups
+                foreach (var entry in steamGroups)
+                    entry.Key.setSteamGroup(entry.Value);
+
+                //clear party groups
+                steamGroups = null;
             }
         }
 
