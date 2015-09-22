@@ -155,7 +155,7 @@ namespace DingusGaming.helper
                 if (healthDiff > 0)
                     player.Heal((byte) healthDiff);
                 else if (healthDiff < 0)
-                    player.Damage((byte) -healthDiff, player.Position, EDeathCause.KILL, ELimb.SPINE, player.CSteamID);
+                    player.Damage((byte) -healthDiff, new Vector3(), EDeathCause.KILL, ELimb.SPINE, player.CSteamID);
 
                 player.Bleeding = bleeding;
                 player.Broken = broken;
