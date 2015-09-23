@@ -15,7 +15,6 @@ namespace DingusGaming
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private static ArenaEvent arena = null;
 
         public bool RunFromConsole
         {
