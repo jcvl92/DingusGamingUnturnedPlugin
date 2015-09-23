@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Player;
+using UnityEngine;
 
 namespace DingusGaming.Events.Arena
 {
@@ -49,11 +50,7 @@ namespace DingusGaming.Events.Arena
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (command.Length > 0)
-            {
-                DGPlugin.messagePlayer(caller, "Incorrect format. Format is \"/arena\".");
-            }
-            else if(arenaEvent == null)
+            if (arenaEvent == null)
             {
                 arenaEvent = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
                 EventScheduler.scheduleEvent(arenaEvent, 30, snapToHour:true, minimumPlayers:5, durationSeconds:60, countDownTimes:new uint[]{600, 300, 60, 10, 5, 4, 3, 2, 1});
@@ -61,8 +58,8 @@ namespace DingusGaming.Events.Arena
             }
             else
             {
-                arenaEvent.location = caller.Position;
-                DGPlugin.messagePlayer(caller, "Arena re-set at your location.");
+                arenaEvent.locations.Add(caller.Position);
+                DGPlugin.messagePlayer(caller, "Your location has been added to the Arena location pool.");
             }
         }
     }

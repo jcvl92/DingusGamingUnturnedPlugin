@@ -19,7 +19,8 @@ namespace DingusGaming.Events
             "Experience can be sold for credits using /sellexp.",
             "You cannot hurt members of your party(replaces Steam groups).",
             "All structures on this server have 10x health.",
-            "Use /store to browse the store and /buy to buy items from the store."
+            "Use /store to browse the store and /buy to buy items from the store.",
+            "If you get stuck at the loading screen, try /unstuck."
 		};
 		private readonly Random rand = new Random();
 

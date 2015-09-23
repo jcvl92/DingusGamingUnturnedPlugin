@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
@@ -168,6 +169,8 @@ namespace DingusGaming.helper
 
             private byte equippedPage, equipped_x, equipped_y, bpQuality, gQuality, hQuality, mQuality, pQuality, sQuality, vQuality;
 
+            private byte[] bpState, gState, hState, mState, pState, sState, vState;
+
             private Dictionary<byte, List<ItemJar>> itemsMap;
 
             public static PlayerInventory getInventory(UnturnedPlayer player)
@@ -200,18 +203,25 @@ namespace DingusGaming.helper
                     //save all the clothes/accessories and their states
                     backpack = p.Clothing.backpack,
                     bpQuality = p.Clothing.backpackQuality,
+                    bpState = p.Clothing.backpackState,
                     glasses = p.Clothing.glasses,
                     gQuality = p.Clothing.glassesQuality,
+                    gState = p.Clothing.glassesState,
                     hat = p.Clothing.hat,
                     hQuality = p.Clothing.hatQuality,
+                    hState = p.Clothing.hatState,
                     mask = p.Clothing.mask,
                     mQuality = p.clothing.maskQuality,
+                    mState = p.Clothing.maskState,
                     pants = p.Clothing.pants,
                     pQuality = p.Clothing.pantsQuality,
+                    pState = p.Clothing.pantsState,
                     shirt = p.Clothing.shirt,
                     sQuality = p.Clothing.shirtQuality,
+                    sState = p.Clothing.shirtState,
                     vest = p.Clothing.vest,
-                    vQuality = p.Clothing.vestQuality
+                    vQuality = p.Clothing.vestQuality,
+                    vState = p.Clothing.vestState
                 };
             }
 
@@ -222,13 +232,13 @@ namespace DingusGaming.helper
                 clearInventory(player);
 
                 //add clothes - states are blank because I don't think they are needed
-                p.Clothing.askWearBackpack(backpack, bpQuality, new byte[0]);
-                p.Clothing.askWearGlasses(glasses, gQuality, new byte[0]);
-                p.Clothing.askWearHat(hat, hQuality, new byte[0]);
-                p.Clothing.askWearMask(mask, mQuality, new byte[0]);
-                p.Clothing.askWearPants(pants, pQuality, new byte[0]);
-                p.Clothing.askWearShirt(shirt, sQuality, new byte[0]);
-                p.Clothing.askWearVest(vest, vQuality, new byte[0]);
+                p.Clothing.askWearBackpack(backpack, bpQuality, bpState);
+                p.Clothing.askWearGlasses(glasses, gQuality, gState);
+                p.Clothing.askWearHat(hat, hQuality, hState);
+                p.Clothing.askWearMask(mask, mQuality, mState);
+                p.Clothing.askWearPants(pants, pQuality, pState);
+                p.Clothing.askWearShirt(shirt, sQuality, sState);
+                p.Clothing.askWearVest(vest, vQuality, vState);
 
                 foreach (var items in p.Inventory.Items)
                     foreach (var item in itemsMap[items.page])

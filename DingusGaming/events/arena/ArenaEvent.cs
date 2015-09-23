@@ -10,6 +10,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
 using UnityEngine;
+using Random = System.Random;
 using Timer = System.Timers.Timer;
 
 namespace DingusGaming.Events.Arena
@@ -24,16 +25,20 @@ namespace DingusGaming.Events.Arena
         private List<int> sortedScores = new List<int>();
         private readonly ushort startItem, dropItem;
         private readonly Dictionary<CSteamID, PlayerState> states = new Dictionary<CSteamID, PlayerState>();
-        public Vector3 location;
+        public readonly List<Vector3> locations;
+        private Vector3 currentLocation;
+        private static readonly Random rand = new Random();
         private readonly float radius;
 
         public ArenaEvent(Vector3 location, float radius = 10, ushort startItem = 0, ushort dropItem = 0, bool adminsIncluded = true)
         {
-            this.location = location;
             this.radius = radius;
             this.startItem = startItem;
             this.dropItem = dropItem;
             this.adminsIncluded = adminsIncluded;
+
+            locations = new List<Vector3>();
+            locations.Add(location);
         }
 
         public string countDown(uint secondsLeft)
@@ -43,7 +48,7 @@ namespace DingusGaming.Events.Arena
 
         public override string ToString()
         {
-            return "Arena-startItem:"+startItem;
+            return "Arena";
         }
 
         public static bool isOccurring
@@ -133,7 +138,7 @@ namespace DingusGaming.Events.Arena
                         player.Player.Equipment.equip(2, 1, 1);
                     }
 
-                    DGPlugin.teleportPlayerInRadius(player, location, radius);
+                    DGPlugin.teleportPlayerInRadius(player, currentLocation, radius);
                 }
 
                 player.Player.PlayerLife.OnUpdateLife -= playerRevived;
@@ -148,6 +153,8 @@ namespace DingusGaming.Events.Arena
                 new Thread(() =>
                 {
                     occurring = true;
+                    
+                    currentLocation = locations[rand.Next(0, locations.Count)];
 
                     DGPlugin.broadcastMessage("Arena has begun!");
 
@@ -197,7 +204,7 @@ namespace DingusGaming.Events.Arena
                     //drop starting items on location
                     if (dropItem != 0)
                         for (int i = 0; i < scores.Count; ++i)
-                            ItemManager.dropItem(new SDG.Unturned.Item(dropItem, 1, 100), location, true, false, true);
+                            ItemManager.dropItem(new SDG.Unturned.Item(dropItem, 1, 100), currentLocation, true, false, true);
 
                     //hook in player death/revive events
                     UnturnedPlayerEvents.OnPlayerDeath += onPlayerDeath;
@@ -246,7 +253,7 @@ namespace DingusGaming.Events.Arena
             player.Features.GodMode = true;
 
             //teleport player to arena location
-            DGPlugin.teleportPlayerInRadius(player, location, radius);
+            DGPlugin.teleportPlayerInRadius(player, currentLocation, radius);
 
             //give players starting item if present
             if (startItem != 0)

@@ -93,6 +93,8 @@ namespace DingusGaming.Events
 
                 e.startEvent();
             }
+            else
+                DGPlugin.broadcastMessage("Not enough players for "+e.ToString()+".");
 
             if (countDownTimes != null && waitTimes != null)
             {
