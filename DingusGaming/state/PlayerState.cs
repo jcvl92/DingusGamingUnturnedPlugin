@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
@@ -231,7 +230,7 @@ namespace DingusGaming.helper
 
                 clearInventory(player);
 
-                //add clothes - states are blank because I don't think they are needed
+                //add clothes
                 p.Clothing.askWearBackpack(backpack, bpQuality, bpState);
                 p.Clothing.askWearGlasses(glasses, gQuality, gState);
                 p.Clothing.askWearHat(hat, hQuality, hState);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DingusGaming.Events.Arena;
 using DingusGaming.helper;
 using Rocket.API;
 using Rocket.Unturned.Player;
@@ -66,7 +65,11 @@ namespace DingusGaming
                     playerRevived = delegate (bool isDead2)
                     {
                         if (!isDead2)
-                            playerState.setCompleteState(caller);
+                        {
+                            playerState.setSkills(caller);
+                            playerState.setStats(caller);
+                            playerState.setInventory(caller);
+                        }
 
                         caller.Player.PlayerLife.OnUpdateLife -= playerRevived;
                     };

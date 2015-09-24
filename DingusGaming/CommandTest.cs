@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Threading;
-using DingusGaming.Events.Arena;
 using Rocket.API;
 using Rocket.Unturned.Player;
-using UnityEngine;
 
 namespace DingusGaming
 {
@@ -14,7 +11,6 @@ namespace DingusGaming
         private const string SYNTAX = "";
         private const bool ALLOW_FROM_CONSOLE = false;
         private const bool RUN_FROM_CONSOLE = false;
-        private static ArenaEvent arena = null;
 
         public bool RunFromConsole
         {
@@ -52,16 +48,7 @@ namespace DingusGaming
 
         public void Execute(UnturnedPlayer caller, string[] command)
         {
-            if (arena == null)
-            {
-                arena = new ArenaEvent(caller.Position, startItem: 1036, dropItem: 1021);
-                arena.startEvent();
-            }
-            else
-            {
-                arena.stopEvent();
-                arena = null;
-            }
+            
         }
     }
 }

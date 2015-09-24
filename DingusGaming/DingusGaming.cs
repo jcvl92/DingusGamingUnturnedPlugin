@@ -250,9 +250,6 @@ namespace DingusGaming
         {
             removeFromVehicle(player);
 
-            //level them with the ground
-            position.y = LevelGround.getHeight(position);
-
             player.Teleport(position, rotation);
         }
 
@@ -278,6 +275,9 @@ namespace DingusGaming
 
             position.x = newX;
             position.z = newZ;
+
+            //level them with the ground
+            position.y = LevelGround.getHeight(position);
 
             teleportPlayer(player, position, rotation);
         }
