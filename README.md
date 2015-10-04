@@ -7,9 +7,9 @@ This is my unfinished Rocket plugin for Unturned. I put a lot of work into it, b
 * Teleporting to a player in a vehicle puts you in their vehicle instead of TPing and probably getting your run over. If vehicle has no space for you, it puts you behind the vehicle.
 * teleportPlayerInRadius() will teleport players to a random point within a circle, leveling them with the ground so they do not get teleported into the ground/in the air.
 * Skills reduction on death is reduced to -10% instead of -$25%. This was done by removing the normal update delegate, and putting my own copy in with the local variable changed.
-* Structure health was programmatically changed to be 10x. This is scaleable and much easier than editing the structure config files.
+* Structure health was programmatically changed to be 10x. This is scalable and much easier than editing the structure config files.
 * Players can be respawned, bypassing the respawn timer, by using the respawnPlayer() function.
-* Inventory/skills&experience/location/survival stats can all be saved and/or cleared out using the PlayerState class. These functions are fairly robust, but can operate a little weird at scale as the underlying Unturned operations are not scaleable or robust, themselves.
+* Inventory/skills&experience/location/survival stats can all be saved and/or cleared out using the PlayerState class. These functions are fairly robust, but can operate a little weird at scale as the underlying Unturned operations are not scalable or robust, themselves.
 * I used a lot of reflection to edit private variables and access invocation lists to replace delegates.
 * In order to auto-respawn players on death, I made an onPlayerDeath delegate that registered an onPlayerDied delegate that would respawn the player. This is because there are two different events that happen when a player dies, onDeath and onDied. onDeath happens before the death has fully registered, and onDied happens after the death has registered, when a respawn call would be valid. A similar flow happens when respawning a player and modifying their state. See the CommandUnstuck and ArenaEvent classes for examples.
 
@@ -33,9 +33,9 @@ This is my unfinished Rocket plugin for Unturned. I put a lot of work into it, b
       * This works by replacing Steam Groups with fake Steam Groups generated for each party. Therefore, Steam Groups do not work with this feature.
 * Schedulable events
   * Server tips every 5 minutes.
-    * These are hardcoded in the TipsEvent class because I hadn't gotten around to reading them in from a file.
+    * These are hard coded in the TipsEvent class because I hadn't gotten around to reading them in from a file.
   * **Arena Event every 30 minutes.**
     * Players' complete states(skill/experience levels, inventory, current survival stats) are saved and cleared. Then they are all teleported to a random location in the Arena location pool. They are given katanas and a bunch of pistols are dropped in the middle of the Arena location(these items are configurable). There is a 3 second timer before players appear to each other. Arena lasts 1 minute(configurable). At the end of Arena, everyone's kills/deaths/rank is reported to them, and their states are completely restored.
     * The benefit of arena is that it allows players to farm a good amount of credits every 30 minutes.
     * If a lot of players are on the server(more than ~16) then players will timeout when the arena begins/ends. So the server timeout needs to be increased(I just maxed it out on my server).
-    * Even with the controls in place, the Unturned code base is so unreliable that Arena will never be stable without seriously comprimising it's funcationality.
+    * Even with the controls in place, the Unturned code base is so unreliable that Arena will never be stable without seriously compromising it's functionality.
