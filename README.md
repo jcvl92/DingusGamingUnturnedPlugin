@@ -1,8 +1,8 @@
-#DingusGaming
+#DingusGaming Unturned Rocket Plugin
 
 This is my unfinished Rocket plugin for Unturned. I put a lot of work into it, but ultimately found that Unturned was not robust or powerful enough to handle any serious mods to the game. For that reason, I gave up on development after the Arena feature was finished. The Arena works, but will often crash or silently fail and cause people to lose their gear, or bug them in other ways. The codebase is solid, but Unturned simply is not able to handle the level of processing required to make Arena work well. I originally wanted to make Arena into Gun Game, but it was very clear that would not be possible.
 
-Some interesting developments that developers might be interested in:
+**Some interesting developments that developers might be interested in:**
 * Teleport functions remove players from cars before teleporting them.
 * Teleporting to a player in a vehicle puts you in their vehicle instead of TPing and probably getting your run over. If vehicle has no space for you, it puts you behind the vehicle.
 * teleportPlayerInRadius() will teleport players to a random point within a circle, leveling them with the ground so they do not get teleported into the ground/in the air.
