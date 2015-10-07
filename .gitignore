@@ -3,7 +3,6 @@
 *.csproj
 *.dll
 *.pdb
-*.xml
 *.cache
 *.txt
 *.DS_Store

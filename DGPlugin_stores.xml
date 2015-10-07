@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfStore>
+	<Store>
+		<name>Ranged Weapons</name>
+		<items>
+			<Item>
+				<name>Cobra</name>
+				<itemID>99</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>BluntForce</name>
+				<itemID>112</itemID>
+				<cost>100</cost>
+			</Item>
+			<Item>
+				<name>DragonFang</name>
+				<itemID>132</itemID>
+				<cost>150</cost>
+			</Item>
+			<Item>
+				<name>Honeybadger</name>
+				<itemID>116</itemID>
+				<cost>200</cost>
+			</Item>
+			<Item>
+				<name>MapleStike</name>
+				<itemID>363</itemID>
+				<cost>250</cost>
+			</Item>
+			<Item>
+				<name>TimberWolf</name>
+				<itemID>18</itemID>
+				<cost>450</cost>
+			</Item>
+			<Item>
+				<name>Grizzly</name>
+				<itemID>297</itemID>
+				<cost>750</cost>
+			</Item>
+			<Item>
+				<name>VSSK</name>
+				<itemID>6068</itemID>
+				<cost>1250</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Ammunition</name>
+		<items>
+			<Item>
+				<name>Military Ammo Box</name>
+				<itemID>43</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Military Magazine</name>
+				<itemID>6</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Military Drum</name>
+				<itemID>17</itemID>
+				<cost>200</cost>
+			</Item>
+			<Item>
+				<name>Timberwolf Magazine</name>
+				<itemID>4</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Grizzly Magazine</name>
+				<itemID>4</itemID>
+				<cost>75</cost>
+			</Item>
+			<Item>
+				<name>VSSK Magazine</name>
+				<itemID>6069</itemID>
+				<cost>125</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Weapon Attachments</name>
+		<items>
+			<Item>
+				<name>Red Cross Scope</name>
+				<itemID>22</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>ShadowStalker Scope</name>
+				<itemID>302</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>8x Scope</name>
+				<itemID>21</itemID>
+				<cost>60</cost>
+			</Item>
+			<Item>
+				<name>16x Scope</name>
+				<itemID>296</itemID>
+				<cost>250</cost>
+			</Item>
+			<Item>
+				<name>RangeFinder</name>
+				<itemID>1008</itemID>
+				<cost>250</cost>
+			</Item>
+			<Item>
+				<name>Adaptive Chambering</name>
+				<itemID>1007</itemID>
+				<cost>150</cost>
+			</Item>
+			<Item>
+				<name>Vertical Grip</name>
+				<itemID>8</itemID>
+				<cost>100</cost>
+			</Item>
+			<Item>
+				<name>Bipod</name>
+				<itemID>143</itemID>
+				<cost>100</cost>
+			</Item>
+			<Item>
+				<name>Military Suppressor</name>
+				<itemID>7</itemID>
+				<cost>150</cost>
+			</Item>
+			<Item>
+				<name>Military Barrel</name>
+				<itemID>149</itemID>
+				<cost>150</cost>
+			</Item>
+			<Item>
+				<name>Military Muzzle</name>
+				<itemID>150</itemID>
+				<cost>150</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Supplies</name>
+		<items>
+			<Item>
+				<name>Metal Scrap</name>
+				<itemID>67</itemID>
+				<cost>5</cost>
+			</Item>
+			<Item>
+				<name>Blowtorch</name>
+				<itemID>76</itemID>
+				<cost>25</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Food and Drink</name>
+		<items>
+			<Item>
+				<name>Canteen</name>
+				<itemID>337</itemID>
+				<cost>25</cost>
+			</Item>
+			<Item>
+				<name>MRE</name>
+				<itemID>81</itemID>
+				<cost>30</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Medical</name>
+		<items>
+			<Item>
+				<name>Dressing</name>
+				<itemID>394</itemID>
+				<cost>10</cost>
+			</Item>
+			<Item>
+				<name>Vaccine</name>
+				<itemID>269</itemID>
+				<cost>10</cost>
+			</Item>
+			<Item>
+				<name>Med Kit</name>
+				<itemID>15</itemID>
+				<cost>20</cost>
+			</Item>
+		</items>
+	</Store>
+	<Store>
+		<name>Clothing</name>
+		<items>
+			<Item>
+				<name>Cargo Pants</name>
+				<itemID>209</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Flight Jacket</name>
+				<itemID>419</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Police Vest</name>
+				<itemID>10</itemID>
+				<cost>50</cost>
+			</Item>
+			<Item>
+				<name>Military Vest</name>
+				<itemID>310</itemID>
+				<cost>75</cost>
+			</Item>
+			<Item>
+				<name>Ghillie Vest</name>
+				<itemID>238</itemID>
+				<cost>100</cost>
+			</Item>
+			<Item>
+				<name>Ghillie Hood</name>
+				<itemID>237</itemID>
+				<cost>75</cost>
+			</Item>
+			<Item>
+				<name>Ghillie Bottom</name>
+				<itemID>236</itemID>
+				<cost>100</cost>
+			</Item>
+			<Item>
+				<name>Ghillie Top</name>
+				<itemID>235</itemID>
+				<cost>75</cost>
+			</Item>
+			<Item>
+				<name>Alice Pack</name>
+				<itemID>253</itemID>
+				<cost>250</cost>
+			</Item>
+		</items>
+	</Store>
+</ArrayOfStore>
